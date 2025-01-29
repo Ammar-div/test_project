@@ -88,6 +88,25 @@ void _handleMyAdvertisings(BuildContext context) async {
   }
 }
 
+void _handleSupport(BuildContext context) async {
+  final user = FirebaseAuth.instance.currentUser;
+  
+  if (user != null) {
+
+    // User is logged in
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) =>  MyAdvertisings(
+          sellerUserId : user.uid,
+          ),
+      ),
+    );
+  } else {
+    _loginDialog(context , "4");
+  }
+}
+
+
 
 
 
