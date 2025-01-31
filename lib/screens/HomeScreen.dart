@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               SliverGrid(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 3 / 4,
+                  childAspectRatio: 3 / 5,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
                 ),
@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 17,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
