@@ -32,6 +32,26 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
     );
   }
 
+  // Helper function to calculate time difference
+  String _getTimeAgo(Timestamp publishDate) {
+    final now = DateTime.now();
+    final date = publishDate.toDate();
+    final difference = now.difference(date);
+
+    if (difference.inDays > 30) {
+      final months = (difference.inDays / 30).floor();
+      return '$months month${months > 1 ? 's' : ''} ago';
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
+    } else {
+      return 'Just now';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,14 +134,16 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                       final imageUrl = product['imageUrls'][0]; // Use the first image
                       final productId = products[index].id; // Get the document ID
                       final categoryId = product['categoryId'];
+                      final publishDate = product['publishDate'] as Timestamp;
+                      final timeAgo = _getTimeAgo(publishDate); // Calculate time ago
 
                       return GestureDetector(
                         onTap: () {
-                          // Navigate to ProductDetailScreen
+                          // Navigate to AdvertisingProductDetailScreen
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProductDetailScreen(
+                              builder: (context) => AdvertisingProductDetailScreen(
                                 productName: product['name'],
                                 productPrice: product['price'],
                                 imageUrls: List<String>.from(product['imageUrls']),
@@ -177,14 +199,32 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                   ),
                                 ),
                               ),
-                              Text(
-                                '${product['price']} JOD',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      '${product['price']} JOD',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const Spacer(),
+                                
+                                     Text(
+                                  timeAgo,
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer, 
+                                  ),
+                                ),                                  
+                                  ],
                                 ),
-                                textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 8),
 

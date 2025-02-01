@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:test_project/screens/products_of_category.dart';
 
 
 class AllCategories extends StatefulWidget {
@@ -58,36 +59,46 @@ getOnTheLoad() async {
                   SizedBox(
                     height: 120, // Limit the height to fit 4 categories
                     child: StreamBuilder(
-                      stream: categoriesStream,
-                      builder: (context , AsyncSnapshot snapshot) {
-                        return snapshot.hasData ? ListView.builder(
-                        scrollDirection: Axis.horizontal, // Set the scroll direction to horizontal
-                        itemCount: snapshot.data.docs.length,
-                        itemBuilder: (ctx, index) {
-                          DocumentSnapshot db = snapshot.data.docs[index];
-                          return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 5.0), // Add spacing between items
-                          width: 90, // Set a fixed width for each item to fit 4 items in the screen
-                          child: Column(
-                            children: [
-                              CircleAvatar(
-                                radius: 30,
-                                backgroundImage: NetworkImage(db["imageUrl"]),
+                        stream: categoriesStream,
+                        builder: (context , AsyncSnapshot snapshot) {
+                          return snapshot.hasData ? ListView.builder(
+                          scrollDirection: Axis.horizontal, // Set the scroll direction to horizontal
+                          itemCount: snapshot.data.docs.length,
+                          itemBuilder: (ctx, index) {
+                            DocumentSnapshot db = snapshot.data.docs[index];
+                            return Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 5.0), // Add spacing between items
+                            width: 90, // Set a fixed width for each item to fit 4 items in the screen
+                            child: GestureDetector(
+                              onTap: () {
+                                var categoryId = db.id; 
+                                var categoryName = db["name"];
+                                Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => ProductsOfCategory(
+                                  categoryId : categoryId,
+                                  categoryName,
+                                ) ,));
+                              },
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 30,
+                                    backgroundImage: NetworkImage(db["imageUrl"]),
+                                  ),
+                                  const SizedBox(height: 8), // Add spacing between image and text
+                                  Text(
+                                    db["name"],
+                                    textAlign: TextAlign.center, // Center the text
+                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 8), // Add spacing between image and text
-                              Text(
-                                db["name"],
-                                textAlign: TextAlign.center, // Center the text
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        );
-                        }
-                      ): const Text('No Available Categories');
-                      },
-                      
-                    ),
+                            ),
+                          );
+                          }
+                        ): const Text('No Available Categories');
+                        },
+                        
+                      ),
                   ),            
                ],
              ),
@@ -154,47 +165,66 @@ Widget build(BuildContext context) {
                     DocumentSnapshot db = snapshot.data.docs[index];
                     return Column(
                       children: [
-                        Card(
-                          margin: const EdgeInsets.all(8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          clipBehavior: Clip.hardEdge,
-                          elevation: 2,
-                          child: Column(
-                            children: [
-                              // Image with individual loading indicator
-                              Image.network(
-                                db["imageUrl"],
-                                height: 300,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                loadingBuilder: (context, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: loadingProgress.expectedTotalBytes != null
-                                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                          : null,
-                                    ),
-                                  );
-                                },
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Center(
-                                    child: Icon(Icons.error, size: 50, color: Colors.red),
-                                  );
-                                },
+                        GestureDetector(
+                          onTap: () {
+                             var categoryId = db.id; 
+                                var categoryName = db["name"];
+                                Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => ProductsOfCategory(
+                                  categoryId : categoryId,
+                                  categoryName,
+                                )
+                                )
+                                );
+                          },
+                          child:Card(
+                            margin: const EdgeInsets.all(8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              side: const BorderSide(
+                                color: Color.fromRGBO(50, 18, 0, 1), // RGB color (50, 18, 0)
+                                width: 2, // Border width
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                db["name"],
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
+                            ),
+                            clipBehavior: Clip.hardEdge,
+                            elevation: 2,
+                            child: Column(
+                              children: [
+                                // Image with individual loading indicator
+                                Image.network(
+                                  db["imageUrl"],
+                                  height: 300,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress.expectedTotalBytes != null
+                                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Center(
+                                      child: Icon(Icons.error, size: 50, color: Colors.red),
+                                    );
+                                  },
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 8),
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(0,0,0,6),
+                                  child: Text(
+                                    db["name"],
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         const SizedBox(height: 25), // Add vertical space after each card

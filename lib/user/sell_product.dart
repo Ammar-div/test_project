@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:test_project/screens/HomeScreen.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 
 class SellProduct extends StatefulWidget {
   const SellProduct({
@@ -400,7 +399,7 @@ Future<void> _pickImageFromGallery() async {
       "price": productPrice,
       "categoryId": widget.categoryId,
       "description": productDescriptionController.text,
-      "publishDate": DateTime.now(),
+      'publishDate': Timestamp.fromDate(DateTime.now()), // Convert DateTime to Timestamp
       "imageUrls": imageUrls, // Store the uploaded image URLs
       "seller_ifos": {
         "seller_id": userId,

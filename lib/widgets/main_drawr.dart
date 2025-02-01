@@ -5,6 +5,7 @@ import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/screens/auth_screen.dart';
 import 'package:test_project/user/account_management.dart';
 import 'package:test_project/user/my_advertisings.dart';
+import 'package:test_project/user/my_favorites.dart';
 import 'package:test_project/user/sell_product.dart';
 
 class MainDrawr extends StatefulWidget {
@@ -88,6 +89,21 @@ void _handleMyAdvertisings(BuildContext context) async {
   }
 }
 
+void _handleMyFavorites(BuildContext context) async {
+  final user = FirebaseAuth.instance.currentUser;
+  
+  if (user != null) {
+    // User is logged in
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) =>  MyFavorites(),
+      ),
+    );
+  } else {
+    _loginDialog(context , "2");
+  }
+}
+
 
 
 void _loginDialog(BuildContext context , String x) 
@@ -101,7 +117,10 @@ void _loginDialog(BuildContext context , String x)
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('You need to log in.'),
+            const Padding(
+              padding:  EdgeInsets.only(top: 12),
+              child: Text('You need to log in.'),
+            ),
             const SizedBox(height: 17,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -168,6 +187,16 @@ void _loginDialog(BuildContext context , String x)
                             builder: (ctx) => MyAdvertisings(
                             sellerUserId: userId,
                             ),
+                          )
+                        );
+                      }
+
+
+                      if(x == "2")
+                      {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (ctx) => MyFavorites(),
                           )
                         );
                       }
@@ -277,6 +306,7 @@ class _MainDrawrState extends State<MainDrawr> {
                   ),
             ),
             onTap: () {
+              _handleMyFavorites(context);
             },
           ),
           const SizedBox(height: 12),
@@ -368,9 +398,6 @@ class _MainDrawrState extends State<MainDrawr> {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (ctx) => const HomeScreen(),
-        // settings: RouteSettings(
-        //   arguments: {'redirectTo': 'Logout'},
-        // ),
       ),
     );
   },
