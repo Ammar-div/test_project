@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test_project/screens/admin/pc_category/all_categories.dart';
@@ -34,13 +35,30 @@ class ProductDetailScreen extends StatefulWidget {
   _ProductDetailScreenState createState() => _ProductDetailScreenState();
 }
 
-class _ProductDetailScreenState extends State<ProductDetailScreen> {
+class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  bool _isFavorite = false;
   bool _isExpanded = false;
   bool _isOverflowing = false;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final textPainter = TextPainter(
         text: TextSpan(text: widget.description, style: const TextStyle()),
@@ -54,6 +72,51 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  // Function to add/remove a product from favorites
+  Future<void> _toggleFavorite() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      // Handle case where user is not logged in
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You must be logged in to add favorites')),
+      );
+      return;
+    }
+
+    final favoriteRef = _firestore
+        .collection('favorites')
+        .where('userId', isEqualTo: user.uid)
+        .where('productId', isEqualTo: widget.productId);
+
+    final favoriteSnapshot = await favoriteRef.get();
+
+    if (favoriteSnapshot.docs.isEmpty) {
+      // Add to favorites
+      await _firestore.collection('favorites').add({
+        'userId': user.uid,
+        'productId': widget.productId,
+        'productName': widget.productName,
+        'productPrice': widget.productPrice,
+        'imageUrl': widget.imageUrls[0],
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Product added to favorites')),
+      );
+    } else {
+      // Remove from favorites
+      await favoriteSnapshot.docs.first.reference.delete();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Product removed from favorites')),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -64,19 +127,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-             CarouselSlider(
-                options: CarouselOptions(
-                  height: 300,
-                  autoPlay: true,
-                  enlargeCenterPage: true,
-                  viewportFraction: 1.0,
-                ),
-                items: widget.imageUrls.map((imageUrl) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return
-                      Hero(tag: widget.productId,
-                       child:  Container(
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 300,
+                autoPlay: true,
+                enlargeCenterPage: true,
+                viewportFraction: 1.0,
+              ),
+              items: widget.imageUrls.map((imageUrl) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Hero(
+                      tag: widget.productId,
+                      child: Container(
                         width: MediaQuery.of(context).size.width,
                         margin: const EdgeInsets.symmetric(horizontal: 5.0),
                         decoration: BoxDecoration(
@@ -87,12 +150,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ),
                         ),
                       ),
-                       );  
-                    },
-                  );
-                }).toList(),
-              ),
-            
+                    );
+                  },
+                );
+              }).toList(),
+            ),
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -117,14 +179,56 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           color: Colors.green,
                         ),
                       ),
-
                       const Spacer(),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: _auth.currentUser != null
+                            ? _firestore
+                                .collection('favorites')
+                                .where('userId', isEqualTo: _auth.currentUser?.uid)
+                                .where('productId', isEqualTo: widget.productId)
+                                .snapshots()
+                            : const Stream<QuerySnapshot>.empty(),
+                        builder: (context, favoriteSnapshot) {
+                          final isFavorite = _auth.currentUser != null &&
+                              favoriteSnapshot.hasData &&
+                              favoriteSnapshot.data!.docs.isNotEmpty;
 
-                      IconButton(onPressed: () {},
-                      icon: const Icon(Icons.favorite_border_outlined , 
-                      size: 26,
-                      ),
-                      
+                          return AnimatedBuilder(
+                            animation: _scaleAnimation,
+                            builder: (context, child) {
+                              return Transform.scale(
+                                scale: _scaleAnimation.value,
+                                child: IconButton(
+                                  onPressed: () {
+                                    if (_auth.currentUser == null) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('You must be logged in to add favorites')),
+                                      );
+                                    } else {
+                                      setState(() {
+                                        _isFavorite = !_isFavorite;
+                                      });
+
+                                      if (_isFavorite) {
+                                        _animationController.forward().then((_) {
+                                          _animationController.reverse();
+                                        });
+                                      } else {
+                                        _animationController.reverse();
+                                      }
+
+                                      _toggleFavorite();
+                                    }
+                                  },
+                                  icon: Icon(
+                                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                                    color: isFavorite ? Colors.red : null,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -180,8 +284,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       },
                       child: Text(_isExpanded ? 'Show Less' : 'Show More'),
                     ),
-
-                    const SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -210,35 +313,30 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ],
                         ),
                       ),
-                      
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              border: Border.all(),
-                              borderRadius: BorderRadius.circular(8),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            const Text(
+                              'Number : ',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            child: Row(
-                              children: [
-                                const Text(
-                                  'Number : ',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  widget.quantity.toString(),
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              widget.quantity.toString(),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -268,7 +366,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ],
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -278,7 +375,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 }
-
 
 
 

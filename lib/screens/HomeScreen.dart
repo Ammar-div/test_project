@@ -14,6 +14,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  bool _isFavorite = false;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late Stream<QuerySnapshot> _productsStream;
@@ -26,6 +28,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       duration: const Duration(milliseconds: 1200),
     );
     _animationController.forward();
+
+     _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
 
     // Initialize the stream
     _productsStream = _firestore
@@ -98,13 +107,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         'imageUrl': imageUrl,
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$productName added to favorites')),
+        const SnackBar(content: Text('Product added to favorites')),
       );
     } else {
       // Remove from favorites
       await favoriteSnapshot.docs.first.reference.delete();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$productName removed from favorites')),
+        const SnackBar(content: Text('Product removed from favorites')),
       );
     }
   }
@@ -243,40 +252,58 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                       color: Colors.green,
                                     ),
                                   ),
-                                  StreamBuilder<QuerySnapshot>(
-                                    stream: _auth.currentUser != null // Check if user is logged in
+                                 StreamBuilder<QuerySnapshot>(
+                                    stream: _auth.currentUser != null
                                         ? _firestore
                                             .collection('favorites')
                                             .where('userId', isEqualTo: _auth.currentUser?.uid)
                                             .where('productId', isEqualTo: productId)
                                             .snapshots()
-                                        : Stream<QuerySnapshot>.empty(), // Return an empty stream if user is not logged in
+                                        : Stream<QuerySnapshot>.empty(),
                                     builder: (context, favoriteSnapshot) {
-                                      // If user is not logged in, show unfilled icon
                                       final isFavorite = _auth.currentUser != null &&
                                           favoriteSnapshot.hasData &&
                                           favoriteSnapshot.data!.docs.isNotEmpty;
 
-                                      return IconButton(
-                                        onPressed: () {
-                                          if (_auth.currentUser == null) {
-                                            // Show a message if user is not logged in
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              const SnackBar(content: Text('You must be logged in to add favorites')),
-                                            );
-                                          } else {
-                                            _toggleFavorite(
-                                              productId,
-                                              product['name'],
-                                              product['price'],
-                                              imageUrl,
-                                            );
-                                          }
+                                      return AnimatedBuilder(
+                                        animation: _scaleAnimation,
+                                        builder: (context, child) {
+                                          return Transform.scale(
+                                            scale: _scaleAnimation.value,
+                                            child: IconButton(
+                                              onPressed: () {
+                                                if (_auth.currentUser == null) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    const SnackBar(content: Text('You must be logged in to add favorites')),
+                                                  );
+                                                } else {
+                                                  setState(() {
+                                                    _isFavorite = !_isFavorite;
+                                                  });
+
+                                                  if (_isFavorite) {
+                                                    _animationController.forward().then((_) {
+                                                      _animationController.reverse();
+                                                    });
+                                                  } else {
+                                                    _animationController.reverse();
+                                                  }
+
+                                                  _toggleFavorite(
+                                                    productId,
+                                                    product['name'],
+                                                    product['price'],
+                                                    imageUrl,
+                                                  );
+                                                }
+                                              },
+                                              icon: Icon(
+                                                isFavorite ? Icons.favorite : Icons.favorite_border,
+                                                color: isFavorite ? Colors.red : null,
+                                              ),
+                                            ),
+                                          );
                                         },
-                                        icon: Icon(
-                                          isFavorite ? Icons.favorite : Icons.favorite_border,
-                                          color: isFavorite ? Colors.red : null,
-                                        ),
                                       );
                                     },
                                   ),

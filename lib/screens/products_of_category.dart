@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/screens/product_details_screen.dart';
 
@@ -14,9 +15,14 @@ class ProductsOfCategory extends StatefulWidget {
   State<ProductsOfCategory> createState() => _ProductsOfCategoryState();
 }
 
-class _ProductsOfCategoryState extends State<ProductsOfCategory> {
+class _ProductsOfCategoryState extends State<ProductsOfCategory> with SingleTickerProviderStateMixin {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _isFavorite = false;
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
 
 
    // Helper function to calculate time difference
@@ -38,6 +44,69 @@ class _ProductsOfCategoryState extends State<ProductsOfCategory> {
       return 'Just now';
     }
   }
+
+
+    // Function to add/remove a product from favorites
+  Future<void> _toggleFavorite(String productId, String productName, double productPrice, String imageUrl) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      // Handle case where user is not logged in
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You must be logged in to add favorites')),
+      );
+      return;
+    }
+    final favoriteRef = _firestore
+        .collection('favorites')
+        .where('userId', isEqualTo: user.uid)
+        .where('productId', isEqualTo: productId);
+    final favoriteSnapshot = await favoriteRef.get();
+    if (favoriteSnapshot.docs.isEmpty) {
+      // Add to favorites
+      await _firestore.collection('favorites').add({
+        'userId': user.uid,
+        'productId': productId,
+        'productName': productName,
+        'productPrice': productPrice,
+        'imageUrl': imageUrl,
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$productName added to favorites')),
+      );
+    } else {
+      // Remove from favorites
+      await favoriteSnapshot.docs.first.reference.delete();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Product removed from favorites')),
+      );
+    }
+  }
+
+
+    @override
+  void initState() {
+    super.initState();
+
+     _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+   @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+
 
    @override
   Widget build(BuildContext context) {
@@ -159,10 +228,61 @@ class _ProductsOfCategoryState extends State<ProductsOfCategory> {
                                     color: Colors.green,
                                   ),
                                 ),
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.favorite_border),
-                                ),
+                                StreamBuilder<QuerySnapshot>(
+                                    stream: _auth.currentUser != null
+                                        ? _firestore
+                                            .collection('favorites')
+                                            .where('userId', isEqualTo: _auth.currentUser?.uid)
+                                            .where('productId', isEqualTo: productId)
+                                            .snapshots()
+                                        : Stream<QuerySnapshot>.empty(),
+                                    builder: (context, favoriteSnapshot) {
+                                      final isFavorite = _auth.currentUser != null &&
+                                          favoriteSnapshot.hasData &&
+                                          favoriteSnapshot.data!.docs.isNotEmpty;
+
+                                      return AnimatedBuilder(
+                                        animation: _scaleAnimation,
+                                        builder: (context, child) {
+                                          return Transform.scale(
+                                            scale: _scaleAnimation.value,
+                                            child: IconButton(
+                                              onPressed: () {
+                                                if (_auth.currentUser == null) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    const SnackBar(content: Text('You must be logged in to add favorites')),
+                                                  );
+                                                } else {
+                                                  setState(() {
+                                                    _isFavorite = !_isFavorite;
+                                                  });
+
+                                                  if (_isFavorite) {
+                                                    _animationController.forward().then((_) {
+                                                      _animationController.reverse();
+                                                    });
+                                                  } else {
+                                                    _animationController.reverse();
+                                                  }
+
+                                                  _toggleFavorite(
+                                                    productId,
+                                                    product['name'],
+                                                    product['price'],
+                                                    imageUrl,
+                                                  );
+                                                }
+                                              },
+                                              icon: Icon(
+                                                isFavorite ? Icons.favorite : Icons.favorite_border,
+                                                color: isFavorite ? Colors.red : null,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
                               ],
                             ),
                             // Display how long ago the product was posted
