@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:test_project/screens/HomeScreen.dart';
+import 'package:test_project/screens/order/order_confirmation.dart';
 
 
 enum OrderStatus {pending , shipped , delivered , canceled}
@@ -173,7 +173,7 @@ void showToastrMessage(String message) {
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (ctx) => const HomeScreen(),
+        builder: (ctx) => const OrderConfirmation(),
       ),
     );
   } catch (e) {
