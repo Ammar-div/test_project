@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:test_project/screens/admin/pc_category/all_categories.dart';
-import 'package:test_project/widgets/main_drawr.dart';
+import 'package:test_project/screens/order/pre_checkout.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 
@@ -172,7 +171,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
                   Row(
                     children: [
                       Text(
-                        '‫${widget.productPrice.toStringAsFixed(2)} JOD',
+                        '‫${widget.productPrice.toStringAsFixed(0)} JOD',
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -237,7 +236,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
                     child: SizedBox(
                       width: screenWidth * 0.80,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          DocumentSnapshot productDocumentObj = await _firestore.collection('products').doc(widget.productId).get();
+                          final sellerId = productDocumentObj["seller_ifos.seller_id"];
+                          final imageUrl = widget.imageUrls[0];
+                          Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => PreCheckout(
+                            productMainTitle: widget.productName,
+                            totalAmount: widget.productPrice,
+                            productDescription: widget.description,
+                            imageUrl: imageUrl,
+                            productId : widget.productId,
+                            sellerId : sellerId,
+                            quantity : widget.quantity,
+                          ) ));
+                        },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 13),
                           backgroundColor: const Color.fromARGB(255, 72, 110, 255),

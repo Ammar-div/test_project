@@ -221,7 +221,7 @@ class _ProductsOfCategoryState extends State<ProductsOfCategory> with SingleTick
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 Text(
-                                  '${product['price']} JOD',
+                                  '${product['price'].toStringAsFixed(0)} JOD',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,

@@ -204,7 +204,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                 child: Row(
                                   children: [
                                     Text(
-                                      '${product['price']} JOD',
+                                      '${product['price'].toStringAsFixed(0)} JOD',
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,

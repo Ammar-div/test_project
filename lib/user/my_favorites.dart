@@ -209,7 +209,7 @@ class _MyFavoritesState extends State<MyFavorites> with SingleTickerProviderStat
                                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Text(
-                                          '$productPrice JOD',
+                                          '${productPrice.toStringAsFixed(0)} JOD',
                                           style: const TextStyle(
                                             color: Colors.green,
                                             fontWeight: FontWeight.bold,
