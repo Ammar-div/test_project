@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/user/my_orders.dart';
@@ -137,7 +138,9 @@ Widget _buildBulletPoint(String text) {
                                 width: double.infinity, // Take full width of the Flexible
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => const MyOrders()));
+                                    final user = FirebaseAuth.instance.currentUser;
+                                    final userId = user!.uid;
+                                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => MyOrders(userId: userId,)));
 
                                   },
                                   style: ElevatedButton.styleFrom(

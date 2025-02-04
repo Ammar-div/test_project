@@ -171,7 +171,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
                   Row(
                     children: [
                       Text(
-                        '‫${widget.productPrice.toStringAsFixed(0)} JOD',
+                        '${widget.productPrice.toStringAsFixed(0)} JOD',
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -445,7 +445,6 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
@@ -498,7 +497,7 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                   ),
                   const SizedBox(height: 8),
                       Text(
-                        '‫${widget.productPrice.toStringAsFixed(2)} JOD',
+                        '${widget.productPrice.toStringAsFixed(2)} JOD',
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

@@ -6,6 +6,7 @@ import 'package:test_project/screens/auth_screen.dart';
 import 'package:test_project/user/account_management.dart';
 import 'package:test_project/user/my_advertisings.dart';
 import 'package:test_project/user/my_favorites.dart';
+import 'package:test_project/user/my_orders.dart';
 import 'package:test_project/user/sell_product.dart';
 
 class MainDrawr extends StatefulWidget {
@@ -15,7 +16,6 @@ class MainDrawr extends StatefulWidget {
   State<MainDrawr> createState() => _MainDrawrState();
 }
 
-final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
  void _handleAccountManagement(BuildContext context) async {
   final user = FirebaseAuth.instance.currentUser;
@@ -101,6 +101,24 @@ void _handleMyFavorites(BuildContext context) async {
     );
   } else {
     _loginDialog(context , "2");
+  }
+}
+
+
+void _handleMyOrders(BuildContext context) async {
+  final user = FirebaseAuth.instance.currentUser;
+  
+  if (user != null) {
+    // User is logged in
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) =>  MyOrders(
+          userId : user.uid,
+          ),
+      ),
+    );
+  } else {
+    _loginDialog(context , "3");
   }
 }
 
@@ -198,6 +216,18 @@ void _loginDialog(BuildContext context , String x)
                           MaterialPageRoute(
                             builder: (ctx) => MyFavorites(),
                           )
+                        );
+                      }
+
+
+                      if(x == "3")
+                      {
+                         Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (ctx) =>  MyOrders(
+                              userId : userId,
+                              ),
+                          ),
                         );
                       }
 
@@ -324,7 +354,7 @@ class _MainDrawrState extends State<MainDrawr> {
                   ),
             ),
             onTap: () {
-             
+             _handleMyOrders(context);
             },
           ),
           const SizedBox(height: 12),

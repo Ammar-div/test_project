@@ -135,6 +135,9 @@ void showToastrMessage(String message) {
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
+    // Save the form data
+    _formkey.currentState?.save(); // <-- Add this line to save the form data
+
     // Convert the enum to a string
     final orderStatusString = _initialOrderStatus.toString().split('.').last;
     final paymentStatusString = _initialPaymentStatus.toString().split('.').last;
@@ -150,18 +153,18 @@ void showToastrMessage(String message) {
       "product_infos": {
         "product_id" : widget.productId,
         "quantity": widget.quantity, // Add the number of products
+        "image_url": widget.imageUrl,
         "total_amount": widget.totalAmount,
       },
       'status': orderStatusString,
       "delivery_person_id": '9IWiv0gCv1Y60CRwjwGqYsuGTtr2', 
       "receiver_infos": {
-        "receiver_id": userId,
         "receiver_name": _enteredFullName,
         "receiver_email": _enteredEmail,
         "receiver_phone_number": _enteredPhoneNumber,
       },
       "payment_status": paymentStatusString,
-      "timestamp": DateTime.now(), // Nullable field
+      "timestamp": Timestamp.fromDate(DateTime.now()),
     };
     final docRef = FirebaseFirestore.instance.collection("orders").doc();
     await docRef.set(orderInfos);
@@ -193,113 +196,28 @@ void showToastrMessage(String message) {
       // Set the background color of the page
       backgroundColor: const Color.fromARGB(255, 153, 191, 216),
       body: Center(
-        child: Container(
-          // Add padding around the card to make it look better
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Card(
-                // Set the background color of the card to white
-                color: Colors.white,
-                // Add elevation to create a shadow behind the card
-                elevation: 5,
-                // Add border radius to the card
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // "Order Detail" text with bottom border
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Colors.grey, // Border color
-                              width: 1.0, // Border width
-                            ),
-                          ),
-                        ),
-                        child: const Text(
-                          'Order Detail',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      // Product image and details row
-                      Row(
-                        children: [
-                          Image.network(
-                            widget.imageUrl,
-                            height: 90,
-                            width: 90,
-                            fit: BoxFit.cover,
-                          ),
-                          const SizedBox(width: 18),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.productMainTitle,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  widget.productDescription,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Text(
-                            'Total(JOD): ${widget.totalAmount}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const Spacer(),
-                          Text('Quantity: ${widget.quantity}'),
-                        ],
-                      ),
-                    ],
+        child: SingleChildScrollView(
+          child: Container(
+            // Add padding around the card to make it look better
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Card(
+                  // Set the background color of the card to white
+                  color: Colors.white,
+                  // Add elevation to create a shadow behind the card
+                  elevation: 5,
+                  // Add border radius to the card
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Card(
-                // Set the background color of the card to white
-                color: Colors.white,
-                // Add elevation to create a shadow behind the card
-                elevation: 5,
-                // Add border radius to the card
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Form(
-                    key: _formkey,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // "Order Header" text with bottom border
+                        // "Order Detail" text with bottom border
                         Container(
                           alignment: Alignment.centerLeft,
                           decoration: const BoxDecoration(
@@ -311,154 +229,241 @@ void showToastrMessage(String message) {
                             ),
                           ),
                           child: const Text(
-                            'Order Header',
+                            'Order Detail',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 0),
-
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(height: 18),
+                        // Product image and details row
+                        Row(
                           children: [
-                            _buildBulletPoint("Enter the recipient's information"),
+                            Image.network(
+                              widget.imageUrl,
+                              height: 90,
+                              width: 90,
+                              fit: BoxFit.cover,
+                            ),
+                            const SizedBox(width: 18),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.productMainTitle,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    widget.productDescription,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
-                        const SizedBox(height: 0,),
-                        // Email TextFormField
-                        TextFormField(
-                          controller: userEmailController,
-                          decoration: const InputDecoration(labelText: 'Email Address'),
-                          keyboardType: TextInputType.emailAddress,
-                          autocorrect: false,
-                          textCapitalization: TextCapitalization.none,
-                          validator: (value) {
-                              if (value == null ||
-                                  value.trim().isEmpty ||
-                                  !value.contains('@')) {
-                                return 'Please enter a valid email address.';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _enteredEmail = value!;
-                            },
-                        ),
                         const SizedBox(height: 16),
-                        // Full Name TextFormField
-                        TextFormField(
-                          controller: userFullNameController,
-                          decoration: const InputDecoration(labelText: 'Full Name'),
-                          keyboardType: TextInputType.name,
-                           validator: (value) {
-                              if (value == null ||value.trim().isEmpty ||value.contains('@') || value.contains('_') || value.contains('-') || value.trim().length<=2) {
-                                return 'Please enter a valid name.';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _enteredFullName = value!;
-                            },
-                        ),
-                        const SizedBox(height: 16),
-                        // Phone Number TextFormField
-                        TextFormField(
-                          controller: userPhoneNumberController,
-                          decoration: const InputDecoration(labelText: 'Phone Number'),
-                          keyboardType: TextInputType.phone,
-                           validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Phone number is required.';
-                                }
-                                if (value.trim().length <= 9) {
-                                  return 'Phone number must be max 10 characters.';
-                                }
-                                if(value.trim().length != 10 && value.trim().length != 13)
-                                {
-                                  return 'Phone number must be 10 characters or starting with +962';
-                                }
-                                if (!value.startsWith('077') && !value.startsWith('078') && !value.startsWith('079') && !value.startsWith('+96277') && !value.startsWith('+96278') && !value.startsWith('+96279')) {
-                                  return 'Phone number must be "077" or "078" or "079" or "+962" .';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                _enteredPhoneNumber = value!;
-                              },
-                        ),
-                        const SizedBox(height: 22,),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            // Back Button
-                            Flexible(
-                              flex: 3, // 3 parts of the available space
-                              child: SizedBox(
-                                width: double.infinity, // Take full width of the Flexible
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.yellow[800],
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: const Center(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center, // Center contents horizontally
-                                      children: [
-                                        Icon(Icons.arrow_back_ios_new, color: Colors.white),
-                                        SizedBox(width: 6),
-                                        Text('Back'),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                            Text(
+                              'Total(JOD): ${widget.totalAmount}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
                             ),
-                            const SizedBox(width: 16), // Add spacing between buttons
-                            // Checkout Button
-                            Flexible(
-                              flex: 3, // 3 parts of the available space
-                              child: SizedBox(
-                                width: double.infinity, // Take full width of the Flexible
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    _confirmOrder();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.green[600],
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: const Center(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center, // Center contents horizontally
-                                      children: [
-                                        Icon(Icons.check_circle_outline, color: Colors.white),
-                                        SizedBox(width: 6),
-                                        Text('Checkout'),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                            const Spacer(),
+                            Text('Quantity: ${widget.quantity}'),
                           ],
                         ),
                       ],
                     ),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                Card(
+                  // Set the background color of the card to white
+                  color: Colors.white,
+                  // Add elevation to create a shadow behind the card
+                  elevation: 5,
+                  // Add border radius to the card
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Form(
+                      key: _formkey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // "Order Header" text with bottom border
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Colors.grey, // Border color
+                                  width: 1.0, // Border width
+                                ),
+                              ),
+                            ),
+                            child: const Text(
+                              'Order Header',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 0),
+          
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildBulletPoint("Enter the recipient's information"),
+                            ],
+                          ),
+                          const SizedBox(height: 0,),
+                          // Email TextFormField
+                          TextFormField(
+                            controller: userEmailController,
+                            decoration: const InputDecoration(labelText: 'Email Address'),
+                            keyboardType: TextInputType.emailAddress,
+                            autocorrect: false,
+                            textCapitalization: TextCapitalization.none,
+                            validator: (value) {
+                                if (value == null ||
+                                    value.trim().isEmpty ||
+                                    !value.contains('@')) {
+                                  return 'Please enter a valid email address.';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _enteredEmail = value!;
+                              },
+                          ),
+                          const SizedBox(height: 16),
+                          // Full Name TextFormField
+                          TextFormField(
+                            controller: userFullNameController,
+                            decoration: const InputDecoration(labelText: 'Full Name'),
+                            keyboardType: TextInputType.name,
+                             validator: (value) {
+                                if (value == null ||value.trim().isEmpty ||value.contains('@') || value.contains('_') || value.contains('-') || value.trim().length<=2) {
+                                  return 'Please enter a valid name.';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _enteredFullName = value!;
+                              },
+                          ),
+                          const SizedBox(height: 16),
+                          // Phone Number TextFormField
+                          TextFormField(
+                            controller: userPhoneNumberController,
+                            decoration: const InputDecoration(labelText: 'Phone Number'),
+                            keyboardType: TextInputType.phone,
+                             validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Phone number is required.';
+                                  }
+                                  if (value.trim().length <= 9) {
+                                    return 'Phone number must be max 10 characters.';
+                                  }
+                                  if(value.trim().length != 10 && value.trim().length != 13)
+                                  {
+                                    return 'Phone number must be 10 characters or starting with +962';
+                                  }
+                                  if (!value.startsWith('077') && !value.startsWith('078') && !value.startsWith('079') && !value.startsWith('+96277') && !value.startsWith('+96278') && !value.startsWith('+96279')) {
+                                    return 'Phone number must be "077" or "078" or "079" or "+962" .';
+                                  }
+                                  return null;
+                                },
+                                onSaved: (value) {
+                                  _enteredPhoneNumber = value!;
+                                },
+                          ),
+                          const SizedBox(height: 22,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              // Back Button
+                              Flexible(
+                                flex: 3, // 3 parts of the available space
+                                child: SizedBox(
+                                  width: double.infinity, // Take full width of the Flexible
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.yellow[800],
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: const Center(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center, // Center contents horizontally
+                                        children: [
+                                          Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                                          SizedBox(width: 6),
+                                          Text('Back'),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16), // Add spacing between buttons
+                              // Checkout Button
+                              Flexible(
+                                flex: 3, // 3 parts of the available space
+                                child: SizedBox(
+                                  width: double.infinity, // Take full width of the Flexible
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      _confirmOrder();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.green[600],
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: const Center(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center, // Center contents horizontally
+                                        children: [
+                                          Icon(Icons.check_circle_outline, color: Colors.white),
+                                          SizedBox(width: 6),
+                                          Text('Checkout'),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
