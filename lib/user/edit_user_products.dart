@@ -184,6 +184,7 @@ Future<void> _pickImageFromGallery() async {
         ? _selectedHowMuchUsed?.toString() ?? '1 week' // Default to 1 week
         : null,
     "quantity": int.parse(widget.quantityController.text),
+    "product_order_status": "Not requested yet",
   };
 
     // Update the existing document

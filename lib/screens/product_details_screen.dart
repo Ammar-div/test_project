@@ -407,6 +407,7 @@ class AdvertisingProductDetailScreen extends StatefulWidget {
   final String howMuchUsed;
   final int quantity;
   final String productId;
+  final String productOrderStatus;
 
   const AdvertisingProductDetailScreen({
     super.key,
@@ -418,6 +419,7 @@ class AdvertisingProductDetailScreen extends StatefulWidget {
     required this.howMuchUsed,
     required this.quantity,
     required this.productId,
+    required this.productOrderStatus,
   });
 
   @override
@@ -539,6 +541,99 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
 
                     const SizedBox(height: 30),
 
+
+                     if(widget.productOrderStatus == "Not requested yet")
+                    Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 16),
+                          width: double.infinity,
+                          color: Colors.blueGrey[100],
+                          child: Row(
+                            children: [
+                              const Text(
+                                'Product order status : ',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                widget.productOrderStatus,
+                                  style: const TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                   ),
+
+                   if(widget.productOrderStatus == "It has been purchased")
+                   Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 16),
+                          width: double.infinity,
+                          color: Colors.green[400],
+                          child: Row(
+                            children: [
+                              const Text(
+                                'Product order status : ',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                widget.productOrderStatus,
+                                  style: const TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                   ),
+
+                     if(widget.productOrderStatus == "It has been purchased")
+                      Padding(padding: const EdgeInsets.symmetric(vertical: 14),
+                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                        Icon(Icons.delivery_dining_sharp , color: Colors.green[600],),
+                        const SizedBox(width: 6,),
+                         const Text('Your Delivery captin will contact you soon.',
+                         textAlign: TextAlign.center,
+                            ),
+                       ],
+                     ),
+                      ),
+
+
+
+                    if(widget.productOrderStatus == "It has been favorited")
+                   Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 16),
+                          width: double.infinity,
+                          color: Colors.orange[300],
+                          child: Row(
+                            children: [
+                              const Text(
+                                'Product order status : ',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                widget.productOrderStatus,
+                                  style: const TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                   ),
+                   const SizedBox(height: 14,),
+
                    Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 16),
                     width: double.infinity,
@@ -611,6 +706,12 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                             ],
                           ),
                    ),
+
+                   const SizedBox(height: 14,),
+                 
+
+
+
 
                 ],
               ),

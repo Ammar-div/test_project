@@ -53,6 +53,9 @@ dependencies:
   transparent_image: ^2.0.1
   carousel_slider: ^5.0.0
   flutter_markdown: ^0.7.5
+  firebase_messaging: ^15.2.1
+  local_notifier: ^0.1.6
+  flutter_local_notifications: ^18.0.1
 
 
 

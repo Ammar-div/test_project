@@ -82,12 +82,31 @@ Widget _buildBulletPoint(String text) {
                         const SizedBox(height: 22,),
 
 
-                        Padding(padding:EdgeInsets.all(10),
+                        Padding(padding:const EdgeInsets.all(10),
                         child: Icon(Icons.check_circle_outline,
                           color: Colors.green[600],
                           size: 160,
                           ),
                          ),
+
+                         const SizedBox(height: 16,),
+
+                          Padding(padding: const EdgeInsets.symmetric(vertical: 14),
+                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                        Icon(Icons.delivery_dining_sharp , color: Colors.green[600],size: 28,),
+                        const SizedBox(width: 6,),
+                         const Text('Your Delivery captin will contact you soon.',
+                         style: TextStyle(
+                          fontSize: 14,
+                         ),
+                         textAlign: TextAlign.center,
+                            ),
+                       ],
+                     ),
+                      ),
+
 
 
                          const SizedBox(height: 16,),

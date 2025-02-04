@@ -49,6 +49,8 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} | ${dateTime.hour}:${dateTime.minute}'; // Customize the format as needed
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -287,29 +289,125 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                     ),
                 child: Column(
                   children: [ 
-
-                    Row(
-                      children: [
-                        Text('Order Status : ${widget.orderStatus}' ,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                                         if(widget.orderStatus == "pending")
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
+                      width: double.infinity,
+                      color: Colors.blueGrey[100],
+                      child: Row(
+                        children: [
+                          Text('Order Status : ${widget.orderStatus}' ,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    ),
+
+                     if(widget.orderStatus == "delivered")
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
+                      width: double.infinity,
+                      color: Colors.green[400],
+                      child: Row(
+                        children: [
+                          Text('Order Status : ${widget.orderStatus}' ,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                     if(widget.orderStatus == "canceled")
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
+                      width: double.infinity,
+                       color: Colors.red[200],
+                      child: Row(
+                        children: [
+                          Text('Order Status : ${widget.orderStatus}' ,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    if(widget.orderStatus == "picked up")
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
+                      width: double.infinity,
+                      color: Colors.orange[300],
+                      child: Row(
+                        children: [
+                          Text('Order Status : ${widget.orderStatus}' ,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
 
                     const SizedBox(height: 8,),
-                   Row(
-                      children: [
-                        Text('Payment Status : ${widget.paymentStatus}' ,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                    if(widget.paymentStatus == "held")
+                   Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
+                      width: double.infinity,
+                      color: Colors.blueGrey[100],
+                     child: Row(
+                        children: [
+                          Text('Payment Status : ${widget.paymentStatus}' ,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                   ),
+
+                  if(widget.paymentStatus == "released")
+                   Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
+                      width: double.infinity,
+                     color: Colors.green[400],
+                     child: Row(
+                        children: [
+                          Text('Payment Status : ${widget.paymentStatus}' ,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                   ),
+
+                    if(widget.paymentStatus == "refunded")
+                   Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
+                      width: double.infinity,
+                     color: Colors.red[200],
+                     child: Row(
+                        children: [
+                          Text('Payment Status : ${widget.paymentStatus}' ,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                   ),
 
                     const SizedBox(height: 8,),
 

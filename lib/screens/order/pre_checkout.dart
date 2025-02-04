@@ -4,12 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:test_project/screens/order/order_confirmation.dart';
 
-
-enum OrderStatus {pending , shipped , delivered , canceled}
-
-enum PaymentStatus {held , released , refunded}
-
-
 class PreCheckout extends StatefulWidget {
   const PreCheckout({
     super.key,
@@ -43,8 +37,21 @@ class _PreCheckoutState extends State<PreCheckout> {
   var _enteredEmail = '';
   var _enteredPhoneNumber = '';
   var _enteredFullName = '';
-  final _initialOrderStatus = OrderStatus.pending; // Make it nullable
-  final _initialPaymentStatus = PaymentStatus.held; // Make it nullable
+
+  // List of order statuses
+  final List<String> orderStatus = [
+    "pending",
+    "delivered",
+    "canceled",
+    "picked up",
+  ];
+
+  // List of product statuses
+  final List<String> paymentStatus = [
+    "held",
+    "released",
+    "refunded",
+  ];
 
   @override
   void initState() {
@@ -138,9 +145,15 @@ void showToastrMessage(String message) {
     // Save the form data
     _formkey.currentState?.save(); // <-- Add this line to save the form data
 
-    // Convert the enum to a string
-    final orderStatusString = _initialOrderStatus.toString().split('.').last;
-    final paymentStatusString = _initialPaymentStatus.toString().split('.').last;
+
+
+  
+
+  final productInfo = {
+    "product_order_status" : "It has been purchased",
+  };
+
+await FirebaseFirestore.instance.collection('products').doc(widget.productId).update(productInfo);
 
 
     final userId = user!.uid;
@@ -156,14 +169,14 @@ void showToastrMessage(String message) {
         "image_url": widget.imageUrl,
         "total_amount": widget.totalAmount,
       },
-      'status': orderStatusString,
+      'status': orderStatus[0],
       "delivery_person_id": '9IWiv0gCv1Y60CRwjwGqYsuGTtr2', 
       "receiver_infos": {
         "receiver_name": _enteredFullName,
         "receiver_email": _enteredEmail,
         "receiver_phone_number": _enteredPhoneNumber,
       },
-      "payment_status": paymentStatusString,
+      "payment_status": paymentStatus[0],
       "timestamp": Timestamp.fromDate(DateTime.now()),
     };
     final docRef = FirebaseFirestore.instance.collection("orders").doc();

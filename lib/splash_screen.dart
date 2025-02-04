@@ -47,9 +47,6 @@ class _SplashScreenState extends State<SplashScreen> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const LoadingScreen();
             }
-            // if (snapshot.hasData) {
-            //   return const HomeScreen();
-            // }
             return _isFirstLaunch! ? const OnBording() : const HomeScreen();
           },
         ),

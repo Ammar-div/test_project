@@ -201,7 +201,6 @@ Widget build(BuildContext context) {
 
 
 
-
 enum ProductStatus {Used , New}
 
 
@@ -256,6 +255,15 @@ class _SellProductContState extends State<SellProductCont> {
 //  var _selectedProductStatus = ProductStatus.New; // Default status
   ProductStatus? _selectedProductStatus; // Make it nullable
   HowMuchUsed? _selectedHowMuchUsed; // Nullable variable for HowMuchUsed
+
+    // List of product statuses
+  final List<String> productOrderStatus = [
+    "Not requested yet",
+    "It has been purchased ",
+    "It has been favorited",
+    "Sold",
+  ];
+
 
    @override
   void initState() {
@@ -352,11 +360,29 @@ Future<void> _pickImageFromGallery() async {
 
   try {
     // Show a loading indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
+showDialog(
+  context: context,
+  barrierDismissible: false,
+  builder: (context) => const Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(
+          color: Colors.white, // Set the spinner color to white
+        ),
+        SizedBox(height: 8),
+        Text(
+          'Posting....',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            decoration: TextDecoration.none, // Remove underline
+          ),
+        ),
+      ],
+    ),
+  ),
+);
 
 
     // Fetch current user details
@@ -409,6 +435,7 @@ Future<void> _pickImageFromGallery() async {
       "status": statusString,
       "how_much_used": howMuchUsedString, // Nullable field
       "quantity": int.parse(quantityController.text), // Add the number of products
+      "product_order_status": "Not requested yet",
     };
     final docRef = FirebaseFirestore.instance.collection("products").doc();
     await docRef.set(productInfo);

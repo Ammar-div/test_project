@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:test_project/screens/order/pre_checkout.dart';
-import 'package:test_project/user/edit_user_products.dart';
 import 'package:test_project/screens/order/order_status_screen.dart';
 
 class MyOrders extends StatefulWidget {
@@ -133,14 +131,20 @@ class _MyOrdersState extends State<MyOrders> {
                           ),
                           title: Row(
                             children: [
-                              Text(
-                                productMainTitle,
-                                style: const TextStyle(fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                              // Constrain the productMainTitle to take up half of the available space
+                              Flexible(
+                                flex: 1, // Takes 1 part of the available space
+                                child: Text(
+                                  productMainTitle,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                  maxLines: 1, // Limit to one line
+                                  overflow: TextOverflow.ellipsis, // Add ellipsis if text overflows
                                 ),
-                                maxLines: 1,
                               ),
-                              const Spacer(),
+                              const Spacer(), // Takes up remaining space
                               Text('x${quantity.toString()}'),
                             ],
                           ),

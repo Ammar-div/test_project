@@ -136,6 +136,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                       final categoryId = product['categoryId'];
                       final publishDate = product['publishDate'] as Timestamp;
                       final timeAgo = _getTimeAgo(publishDate); // Calculate time ago
+                      final productOrderStatus = product['product_order_status'] ?? 'None';
 
                       return GestureDetector(
                         onTap: () {
@@ -150,8 +151,9 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                 description: product['description'],
                                 quantity: product['quantity'],
                                 status: product['status'],
-                                howMuchUsed: product['how_much_used'],
+                                howMuchUsed: product['how_much_used'] ?? "None",
                                 productId: productId,
+                                productOrderStatus : productOrderStatus,
                               ),
                             ),
                           );
@@ -227,7 +229,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-
+                              if(productOrderStatus == "Not requested yet")
                               // Edit Button
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -279,6 +281,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                 ),
                               ),
 
+                              if(productOrderStatus == "Not requested yet" || productOrderStatus == "Sold")
                               // Delete Button
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
