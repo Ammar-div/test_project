@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/screens/order/order_status_screen.dart';
 
 class MyOrders extends StatefulWidget {
@@ -18,6 +19,13 @@ class _MyOrdersState extends State<MyOrders> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Orders'),
+         leading: IconButton(
+           icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+               Navigator.pushReplacement( context, MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+                 }, 
+                 ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 5),

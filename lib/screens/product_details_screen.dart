@@ -42,6 +42,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
   bool _isOverflowing = false;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  String? _currentUserId;
+  bool _isSeller = false;
 
   @override
   void initState() {
@@ -67,6 +69,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
       setState(() {
         _isOverflowing = textPainter.didExceedMaxLines;
       });
+    });
+
+    // Get the current user ID and check if it matches the seller_id
+    _currentUserId = _auth.currentUser?.uid;
+    _checkIfSeller();
+  }
+
+  Future<void> _checkIfSeller() async {
+    DocumentSnapshot productDocumentObj = await _firestore.collection('products').doc(widget.productId).get();
+    final sellerId = productDocumentObj["seller_ifos"]["seller_id"];
+
+    setState(() {
+      _isSeller = _currentUserId == sellerId;
     });
   }
 
@@ -127,33 +142,34 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
         child: Column(
           children: [
             CarouselSlider(
-              options: CarouselOptions(
-                height: 300,
-                autoPlay: true,
-                enlargeCenterPage: true,
-                viewportFraction: 1.0,
-              ),
-              items: widget.imageUrls.map((imageUrl) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return Hero(
-                      tag: widget.productId,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          image: DecorationImage(
-                            image: NetworkImage(imageUrl),
-                            fit: BoxFit.cover,
-                          ),
+            options: CarouselOptions(
+              height: 300,
+              autoPlay: true,
+              enlargeCenterPage: true,
+              viewportFraction: 1.0,
+            ),
+            items: widget.imageUrls.map((imageUrl) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return Hero(
+                    // Use a unique tag for each image by combining productId and index
+                    tag: 'product-image-${widget.productId}-${widget.imageUrls.indexOf(imageUrl)}',
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        image: DecorationImage(
+                          image: NetworkImage(imageUrl),
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    );
-                  },
-                );
-              }).toList(),
-            ),
+                    ),
+                  );
+                },
+              );
+            }).toList(),
+          ),
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -232,40 +248,43 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
                     ],
                   ),
                   const SizedBox(height: 25),
-                  Center(
-                    child: SizedBox(
-                      width: screenWidth * 0.80,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          DocumentSnapshot productDocumentObj = await _firestore.collection('products').doc(widget.productId).get();
-                          final sellerId = productDocumentObj["seller_ifos.seller_id"];
-                          final imageUrl = widget.imageUrls[0];
-                          Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => PreCheckout(
-                            productMainTitle: widget.productName,
-                            totalAmount: widget.productPrice,
-                            productDescription: widget.description,
-                            imageUrl: imageUrl,
-                            productId : widget.productId,
-                            sellerId : sellerId,
-                            quantity : widget.quantity,
-                          ) ));
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 13),
-                          backgroundColor: const Color.fromARGB(255, 72, 110, 255),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+
+                  // Conditionally display the Checkout button
+                  if (!_isSeller)
+                    Center(
+                      child: SizedBox(
+                        width: screenWidth * 0.80,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            DocumentSnapshot productDocumentObj = await _firestore.collection('products').doc(widget.productId).get();
+                            final sellerId = productDocumentObj["seller_ifos"]["seller_id"];
+                            final imageUrl = widget.imageUrls[0];
+                            Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => PreCheckout(
+                              productMainTitle: widget.productName,
+                              totalAmount: widget.productPrice,
+                              productDescription: widget.description,
+                              imageUrl: imageUrl,
+                              productId : widget.productId,
+                              sellerId : sellerId,
+                              quantity : widget.quantity,
+                            ) ));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 13),
+                            backgroundColor: const Color.fromARGB(255, 72, 110, 255),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          'Checkout',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 234, 241, 255),
+                          child: const Text(
+                            'Checkout',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 234, 241, 255),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
                   const SizedBox(height: 20),
                   const Text(
                     'Description',
@@ -387,9 +406,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
     );
   }
 }
-
-
-
 
 
 

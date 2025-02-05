@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/screens/product_details_screen.dart';
 import 'package:test_project/user/edit_user_products.dart';
 
@@ -58,6 +59,13 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       appBar: AppBar(
         title: const Text('Your Advertisings'),
+         leading: IconButton(
+           icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+               Navigator.pushReplacement( context, MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+                 }, 
+                 ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),

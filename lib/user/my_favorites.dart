@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/screens/product_details_screen.dart';
 import 'package:test_project/screens/products_of_category.dart';
 
@@ -84,6 +85,13 @@ class _MyFavoritesState extends State<MyFavorites> with SingleTickerProviderStat
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Favorites'),
+         leading: IconButton(
+           icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+               Navigator.pushReplacement( context, MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+                 }, 
+                 ),
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),

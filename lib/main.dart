@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -11,36 +12,17 @@ var kColorScheme = ColorScheme.fromSeed(
 );
 
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
-void initializeNotifications() async {
-  // Initialize settings for Android
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher'); // Use your app's launcher icon
-
-  // Initialize settings for iOS (optional)
-  const DarwinInitializationSettings initializationSettingsIOS =
-      DarwinInitializationSettings();
-
-  // Combine settings for all platforms
-  const InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-    iOS: initializationSettingsIOS,
-  );
-
-  // Initialize the plugin
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-}
-
-
 void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize notifications and await the result
+  await NotiService().initNotification();
   
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  initializeNotifications(); // Initialize notifications
   runApp(const App());
 }
 

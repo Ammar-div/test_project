@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:test_project/screens/order/order_confirmation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 
 class PreCheckout extends StatefulWidget {
   const PreCheckout({
@@ -52,6 +54,11 @@ class _PreCheckoutState extends State<PreCheckout> {
     "released",
     "refunded",
   ];
+
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
 
   @override
   void initState() {
@@ -126,15 +133,18 @@ void showToastrMessage(String message) {
 
 
   Future<void> _confirmOrder() async {
-    if (_formkey.currentState?.validate() != true) {
+  if (_formkey.currentState?.validate() != true) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Please provide valid information')),
     );
     return;
   }
 
-
   try {
+
+    // Cancel all notifications
+    await flutterLocalNotificationsPlugin.cancelAll();
+
     // Show a loading indicator
     showDialog(
       context: context,
@@ -143,34 +153,31 @@ void showToastrMessage(String message) {
     );
 
     // Save the form data
-    _formkey.currentState?.save(); // <-- Add this line to save the form data
+    _formkey.currentState?.save();
 
+    // Update the product_order_status
+    final productInfo = {
+      "product_order_status": "It has been purchased",
+    };
 
+    await FirebaseFirestore.instance
+        .collection('products')
+        .doc(widget.productId)
+        .update(productInfo);
 
-  
-
-  final productInfo = {
-    "product_order_status" : "It has been purchased",
-  };
-
-await FirebaseFirestore.instance.collection('products').doc(widget.productId).update(productInfo);
-
-
+    // Save order information in Firestore
     final userId = user!.uid;
-
-
-    // Save order informations in Firestore
     final orderInfos = {
       "buyer_id": userId,
       "seller_id": widget.sellerId,
       "product_infos": {
-        "product_id" : widget.productId,
-        "quantity": widget.quantity, // Add the number of products
+        "product_id": widget.productId,
+        "quantity": widget.quantity,
         "image_url": widget.imageUrl,
         "total_amount": widget.totalAmount,
       },
       'status': orderStatus[0],
-      "delivery_person_id": '9IWiv0gCv1Y60CRwjwGqYsuGTtr2', 
+      "delivery_person_id": '9IWiv0gCv1Y60CRwjwGqYsuGTtr2',
       "receiver_infos": {
         "receiver_name": _enteredFullName,
         "receiver_email": _enteredEmail,
@@ -198,9 +205,7 @@ await FirebaseFirestore.instance.collection('products').doc(widget.productId).up
       SnackBar(content: Text('Something went wrong: $e')),
     );
   }
-
-
-  }
+}
 
 
   @override

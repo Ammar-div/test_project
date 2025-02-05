@@ -54,6 +54,13 @@ Widget build(BuildContext context) {
     backgroundColor: Theme.of(context).colorScheme.primaryContainer,
     appBar: AppBar(
       title: const Text('Sell Product'),
+       leading: IconButton(
+           icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+               Navigator.pushReplacement( context, MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+                 }, 
+                 ),
     ),
     body: Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
