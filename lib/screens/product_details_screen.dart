@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:test_project/screens/HomeScreen.dart';
+import 'package:test_project/screens/auth_screen.dart';
 import 'package:test_project/screens/order/pre_checkout.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -130,6 +132,43 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
     }
   }
 
+
+  void _navigateToPreCheckout() async {
+  DocumentSnapshot productDocumentObj = 
+      await _firestore.collection('products').doc(widget.productId).get();
+  final sellerId = productDocumentObj["seller_ifos"]["seller_id"];
+  final imageUrl = widget.imageUrls[0];
+
+
+  final user = FirebaseAuth.instance.currentUser;
+  if(user != null)
+  {
+    if(user.uid == sellerId)
+    {
+      // owner of the product
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: 
+      (ctx) => const HomeScreen(), ));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The user can't buy his own product.")));
+      return;
+    }
+  }
+
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (ctx) => PreCheckout(
+        productMainTitle: widget.productName,
+        totalAmount: widget.productPrice,
+        productDescription: widget.description,
+        imageUrl: imageUrl,
+        productId: widget.productId,
+        sellerId: sellerId,
+        quantity: widget.quantity,
+      ),
+    ),
+  );
+}
+
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -144,7 +183,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
             CarouselSlider(
             options: CarouselOptions(
               height: 300,
-              autoPlay: true,
+              autoPlay: widget.imageUrls.length > 1, // Auto-play only if there is more than one image
               enlargeCenterPage: true,
               viewportFraction: 1.0,
             ),
@@ -256,19 +295,54 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
                         width: screenWidth * 0.80,
                         child: ElevatedButton(
                           onPressed: () async {
-                            DocumentSnapshot productDocumentObj = await _firestore.collection('products').doc(widget.productId).get();
-                            final sellerId = productDocumentObj["seller_ifos"]["seller_id"];
-                            final imageUrl = widget.imageUrls[0];
-                            Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => PreCheckout(
-                              productMainTitle: widget.productName,
-                              totalAmount: widget.productPrice,
-                              productDescription: widget.description,
-                              imageUrl: imageUrl,
-                              productId : widget.productId,
-                              sellerId : sellerId,
-                              quantity : widget.quantity,
-                            ) ));
-                          },
+                              final user = FirebaseAuth.instance.currentUser;
+                              if (user == null) {
+                                // Show a dialog if the user is not logged in
+                                final result = await showDialog<Map<String, dynamic>>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Sign In Required'),
+                                      content: const Text('You need to sign in to proceed with the checkout.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(); // Close the dialog
+                                          },
+                                          child: const Text(
+                                            'Close',
+                                            style: TextStyle(color: Colors.grey),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            Navigator.of(context).pop(); // Close the dialog
+
+                                            // Navigate to login screen
+                                            final authResult = await Navigator.of(context).push<Map<String, dynamic>>(
+                                              MaterialPageRoute(builder: (ctx) => const AuthScreen()),
+                                            );
+
+                                            // Check if login was successful and proceed to checkout
+                                            if (authResult != null && authResult['success'] == true) {
+                                              _navigateToPreCheckout();
+                                            }
+                                          },
+                                          child: const Text(
+                                            'Sign In',
+                                            style: TextStyle(color: Colors.blue),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              } else {
+                                _navigateToPreCheckout(); // Proceed to checkout if already logged in
+                              }
+                            },
+
+
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 13),
                             backgroundColor: const Color.fromARGB(255, 72, 110, 255),

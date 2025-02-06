@@ -174,7 +174,7 @@ void showToastrMessage(String message) {
         "product_id": widget.productId,
         "quantity": widget.quantity,
         "image_url": widget.imageUrl,
-        "total_amount": widget.totalAmount,
+        "total_amount": _orderTotal(widget.totalAmount),
       },
       'status': orderStatus[0],
       "delivery_person_id": '9IWiv0gCv1Y60CRwjwGqYsuGTtr2',
@@ -206,6 +206,15 @@ void showToastrMessage(String message) {
     );
   }
 }
+
+
+  double _orderTotal(double productPrice)
+  {
+    var DeliveryFee = 3;
+    var ServiceFee = 0.35;
+    productPrice = (productPrice + DeliveryFee + ServiceFee);
+    return productPrice;
+  }
 
 
   @override
@@ -287,19 +296,48 @@ void showToastrMessage(String message) {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Text(
-                              'Total(JOD): ${widget.totalAmount}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+
+                            Row(
+                              children: [
+                                Text('Product price: ${widget.totalAmount}'),
+                                const Spacer(),
+                                Text('Quantity: ${widget.quantity}'),
+                              ],
                             ),
-                            const Spacer(),
-                            Text('Quantity: ${widget.quantity}'),
-                          ],
-                        ),
+                            const SizedBox(height: 5,),
+
+                            const Divider(),
+
+                            const SizedBox(height: 16,),
+
+                           const Row(
+                              children: [
+                                 Text('Delivery fee'),
+                                 Spacer(),
+                                 Text('3 JOD'),
+                              ],
+                            ),
+                            const SizedBox(height: 8,),
+
+                            const Row(
+                              children: [
+                                 Text('Service fee'),
+                                 Spacer(),
+                                 Text('0.35 JOD'),
+                              ],
+                            ),
+                            const SizedBox(height: 8,),
+                             Row(
+                              children: [
+                                 const Text('Order Total(incl. tax)',style: 
+                                 TextStyle(fontWeight: FontWeight.bold),),
+                                 const Spacer(),
+                                 Text('${_orderTotal(widget.totalAmount).toString()} JOD'),
+                              ],
+                            ),
+                            const SizedBox(height: 8,),
+
+  
                       ],
                     ),
                   ),
@@ -410,6 +448,7 @@ void showToastrMessage(String message) {
                                   _enteredPhoneNumber = value!;
                                 },
                           ),
+
                           const SizedBox(height: 22,),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
