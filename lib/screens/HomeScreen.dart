@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // For user authentication
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:test_project/screens/admin/pc_category/all_categories.dart';
+import 'package:test_project/screens/auth_screen.dart';
 import 'package:test_project/screens/product_details_screen.dart';
 import 'package:test_project/widgets/main_drawr.dart';
 
@@ -21,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late Stream<QuerySnapshot> _productsStream;
   final NotiService _notiService = NotiService();
+  String userName = '';
 
   @override
   void initState() {
@@ -45,6 +48,19 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         .collection('products')
         .orderBy('publishDate', descending: true)
         .snapshots();
+
+
+
+       // Set up the auth state listener
+  FirebaseAuth.instance.authStateChanges().listen((user) {
+    if (user != null) {
+      _getUserName();
+    } else {
+      setState(() {
+        userName = '';
+      });
+    }
+  });
 
     // Listen for product status changes
     _listenForProductStatusChanges();
@@ -92,6 +108,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         }
       }
     });
+  }
+
+  void _getUserName() async {
+    final user = _auth.currentUser;
+    if(user != null)
+    {
+        final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        setState(() {
+           userName = userDoc['username'] ?? 'N/A';
+        });
+    }
   }
 
   @override
@@ -180,11 +207,36 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       appBar: AppBar(
         actions: [
-          Image.asset(
-            'assets/images/logo.png',
-            width: 90,
-            height: 90,
+          if(user == null)
+          GestureDetector(
+           onTap: () async {
+              final result = await Navigator.of(context).push(
+                MaterialPageRoute(builder: (ctx) => const AuthScreen()),
+              );
+
+              // Check the result; if login was successful, update the username
+              if (result != null && result['success'] == true) {
+                _getUserName();
+              }
+            },
+            child: const Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Row(children: [
+                Icon(FontAwesomeIcons.user,size: 16,),
+                 SizedBox(width: 6,),
+                 Text('Sign In'),
+              ],),
+            ),
           ),
+        if(user != null)
+           Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Row(children: [
+                 Text(userName),
+                const SizedBox(width: 8,),
+                const Icon(FontAwesomeIcons.userTie,size: 16,),
+              ],),
+            ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(10),
