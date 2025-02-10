@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:test_project/loading_screen.dart';
-import 'package:test_project/screens/HomeScreen.dart';
-import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 import 'package:test_project/onbording/onbording.dart';
-import 'package:test_project/screens/auth_screen.dart';
+import 'package:test_project/screens/HomeScreen.dart';
+import 'package:test_project/screens/delivery/delivery_home_screen.dart';
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -26,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _initializeApp() async {
     await _checkFirstLaunch();
-    await Future.delayed(const Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 2)); // Adjust splash screen duration
     _navigateToNextScreen();
   }
 
@@ -38,20 +40,53 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
-  void _navigateToNextScreen() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => StreamBuilder(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (ctx, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const LoadingScreen();
-            }
-            return _isFirstLaunch! ? const OnBording() : const HomeScreen();
-          },
+  Future<void> _navigateToNextScreen() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      // Fetch the user's role from Firestore
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      final deliveryDoc = await FirebaseFirestore.instance
+          .collection('delivery')
+          .doc(user.uid)
+          .get();
+
+      String role = 'customer'; // Default role
+
+      if (userDoc.exists) {
+        role = userDoc['role'] ?? 'customer';
+      } else if (deliveryDoc.exists) {
+        role = deliveryDoc['role'] ?? 'delivery';
+      }
+
+      // Navigate based on the user's role
+      if (role == 'delivery') {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => DeliveryHomeScreen(
+              deliveryData: deliveryDoc.data(), // Pass delivery data to the screen
+            ),
+          ),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => const HomeScreen(),
+          ),
+        );
+      }
+    } else {
+      // If the user is not logged in, navigate to the onboarding or login screen
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => _isFirstLaunch! ? const OnBording() : const HomeScreen(),
         ),
-      ),
-    );
+      );
+    }
   }
 
   @override

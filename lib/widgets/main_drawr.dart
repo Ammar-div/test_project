@@ -131,113 +131,115 @@ void _loginDialog(BuildContext context , String x)
       builder: (BuildContext context) =>  Dialog(
         child:
          Padding(padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Padding(
-              padding:  EdgeInsets.only(top: 12),
-              child: Text('You need to log in.'),
-            ),
-            const SizedBox(height: 17,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [ 
-                TextButton(onPressed: () {
-                  Navigator.pop(context);
-                },
-                 child: const Text('Close'), 
-                 ),
-
-                TextButton(onPressed: () async {
-                      // User is not logged in
-                    final result = await Navigator.of(context).push<Map<String , dynamic>>(
-                      MaterialPageRoute(
-                        builder: (ctx) => const AuthScreen(),
-                      ),
-                    );
-
-                    if (result != null && result['success'] == true) {
-                      final userId = result['userId'];
-                      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-                      final username = userDoc['username'] ?? 'N/A';
-                      final email = userDoc['email'] ?? 'N/A';
-                      final phoneNumber = userDoc['phone_number'] ?? 'N/A';
-                      final fullName = userDoc['name'] ?? 'N/A';
-                      final imageUrl = userDoc['image_url'] ;
-                      
-
-
-                      if(x == "1")
-                      {
-                      // User finished logging in or signing up
-                      Navigator.of(context).push(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Padding(
+                padding:  EdgeInsets.only(top: 12),
+                child: Text('You need to log in.'),
+              ),
+              const SizedBox(height: 17,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [ 
+                  TextButton(onPressed: () {
+                    Navigator.pop(context);
+                  },
+                   child: const Text('Close'), 
+                   ),
+          
+                  TextButton(onPressed: () async {
+                        // User is not logged in
+                      final result = await Navigator.of(context).push<Map<String , dynamic>>(
                         MaterialPageRoute(
-                          builder: (ctx) => AccountManagementScreen(
-                          userId : userId,
-                          initialUsername : username,
-                          initialEmail : email,
-                          initialPhoneNumber : phoneNumber,
-                          initialName : fullName,
-                          initialImageUrl: imageUrl,
+                          builder: (ctx) => const AuthScreen(),
+                        ),
+                      );
+          
+                      if (result != null && result['success'] == true) {
+                        final userId = result['userId'];
+                        final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+                        final username = userDoc['username'] ?? 'N/A';
+                        final email = userDoc['email'] ?? 'N/A';
+                        final phoneNumber = userDoc['phone_number'] ?? 'N/A';
+                        final fullName = userDoc['name'] ?? 'N/A';
+                        final imageUrl = userDoc['image_url'] ;
+                        
+          
+          
+                        if(x == "1")
+                        {
+                        // User finished logging in or signing up
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (ctx) => AccountManagementScreen(
+                            userId : userId,
+                            initialUsername : username,
+                            initialEmail : email,
+                            initialPhoneNumber : phoneNumber,
+                            initialName : fullName,
+                            initialImageUrl: imageUrl,
+                             ),
                            ),
-                         ),
-                       );
-                      }
-
-
-                      if(x == "5")
-                      {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (ctx) => SellProduct(
-                            sellerUserId: userId,
-                            sellerEmail: email,
-                            sellerlName: fullName),
-                          )
-                        );
-                      }
-
-                      if(x == "4")
-                      {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (ctx) => MyAdvertisings(
-                            sellerUserId: userId,
-                            ),
-                          )
-                        );
-                      }
-
-
-                      if(x == "2")
-                      {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (ctx) => MyFavorites(),
-                          )
-                        );
-                      }
-
-
-                      if(x == "3")
-                      {
-                         Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (ctx) =>  MyOrders(
-                              userId : userId,
+                         );
+                        }
+          
+          
+                        if(x == "5")
+                        {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctx) => SellProduct(
+                              sellerUserId: userId,
+                              sellerEmail: email,
+                              sellerlName: fullName),
+                            )
+                          );
+                        }
+          
+                        if(x == "4")
+                        {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctx) => MyAdvertisings(
+                              sellerUserId: userId,
                               ),
-                          ),
-                        );
+                            )
+                          );
+                        }
+          
+          
+                        if(x == "2")
+                        {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctx) => MyFavorites(),
+                            )
+                          );
+                        }
+          
+          
+                        if(x == "3")
+                        {
+                           Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctx) =>  MyOrders(
+                                userId : userId,
+                                ),
+                            ),
+                          );
+                        }
+          
                       }
-
-                    }
-                },
-                 child: const Text('Login/Sign up'),),
+                  },
+                   child: const Text('Login/Sign up'),),
+              ],
+             ),
             ],
            ),
-          ],
-         ),
+        ),
         ),
       ),
     );
@@ -316,7 +318,7 @@ class _MainDrawrState extends State<MainDrawr> {
               'Account Management',
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 22,
+                    fontSize: 18,
                   ),
             ),
             onTap: () => _handleAccountManagement(context),
@@ -332,7 +334,7 @@ class _MainDrawrState extends State<MainDrawr> {
               'My Favorites',
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 24,
+                    fontSize: 18,
                   ),
             ),
             onTap: () {
@@ -350,7 +352,7 @@ class _MainDrawrState extends State<MainDrawr> {
               'My Orders',
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 24,
+                    fontSize: 18,
                   ),
             ),
             onTap: () {
@@ -365,10 +367,10 @@ class _MainDrawrState extends State<MainDrawr> {
               color: Theme.of(context).colorScheme.primary,
             ),
             title: Text(
-              'My Advertising',
+              'My Advertisings',
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 24,
+                    fontSize: 18,
                   ),
             ),
             onTap: () {
@@ -386,7 +388,7 @@ class _MainDrawrState extends State<MainDrawr> {
               'Sell Product',
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 24,
+                    fontSize: 18,
                   ),
             ),
             onTap: () {
@@ -404,7 +406,7 @@ class _MainDrawrState extends State<MainDrawr> {
               'Support',
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 24,
+                    fontSize: 18,
                   ),
             ),
             onTap: () {},
@@ -420,7 +422,7 @@ class _MainDrawrState extends State<MainDrawr> {
     'Log Out',
     style: Theme.of(context).textTheme.titleSmall!.copyWith(
           color: Theme.of(context).colorScheme.onSurface,
-          fontSize: 24,
+          fontSize: 18,
         ),
   ),
   onTap: () {

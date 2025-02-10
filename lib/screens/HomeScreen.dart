@@ -284,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 SliverGrid(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 3 / 5,
+                    childAspectRatio: 3 / 5.5,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
                   ),
@@ -341,7 +341,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    fontSize: 17,
+                                    fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -353,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 10,
                                   ),
                                 ),
                               ),
@@ -363,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                   Text(
                                     '${product['price'].toStringAsFixed(0)} JOD',
                                     style: const TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 13,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.green,
                                     ),
@@ -375,7 +375,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                             .where('userId', isEqualTo: _auth.currentUser?.uid)
                                             .where('productId', isEqualTo: productId)
                                             .snapshots()
-                                        : Stream<QuerySnapshot>.empty(),
+                                        : const Stream<QuerySnapshot>.empty(),
                                     builder: (context, favoriteSnapshot) {
                                       final isFavorite = _auth.currentUser != null &&
                                           favoriteSnapshot.hasData &&
@@ -415,6 +415,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                               },
                                               icon: Icon(
                                                 isFavorite ? Icons.favorite : Icons.favorite_border,
+                                                size: 19,
                                                 color: isFavorite ? Colors.red : null,
                                               ),
                                             ),
@@ -432,7 +433,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                   timeAgo,
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 9,
                                     fontWeight: FontWeight.bold,
                                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                                   ),

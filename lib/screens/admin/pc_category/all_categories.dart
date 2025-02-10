@@ -44,14 +44,14 @@ getOnTheLoad() async {
                     const Text('Category',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 16,
                     ),
                     ),
                     TextButton(
                      onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => VerticalAllCategories()));
                      },
-                     child: const Text('See All'),
+                     child: const Text('See All',style: TextStyle(fontSize: 11),),
                      ),
                   ],
                 ),
@@ -88,7 +88,7 @@ getOnTheLoad() async {
                                   Text(
                                     db["name"],
                                     textAlign: TextAlign.center, // Center the text
-                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),

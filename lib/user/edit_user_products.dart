@@ -8,6 +8,38 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 
 
+
+final List<String> pickUpLocation = [
+  "Al Yasmin",
+  "Nazal",
+  "Al Moqabalain",
+  "Al Abdali",
+  "Al Shmesani",
+  "Jabal Amman",
+  "Jabal Al Hadid",
+  "Jabal Al Husain",
+  "Al Akhdar",
+  "Al Quesmeh",
+  "Abdoun",
+  "Tla'a Al Ali",
+  "Wadi Al Saer",
+  "Abu Nussair",
+  "Al Muhagerein",
+  "Al Mouaqar",
+  "Wast Al Balad",
+  "Al Wehdat",
+  "Naour",
+  "Ras Al Ein",
+  "Marka",
+  "Marg Al Hamam",
+  "Sahab",
+  "Shafa Badran",
+  "Soualih",
+  "Al Madina Al Riadiah",
+  "Al Madina Al Tibiah",
+];
+
+
 enum ProductStatus {Used , New}
 
 
@@ -71,6 +103,7 @@ final _formKey = GlobalKey<FormState>();
   List<String> _imageUrls = []; // Store image URLs (initial + newly uploaded)
   ProductStatus? _selectedProductStatus;
   HowMuchUsed? _selectedHowMuchUsed;
+     String? _selectedPickUpLocation;
 
   @override
 void initState() {
@@ -166,6 +199,10 @@ Future<void> _pickImageFromGallery() async {
     // Combine initial and new image URLs
     final allImageUrls = [..._imageUrls, ...newImageUrls];
 
+    final user = FirebaseAuth.instance.currentUser!;
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    final sellerName = userDoc['name'];
+
     // Save product details in Firestore
     final productInfo = {
     "name": widget.productNameController.text,
@@ -176,8 +213,9 @@ Future<void> _pickImageFromGallery() async {
     "imageUrls": allImageUrls,
     "seller_ifos": {
       "seller_id": FirebaseAuth.instance.currentUser!.uid,
-      "seller_name": FirebaseAuth.instance.currentUser!.displayName ?? 'N/A',
+      "seller_name": sellerName,
       "seller_email": FirebaseAuth.instance.currentUser!.email ?? 'N/A',
+      "seller_pick_up_location": _selectedPickUpLocation, // Add the selected pick-up location
     },
     "status": _selectedProductStatus?.toString().split('.').last ?? 'New', // Default to New
     "how_much_used": _selectedProductStatus == ProductStatus.Used
@@ -448,7 +486,7 @@ Widget build(BuildContext context) {
                     return null;
                   },
                 ),
-              
+              if (_selectedProductStatus == ProductStatus.Used)
             const SizedBox(height: 25),
 
                  TextFormField(
@@ -469,6 +507,37 @@ Widget build(BuildContext context) {
                   return null;
                 },
               ),
+                
+              
+            const SizedBox(height: 25),
+
+              //pick up places
+                 // Dropdown for Pick Up Location
+                DropdownButtonFormField<String>(
+                  value: _selectedPickUpLocation, // Selected value
+                  decoration: const InputDecoration(
+                    labelText: 'Pick up location',
+                    border: OutlineInputBorder(),
+                  ),
+                  hint: const Text('Where the captain will take your product'), // Hint text
+                  items: pickUpLocation.map((location) {
+                    return DropdownMenuItem<String>(
+                      value: location,
+                      child: Text(location), // Display the location name
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedPickUpLocation = value; // Update the selected value
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Please select a pick-up location.';
+                    }
+                    return null;
+                  },
+                ),
                 
               
             const SizedBox(height: 25),

@@ -498,6 +498,7 @@ class AdvertisingProductDetailScreen extends StatefulWidget {
   final int quantity;
   final String productId;
   final String productOrderStatus;
+  final String pickUpLocation;
 
   const AdvertisingProductDetailScreen({
     super.key,
@@ -510,6 +511,7 @@ class AdvertisingProductDetailScreen extends StatefulWidget {
     required this.quantity,
     required this.productId,
     required this.productOrderStatus,
+    required this.pickUpLocation,
   });
 
   @override
@@ -589,7 +591,7 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                   ),
                   const SizedBox(height: 8),
                       Text(
-                        '${widget.productPrice.toStringAsFixed(2)} JOD',
+                        '${widget.productPrice.toStringAsFixed(0)} JOD',
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -800,9 +802,31 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                    const SizedBox(height: 14,),
                  
 
-
-
-
+                 Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 16),
+                    width: double.infinity,
+                    color: Colors.blueGrey[100],
+                     child: Row(
+                            children: [
+                              const Text(
+                                'Area : ',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                widget.pickUpLocation,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                   ),
+                  const SizedBox(height: 14,),
+                 
                 ],
               ),
             ),

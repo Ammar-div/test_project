@@ -49,7 +49,7 @@ class _MyOrdersState extends State<MyOrders> {
 
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
               return const Center(
-                child: Text('No Orders Found, Try adding one'),
+                child: Text('No Orders Found, Try adding one', style: TextStyle(fontSize: 11),),
               );
             }
 
@@ -69,6 +69,7 @@ class _MyOrdersState extends State<MyOrders> {
                 final receiverPhoneNumber = orderDoc['receiver_infos.receiver_phone_number'];
                 final paymentStatus = orderDoc['payment_status'];
                 final orderedDate = orderDoc['timestamp'];
+                final receiverPickUpLocation = orderDoc['receiver_infos']['receiver_pick_up_location'];
 
 
 
@@ -117,6 +118,7 @@ class _MyOrdersState extends State<MyOrders> {
                               orderStatus: orderStatus,
                               paymentStatus: paymentStatus,
                               timestamp: orderedDate,
+                              receiverPickUpLocation : receiverPickUpLocation,
                             ),
                           )
                         );

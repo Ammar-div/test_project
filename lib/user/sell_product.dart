@@ -83,7 +83,7 @@ Widget build(BuildContext context) {
             Text(
               'What Product you want to sell',
               style: TextStyle(
-                fontSize: 40,
+                fontSize: 25,
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
@@ -205,7 +205,36 @@ Widget build(BuildContext context) {
 
 
 
-
+final List<String> pickUpLocation = [
+  "Al Yasmin",
+  "Nazzal",
+  "Al Moqabalain",
+  "Al Abdali",
+  "Al Shmesani",
+  "Jabal Amman",
+  "Jabal Al Hadid",
+  "Jabal Al Husain",
+  "Al Akhdar",
+  "Al Quesmeh",
+  "Abdoun",
+  "Tla'a Al Ali",
+  "Wadi Al Saer",
+  "Abu Nussair",
+  "Al Muhagerein",
+  "Al Mouaqar",
+  "Wast Al Balad",
+  "Al Wehdat",
+  "Naour",
+  "Ras Al Ein",
+  "Marka",
+  "Marg Al Hamam",
+  "Sahab",
+  "Shafa Badran",
+  "Soualih",
+  "Al Madina Al Riadiah",
+  "Al Madina Al Tibiah",
+  "Tabarbor",
+];
 
 
 enum ProductStatus {Used , New}
@@ -256,12 +285,15 @@ class _SellProductContState extends State<SellProductCont> {
   late TextEditingController productNameController;
   late TextEditingController productDescriptionController;
   late TextEditingController quantityController;
+   late TextEditingController searchController; // Controller for search bar
 
   var _isUpdating = false;
   List<File> _selectedImages = []; // Store multiple images
 //  var _selectedProductStatus = ProductStatus.New; // Default status
   ProductStatus? _selectedProductStatus; // Make it nullable
   HowMuchUsed? _selectedHowMuchUsed; // Nullable variable for HowMuchUsed
+   String? _selectedPickUpLocation;
+   List<String> filteredPickUpLocations = []; // Filtered list for search
 
     // List of product statuses
   final List<String> productOrderStatus = [
@@ -279,7 +311,8 @@ class _SellProductContState extends State<SellProductCont> {
     productNameController = TextEditingController();
     productDescriptionController = TextEditingController(); // Initialize the controller
     quantityController = TextEditingController();
-
+    searchController = TextEditingController();
+    filteredPickUpLocations = pickUpLocation; // Initialize with all locations
   }
 
   
@@ -290,9 +323,91 @@ class _SellProductContState extends State<SellProductCont> {
     productNameController.dispose();
     productDescriptionController.dispose();
     quantityController.dispose();
-
+    searchController.dispose();
     super.dispose();
   }
+
+ // Function to filter locations based on search input
+void _filterLocations(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredPickUpLocations = List.from(pickUpLocation);
+      } else {
+        filteredPickUpLocations = pickUpLocation
+            .where((location) =>
+                location.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
+  // Function to show the searchable dropdown dialog
+  Future<void> _showSearchableDropdown(BuildContext context) async {
+  await showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Select Pick Up Location'),
+            content: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: searchController,
+                    decoration: const InputDecoration(
+                      hintText: 'Search for a location...',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (query) {
+                      setState(() {
+                        _filterLocations(query);
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: filteredPickUpLocations.length,
+                      itemBuilder: (context, index) {
+                        final location = filteredPickUpLocations[index];
+                        return ListTile(
+                          title: Text(location),
+                          onTap: () {
+                            // ✅ Update main widget state
+                            this.setState(() {
+                              _selectedPickUpLocation = location;
+                            });
+
+                            // Clear search and reset list
+                            setState(() {
+                              searchController.clear();
+                              filteredPickUpLocations = List.from(pickUpLocation);
+                            });
+
+                            Navigator.pop(context); // Close dialog
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+
+
+
 
 Future<void> _pickImageFromCamera() async {
   final pickedImage = await ImagePicker().pickImage(source: ImageSource.camera);
@@ -438,6 +553,7 @@ showDialog(
         "seller_id": userId,
         "seller_name": name,
         "seller_email": email,
+        "seller_pick_up_location": _selectedPickUpLocation, // Add the selected pick-up location
       },
       "status": statusString,
       "how_much_used": howMuchUsedString, // Nullable field
@@ -592,7 +708,7 @@ Widget build(BuildContext context) {
                 labelText: 'Description',
                 hintText: 'Write the description of your product',
                 alignLabelWithHint: true,
-                border: OutlineInputBorder(), // Add a border for better visibility
+                border: const OutlineInputBorder(), // Add a border for better visibility
                  
                  suffixIcon: IconButton(
                   icon: const Icon(Icons.clear),
@@ -668,8 +784,9 @@ Widget build(BuildContext context) {
                     return null;
                   },
                 ),
-              
-            const SizedBox(height: 25),
+
+              if (_selectedProductStatus == ProductStatus.Used)
+                const SizedBox(height: 25),
 
             TextFormField(
                     controller: quantityController, // Add a controller if needed
@@ -689,6 +806,38 @@ Widget build(BuildContext context) {
                       return null;
                     },
                   ),
+
+
+                const SizedBox(height: 25),
+
+              // Searchable Dropdown for Pick Up Location
+           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Pick up location',
+                style: TextStyle(fontSize: 16,),
+              ),
+              const SizedBox(height: 8),
+              InkWell(
+                onTap: () => _showSearchableDropdown(context),
+                child: InputDecorator(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  ),
+                  child: Text(
+                    _selectedPickUpLocation ?? 'Select pick up location',
+                    style: TextStyle(
+                      color: _selectedPickUpLocation != null ? Colors.black : const Color.fromARGB(255, 97, 81, 73),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+
                 
               
             const SizedBox(height: 25),

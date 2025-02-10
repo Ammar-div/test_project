@@ -18,6 +18,7 @@ class OrderStatusScreen extends StatefulWidget {
     required this.orderStatus,
     required this.paymentStatus,
     required this.timestamp,
+    required this.receiverPickUpLocation,
   });
 
   final List<String> imageUrls;
@@ -33,6 +34,7 @@ class OrderStatusScreen extends StatefulWidget {
   final String orderStatus;
   final String paymentStatus;
   final Timestamp timestamp; // Add this line
+  final String receiverPickUpLocation;
 
   @override
   State<OrderStatusScreen> createState() => _OrderStatusScreenState();
@@ -271,7 +273,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(widget.receiverEmail),
-                        const Text('                       '),
+                        Text(widget.receiverPickUpLocation),
                       ],
                     ),
                             

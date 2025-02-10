@@ -99,7 +99,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                       TextSpan(
                         text: 'You can ',
                         style: TextStyle(
-                          fontSize: 40,
+                          fontSize: 25,
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
@@ -132,7 +132,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                 SliverGrid(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 3 / 6,
+                    childAspectRatio: 3 / 5.5,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
                   ),
@@ -145,6 +145,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                       final publishDate = product['publishDate'] as Timestamp;
                       final timeAgo = _getTimeAgo(publishDate); // Calculate time ago
                       final productOrderStatus = product['product_order_status'] ?? 'None';
+                      final pickUpLocation = product['seller_ifos']['seller_pick_up_location'] ?? 'None';
 
                       return GestureDetector(
                         onTap: () {
@@ -162,6 +163,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                 howMuchUsed: product['how_much_used'] ?? "None",
                                 productId: productId,
                                 productOrderStatus : productOrderStatus,
+                                pickUpLocation : pickUpLocation,
                               ),
                             ),
                           );
@@ -193,7 +195,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    fontSize: 17,
+                                    fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -205,7 +207,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 10,
                                   ),
                                 ),
                               ),
@@ -216,7 +218,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                     Text(
                                       '${product['price'].toStringAsFixed(0)} JOD',
                                       style: const TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 12,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.green,
                                       ),
@@ -228,7 +230,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                   timeAgo,
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 7,
                                     fontWeight: FontWeight.bold,
                                     color: Theme.of(context).colorScheme.onPrimaryContainer, 
                                   ),
@@ -275,12 +277,12 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                   child: const Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.edit_square, color: Colors.white, size: 23),
+                                      Icon(Icons.edit_square, color: Colors.white, size: 19),
                                       SizedBox(width: 5),
                                       Text(
                                         'Edit',
                                         style: TextStyle(
-                                          fontSize: 20,
+                                          fontSize: 14,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -357,12 +359,12 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                   child: const Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.delete, color: Colors.white, size: 23),
+                                      Icon(Icons.delete, color: Colors.white, size: 19),
                                       SizedBox(width: 5),
                                       Text(
                                         'Delete',
                                         style: TextStyle(
-                                          fontSize: 20,
+                                          fontSize: 14,
                                           color: Colors.white,
                                         ),
                                       ),

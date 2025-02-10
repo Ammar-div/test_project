@@ -6,6 +6,41 @@ import 'package:test_project/screens/order/order_confirmation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 
+
+
+
+final List<String> pickUpLocation = [
+  "Al Yasmin",
+  "Nazzal",
+  "Al Moqabalain",
+  "Al Abdali",
+  "Al Shmesani",
+  "Jabal Amman",
+  "Jabal Al Hadid",
+  "Jabal Al Husain",
+  "Al Akhdar",
+  "Al Quesmeh",
+  "Abdoun",
+  "Tla'a Al Ali",
+  "Wadi Al Saer",
+  "Abu Nussair",
+  "Al Muhagerein",
+  "Al Mouaqar",
+  "Wast Al Balad",
+  "Al Wehdat",
+  "Naour",
+  "Ras Al Ein",
+  "Marka",
+  "Marg Al Hamam",
+  "Sahab",
+  "Shafa Badran",
+  "Soualih",
+  "Al Madina Al Riadiah",
+  "Al Madina Al Tibiah",
+  "Tabarbor",
+];
+
+
 class PreCheckout extends StatefulWidget {
   const PreCheckout({
     super.key,
@@ -39,6 +74,11 @@ class _PreCheckoutState extends State<PreCheckout> {
   var _enteredEmail = '';
   var _enteredPhoneNumber = '';
   var _enteredFullName = '';
+  String? _selectedPickUpLocation;
+  late TextEditingController searchController; // Controller for search bar
+  List<String> filteredPickUpLocations = []; // Filtered list for search
+
+
 
   // List of order statuses
   final List<String> orderStatus = [
@@ -67,6 +107,8 @@ class _PreCheckoutState extends State<PreCheckout> {
     userEmailController = TextEditingController();
     userFullNameController = TextEditingController();
     userPhoneNumberController = TextEditingController();
+    searchController = TextEditingController();
+    filteredPickUpLocations = pickUpLocation; // Initialize with all locations
 
     // Fetch user data and set initial values for controllers
     fetchUserData();
@@ -92,8 +134,87 @@ class _PreCheckoutState extends State<PreCheckout> {
     userEmailController.dispose();
     userFullNameController.dispose();
     userPhoneNumberController.dispose();
+    searchController.dispose();
     super.dispose();
   }
+
+  // Function to filter locations based on search input
+void _filterLocations(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredPickUpLocations = List.from(pickUpLocation);
+      } else {
+        filteredPickUpLocations = pickUpLocation
+            .where((location) =>
+                location.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
+  // Function to show the searchable dropdown dialog
+  Future<void> _showSearchableDropdown(BuildContext context) async {
+  await showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Select Pick Up Location'),
+            content: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: searchController,
+                    decoration: const InputDecoration(
+                      hintText: 'Search for a location...',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (query) {
+                      setState(() {
+                        _filterLocations(query);
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: filteredPickUpLocations.length,
+                      itemBuilder: (context, index) {
+                        final location = filteredPickUpLocations[index];
+                        return ListTile(
+                          title: Text(location),
+                          onTap: () {
+                            // ✅ Update main widget state
+                            this.setState(() {
+                              _selectedPickUpLocation = location;
+                            });
+
+                            // Clear search and reset list
+                            setState(() {
+                              searchController.clear();
+                              filteredPickUpLocations = List.from(pickUpLocation);
+                            });
+
+                            Navigator.pop(context); // Close dialog
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
 
 
    // Helper method to create a bullet point
@@ -182,6 +303,7 @@ void showToastrMessage(String message) {
         "receiver_name": _enteredFullName,
         "receiver_email": _enteredEmail,
         "receiver_phone_number": _enteredPhoneNumber,
+        "receiver_pick_up_location": _selectedPickUpLocation, // Add the selected pick-up location
       },
       "payment_status": paymentStatus[0],
       "timestamp": Timestamp.fromDate(DateTime.now()),
@@ -448,6 +570,35 @@ void showToastrMessage(String message) {
                                   _enteredPhoneNumber = value!;
                                 },
                           ),
+
+                          const SizedBox(height: 16,),
+
+                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Pick up location',
+                                style: TextStyle(fontSize: 16,),
+                              ),
+                              const SizedBox(height: 8),
+                              InkWell(
+                                onTap: () => _showSearchableDropdown(context),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                                  ),
+                                  child: Text(
+                                    _selectedPickUpLocation ?? 'Select pick up location',
+                                    style: TextStyle(
+                                      color: _selectedPickUpLocation != null ? Colors.black : const Color.fromARGB(255, 97, 81, 73),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
 
                           const SizedBox(height: 22,),
                           Row(

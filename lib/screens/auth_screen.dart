@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:test_project/loading_screen.dart';
+import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/screens/admin/admin_tabs.dart';
+import 'package:test_project/screens/delivery/delivery_home_screen.dart';
 import 'package:test_project/widgets/location_input.dart';
 import 'package:test_project/widgets/user_image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -108,7 +110,7 @@ Future<void> _submit() async {
         );
       },
     );
-  
+
     if (_isLogin) {
       // Admin Login
       const adminEmail = "admin@example.com";
@@ -128,15 +130,52 @@ Future<void> _submit() async {
       }
 
       // Regular User Login
-      await _firebase.signInWithEmailAndPassword(
+      final userCredential = await _firebase.signInWithEmailAndPassword(
         email: _enteredEmail,
         password: _enteredPassword,
-      ).then((value) {
-        showToastrMessage("Logged In Successfully.");
-        final userId = value.user!.uid;
-        Navigator.of(context).pop(); // Close spinner
-        Navigator.of(context).pop({'success': true, 'userId': userId});
-      });
+      );
+
+      final userId = userCredential.user!.uid;
+
+      // Fetch the user's role from Firestore
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      final deliveryDoc = await FirebaseFirestore.instance
+          .collection('delivery')
+          .doc(userId)
+          .get();
+
+      String role = 'customer'; // Default role
+
+      if (userDoc.exists) {
+        role = userDoc['role'] ?? 'customer';
+      } else if (deliveryDoc.exists) {
+        role = deliveryDoc['role'] ?? 'delivery';
+      }
+
+      Navigator.of(context).pop(); // Close spinner
+
+      // Navigate based on the user's role
+      if (role == 'delivery') {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (ctx) => DeliveryHomeScreen(
+              deliveryData: deliveryDoc.data(), // Pass delivery data to the screen
+            ),
+          ),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (ctx) => const HomeScreen(),
+          ),
+        );
+      }
+
+      showToastrMessage("Logged In Successfully.");
     } else {
       // Sign Up New User
       final userCredentials = await _firebase.createUserWithEmailAndPassword(
