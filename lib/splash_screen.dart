@@ -69,6 +69,7 @@ class _SplashScreenState extends State<SplashScreen> {
           MaterialPageRoute(
             builder: (_) => DeliveryHomeScreen(
               deliveryData: deliveryDoc.data(), // Pass delivery data to the screen
+              deliveryDoc.id,
             ),
           ),
         );

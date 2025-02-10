@@ -164,6 +164,7 @@ Future<void> _submit() async {
           MaterialPageRoute(
             builder: (ctx) => DeliveryHomeScreen(
               deliveryData: deliveryDoc.data(), // Pass delivery data to the screen
+              deliveryDoc.id,
             ),
           ),
         );

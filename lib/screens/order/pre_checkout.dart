@@ -74,26 +74,10 @@ class _PreCheckoutState extends State<PreCheckout> {
   var _enteredEmail = '';
   var _enteredPhoneNumber = '';
   var _enteredFullName = '';
+
   String? _selectedPickUpLocation;
   late TextEditingController searchController; // Controller for search bar
   List<String> filteredPickUpLocations = []; // Filtered list for search
-
-
-
-  // List of order statuses
-  final List<String> orderStatus = [
-    "pending",
-    "delivered",
-    "canceled",
-    "picked up",
-  ];
-
-  // List of product statuses
-  final List<String> paymentStatus = [
-    "held",
-    "released",
-    "refunded",
-  ];
 
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -107,11 +91,21 @@ class _PreCheckoutState extends State<PreCheckout> {
     userEmailController = TextEditingController();
     userFullNameController = TextEditingController();
     userPhoneNumberController = TextEditingController();
+
     searchController = TextEditingController();
     filteredPickUpLocations = pickUpLocation; // Initialize with all locations
 
     // Fetch user data and set initial values for controllers
     fetchUserData();
+  }
+
+   @override
+  void dispose() {
+    userEmailController.dispose();
+    userFullNameController.dispose();
+    userPhoneNumberController.dispose();
+    searchController.dispose();
+    super.dispose();
   }
 
   Future<void> fetchUserData() async {
@@ -129,14 +123,7 @@ class _PreCheckoutState extends State<PreCheckout> {
     });
   }
 
-  @override
-  void dispose() {
-    userEmailController.dispose();
-    userFullNameController.dispose();
-    userPhoneNumberController.dispose();
-    searchController.dispose();
-    super.dispose();
-  }
+ 
 
   // Function to filter locations based on search input
 void _filterLocations(String query) {
@@ -216,6 +203,21 @@ void _filterLocations(String query) {
   );
 }
 
+  // List of order statuses
+  final List<String> orderStatus = [
+    "pending",
+    "delivered",
+    "canceled",
+    "picked up",
+  ];
+
+  // List of product statuses
+  final List<String> paymentStatus = [
+    "held",
+    "released",
+    "refunded",
+  ];
+
 
    // Helper method to create a bullet point
 Widget _buildBulletPoint(String text) {
@@ -257,6 +259,14 @@ void showToastrMessage(String message) {
   if (_formkey.currentState?.validate() != true) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Please provide valid information')),
+    );
+    return;
+  }
+
+  if(_selectedPickUpLocation == null)
+  {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Select Pick Up Location.'))
     );
     return;
   }

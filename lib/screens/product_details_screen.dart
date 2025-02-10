@@ -173,9 +173,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(widget.productName),
+        backgroundColor: Colors.white,
+        leading: IconButton(onPressed: () {
+          Navigator.pop(context);
+        },
+         icon: const Icon(Icons.arrow_back_ios , color: Colors.black87,),
+         ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -541,8 +546,13 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      appBar: AppBar(
-        title: Text(widget.productName),
+      appBar:  AppBar(
+        backgroundColor: Colors.white,
+        leading: IconButton(onPressed: () {
+          Navigator.pop(context);
+        },
+         icon: const Icon(Icons.arrow_back , color: Colors.black87,),
+         ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -550,7 +560,7 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
              CarouselSlider(
                 options: CarouselOptions(
                   height: 300,
-                  autoPlay: true,
+                  autoPlay: widget.imageUrls.length >1,
                   enlargeCenterPage: true,
                   viewportFraction: 1.0,
                 ),
