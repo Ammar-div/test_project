@@ -273,6 +273,8 @@ void showToastrMessage(String message) {
 
   try {
 
+    final productDoc = await FirebaseFirestore.instance.collection('products').doc(widget.productId).get();
+    final sellerLocation = productDoc['seller_ifos']['seller_pick_up_location'];
     // Cancel all notifications
     await flutterLocalNotificationsPlugin.cancelAll();
 
@@ -317,6 +319,7 @@ void showToastrMessage(String message) {
       },
       "payment_status": paymentStatus[0],
       "timestamp": Timestamp.fromDate(DateTime.now()),
+      "seller_location": sellerLocation, 
     };
     final docRef = FirebaseFirestore.instance.collection("orders").doc();
     await docRef.set(orderInfos);
