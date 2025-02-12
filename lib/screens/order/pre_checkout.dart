@@ -275,6 +275,7 @@ void showToastrMessage(String message) {
 
     final productDoc = await FirebaseFirestore.instance.collection('products').doc(widget.productId).get();
     final sellerLocation = productDoc['seller_ifos']['seller_pick_up_location'];
+    final sellerPhoneNumber = productDoc['seller_ifos']['seller_phone_number'] ?? 'None';
     // Cancel all notifications
     await flutterLocalNotificationsPlugin.cancelAll();
 
@@ -320,6 +321,7 @@ void showToastrMessage(String message) {
       "payment_status": paymentStatus[0],
       "timestamp": Timestamp.fromDate(DateTime.now()),
       "seller_location": sellerLocation, 
+      "seller_phone_number": sellerPhoneNumber,
     };
     final docRef = FirebaseFirestore.instance.collection("orders").doc();
     await docRef.set(orderInfos);

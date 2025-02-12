@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/screens/delivery/active_order.dart';
+import 'package:test_project/screens/delivery/delivery_order_details.dart';
 import 'package:test_project/screens/delivery/delivery_personal_data.dart';
 import 'package:test_project/screens/delivery/earning_summary.dart';
 import 'package:test_project/screens/delivery/orders_summary.dart';
@@ -52,6 +53,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
           final productId = order['product_infos']['product_id'];
           final sellerLocation = order['seller_location'];
           final receiverLocation = order['receiver_infos']['receiver_pick_up_location'];
+          
 
           return FutureBuilder<DocumentSnapshot>(
             future: FirebaseFirestore.instance.collection('products').doc(productId).get(),
@@ -89,158 +91,168 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                   final categoryData = productSnapshot.data!.data() as Map<String, dynamic>;
                   final categoryName = categoryData['name'] ?? 'Null Category';
 
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.blue.shade100,
-                          Colors.blue.shade200,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 8,
-                          offset: const Offset(2, 4),
+                  return InkWell(
+                    onTap : () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => DeliveryOrderDetails(
+                        categoryName : categoryName,
+                        orderData : order,
+                        productData : productData,
+                         orderId: orders[index].id, // Pass the document ID here
+                      ) ));
+                    } ,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.blue.shade100,
+                            Colors.blue.shade200,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Location and Quantity
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  '$sellerLocation -> $receiverLocation',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(2, 4),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Location and Quantity
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    '$sellerLocation -> $receiverLocation',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(12),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    'x$quantity',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                                 ),
-                                child: Text(
-                                  'x$quantity',
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                    
+                            // Category and Icon
+                            Row(
+                              children: [
+                                Image(
+                                  image: AssetImage(
+                                    categoryName == 'Screens'
+                                        ? 'assets/images/monitor.png'
+                                        : categoryName == 'GPU'
+                                            ? 'assets/images/gpu-mining.png'
+                                            : categoryName == 'KeyBoard'
+                                                ? 'assets/images/keyboard.png'
+                                                : categoryName == 'CPU'
+                                                    ? 'assets/images/cpu1.png'
+                                                    : categoryName == 'mouse pad'
+                                                        ? 'assets/images/mousepad.png'
+                                                        : categoryName == 'Mouse'
+                                                            ? 'assets/images/mouse.png'
+                                                            : categoryName == "Table"
+                                                                ? 'assets/images/standing-desk.png'
+                                                                : categoryName == "Chair"
+                                                                    ? 'assets/images/gaming-chair.png'
+                                                                    : categoryName == "Fans"
+                                                                        ? 'assets/images/fan.png'
+                                                                        : categoryName == 'MotherBoard'
+                                                                            ? 'assets/images/motherboard.png'
+                                                                            : categoryName == "Headphones"
+                                                                                ? 'assets/images/headphones.png'
+                                                                                : categoryName == "Case"
+                                                                                    ? 'assets/images/computer-case.png'
+                                                                                    : categoryName == "RAM"
+                                                                                        ? 'assets/images/ram.png'
+                                                                                        : categoryName == "Memory"
+                                                                                            ? 'assets/images/ssd-card.png'
+                                                                                            : categoryName == "Power Supply"
+                                                                                                ? 'assets/images/power-supply.png'
+                                                                                                : 'assets/images/question-sign.png',
+                                  ),
+                                  width: 24,
+                                  height: 24,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  categoryName,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                     color: Colors.white,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-
-                          // Category and Icon
-                          Row(
-                            children: [
-                              Image(
-                                image: AssetImage(
-                                  categoryName == 'Screens'
-                                      ? 'assets/images/monitor.png'
-                                      : categoryName == 'GPU'
-                                          ? 'assets/images/gpu-mining.png'
-                                          : categoryName == 'KeyBoard'
-                                              ? 'assets/images/keyboard.png'
-                                              : categoryName == 'CPU'
-                                                  ? 'assets/images/cpu1.png'
-                                                  : categoryName == 'mouse pad'
-                                                      ? 'assets/images/mousepad.png'
-                                                      : categoryName == 'Mouse'
-                                                          ? 'assets/images/mouse.png'
-                                                          : categoryName == "Table"
-                                                              ? 'assets/images/standing-desk.png'
-                                                              : categoryName == "Chair"
-                                                                  ? 'assets/images/gaming-chair.png'
-                                                                  : categoryName == "Fans"
-                                                                      ? 'assets/images/fan.png'
-                                                                      : categoryName == 'MotherBoard'
-                                                                          ? 'assets/images/motherboard.png'
-                                                                          : categoryName == "Headphones"
-                                                                              ? 'assets/images/headphones.png'
-                                                                              : categoryName == "Case"
-                                                                                  ? 'assets/images/computer-case.png'
-                                                                                  : categoryName == "RAM"
-                                                                                      ? 'assets/images/ram.png'
-                                                                                      : categoryName == "Memory"
-                                                                                          ? 'assets/images/ssd-card.png'
-                                                                                          : categoryName == "Power Supply"
-                                                                                              ? 'assets/images/power-supply.png'
-                                                                                              : 'assets/images/question-sign.png',
-                                ),
-                                width: 24,
-                                height: 24,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                categoryName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-
-                          // Delivery Icons and Take Button
-                          Row(
-                            children: [
-                              const Icon(
-                                FontAwesomeIcons.carSide,
-                                size: 18,
-                                color: Colors.white,
-                              ),
-                              const SizedBox(width: 10),
-                              if (categoryName == 'Mouse' ||
-                                  categoryName == 'Keyboard' ||
-                                  categoryName == 'GPU' ||
-                                  categoryName == 'CPU' ||
-                                  categoryName == 'Mouse Pad')
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                    
+                            // Delivery Icons and Take Button
+                            Row(
+                              children: [
                                 const Icon(
-                                  Icons.delivery_dining,
-                                  size: 25,
+                                  FontAwesomeIcons.carSide,
+                                  size: 18,
                                   color: Colors.white,
                                 ),
-                              const Spacer(),
-                              ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                const SizedBox(width: 10),
+                                if (categoryName == 'Mouse' ||
+                                    categoryName == 'Keyboard' ||
+                                    categoryName == 'GPU' ||
+                                    categoryName == 'CPU' ||
+                                    categoryName == 'Mouse Pad')
+                                  const Icon(
+                                    Icons.delivery_dining,
+                                    size: 25,
+                                    color: Colors.white,
                                   ),
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                ),
-                                child: const Text(
-                                  'Take',
-                                  style: TextStyle(
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.bold,
+                                const Spacer(),
+                                ElevatedButton(
+                                  onPressed: () {},
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  ),
+                                  child: const Text(
+                                    'Take',
+                                    style: TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

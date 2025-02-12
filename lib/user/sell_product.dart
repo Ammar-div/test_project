@@ -527,6 +527,7 @@ showDialog(
 
     final email = userDoc['email'] ?? 'N/A';
     final name = userDoc['name'] ?? 'N/A';
+    final phoneNumber = userDoc['phone_number'];
 
     // Upload images and get their URLs
     List<String> imageUrls = [];
@@ -554,6 +555,7 @@ showDialog(
         "seller_name": name,
         "seller_email": email,
         "seller_pick_up_location": _selectedPickUpLocation, // Add the selected pick-up location
+        "seller_phone_number": phoneNumber,
       },
       "status": statusString,
       "how_much_used": howMuchUsedString, // Nullable field
