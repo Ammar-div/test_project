@@ -19,6 +19,7 @@ class OrderStatusScreen extends StatefulWidget {
     required this.paymentStatus,
     required this.timestamp,
     required this.receiverPickUpLocation,
+    this.deliveryInfos, // Make it optional with `?`
   });
 
   final List<String> imageUrls;
@@ -33,8 +34,9 @@ class OrderStatusScreen extends StatefulWidget {
   final String receiverEmail;
   final String orderStatus;
   final String paymentStatus;
-  final Timestamp timestamp; // Add this line
+  final Timestamp timestamp;
   final String receiverPickUpLocation;
+  final Map<String, dynamic>? deliveryInfos; // Make it nullable
 
   @override
   State<OrderStatusScreen> createState() => _OrderStatusScreenState();
@@ -51,6 +53,36 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} | ${dateTime.hour}:${dateTime.minute}'; // Customize the format as needed
   }
 
+
+  // Helper function to map color names to Color objects
+Color _getColorFromString(String colorName) {
+  switch (colorName.toLowerCase()) {
+    case 'red':
+      return Colors.red;
+    case 'blue':
+      return Colors.blue;
+    case 'green':
+      return Colors.green;
+    case 'yellow':
+      return Colors.yellow;
+    case 'orange':
+      return Colors.orange;
+    case 'purple':
+      return Colors.purple;
+    case 'pink':
+      return Colors.pink;
+    case 'brown':
+      return Colors.brown;
+    case 'silver':
+      return Colors.grey;
+    case 'black':
+      return Colors.black;
+    case 'white':
+      return Colors.white;
+    default:
+      return Colors.grey; // Default color if the color name is not recognized
+  }
+}
   
 
   @override
@@ -276,7 +308,91 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                         Text(widget.receiverPickUpLocation),
                       ],
                     ),
-                            
+
+                    if(widget.orderStatus == "confirmed")
+                    const SizedBox(height: 15,),
+                      
+                      
+                    if(widget.orderStatus == "confirmed")
+                    const Divider(),
+
+                    if(widget.orderStatus == "confirmed")
+                    const SizedBox(height: 15,),
+
+                    if(widget.orderStatus == "confirmed")
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CircleAvatar(
+                          radius: 25,
+                          backgroundImage: widget.deliveryInfos?['image_url'] != null && widget.deliveryInfos!['image_url'].isNotEmpty
+                              ? NetworkImage(widget.deliveryInfos!['image_url']) as ImageProvider
+                              : const AssetImage('assets/images/profile_placeholder.jpg'),
+                        ),
+                        Text(
+                          widget.deliveryInfos!['name'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+
+
+                    if(widget.orderStatus == "confirmed")
+                    const SizedBox(height: 16,),
+
+                    if(widget.orderStatus == "confirmed")
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          Text('${widget.deliveryInfos!['Vehicle_Infos']['vehicle_type']} : ${widget.deliveryInfos!['Vehicle_Infos']['vehicle_model']}',
+                           style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                           ),
+                           ),
+                           const Spacer(),
+                          // In the build method, update the Row that displays the vehicle color
+                            Row(
+                              children: [
+                                Text('Color: ${widget.deliveryInfos!['Vehicle_Infos']['Vehicle_Color']}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 8), // Add some spacing between the text and the circle
+                                Container(
+                                  width: 20, // Diameter of the circle
+                                  height: 20, // Diameter of the circle
+                                  decoration: BoxDecoration(
+                                    color: _getColorFromString(widget.deliveryInfos!['Vehicle_Infos']['Vehicle_Color']), // Parse the color
+                                    shape: BoxShape.circle, // Make it a circle
+                                  ),
+                                ),
+                              ],
+                            ),
+                                                    ],
+                      ),
+                    ),
+
+                    if(widget.orderStatus == "confirmed")
+                    const SizedBox(height: 16,),
+
+                    if(widget.orderStatus == "confirmed")
+                    Padding(padding: const EdgeInsets.only(left : 20),
+                    child: Row(
+                      children: [
+                        Text('Number: ${widget.deliveryInfos!['Vehicle_Infos']['vehicle_number']}', 
+                               style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                ),
+                               ),
+                      ],
+                    ),
+                    ),
+
                   ],
                 ),
               ),
@@ -291,7 +407,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                     ),
                 child: Column(
                   children: [ 
-                                         if(widget.orderStatus == "pending")
+                    if(widget.orderStatus == "pending")
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
                       width: double.infinity,
@@ -358,6 +474,24 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                         ],
                       ),
                     ),
+
+                    if(widget.orderStatus == "confirmed")
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
+                      width: double.infinity,
+                      color: const Color.fromARGB(255, 162, 210, 233),
+                      child: Row(
+                        children: [
+                          Text('Order Status : ${widget.orderStatus}' ,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
 
                     const SizedBox(height: 8,),
                     if(widget.paymentStatus == "held")

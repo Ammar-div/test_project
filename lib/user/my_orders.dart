@@ -70,7 +70,7 @@ class _MyOrdersState extends State<MyOrders> {
                 final paymentStatus = orderDoc['payment_status'];
                 final orderedDate = orderDoc['timestamp'];
                 final receiverPickUpLocation = orderDoc['receiver_infos']['receiver_pick_up_location'];
-
+                final orderID = orders[index].id;
 
 
                 return FutureBuilder<DocumentSnapshot>(
@@ -102,27 +102,55 @@ class _MyOrdersState extends State<MyOrders> {
                     final howMuchUsed = productData['how_much_used']?? "None";
 
                     return InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: 
-                            (ctx) => OrderStatusScreen(
-                              imageUrls : productImageUrls,
-                              mainTitle : productMainTitle,
-                              description: productDescription,
-                              totalAmount: productTotalAmount,
-                              quantity: quantity,
-                              productStatus: productStatus,
-                              howMuchUsed: howMuchUsed,
-                              receiverEmail: receiverEmail,
-                              receiverName: receiverName,
-                              receiverPhoneNumber: receiverPhoneNumber,
-                              orderStatus: orderStatus,
-                              paymentStatus: paymentStatus,
-                              timestamp: orderedDate,
-                              receiverPickUpLocation : receiverPickUpLocation,
-                            ),
-                          )
-                        );
-                      },
+                      onTap: () async {
+                      final orderDoc = await FirebaseFirestore.instance.collection('orders').doc(orderID).get();
+                      final deliveryID = orderDoc['delivery_person_id'];
+
+                      if (deliveryID != null) {
+                        final deliveryDoc = await FirebaseFirestore.instance.collection('delivery').doc(deliveryID).get();
+                        final deliveryInfos = deliveryDoc.data();
+
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (ctx) => OrderStatusScreen(
+                            imageUrls: productImageUrls,
+                            mainTitle: productMainTitle,
+                            description: productDescription,
+                            totalAmount: productTotalAmount,
+                            quantity: quantity,
+                            productStatus: productStatus,
+                            howMuchUsed: howMuchUsed,
+                            receiverEmail: receiverEmail,
+                            receiverName: receiverName,
+                            receiverPhoneNumber: receiverPhoneNumber,
+                            orderStatus: orderStatus,
+                            paymentStatus: paymentStatus,
+                            timestamp: orderedDate,
+                            receiverPickUpLocation: receiverPickUpLocation,
+                            deliveryInfos: deliveryInfos!, // Only passed when not null
+                          ),
+                        ));
+                      } else {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (ctx) => OrderStatusScreen(
+                            imageUrls: productImageUrls,
+                            mainTitle: productMainTitle,
+                            description: productDescription,
+                            totalAmount: productTotalAmount,
+                            quantity: quantity,
+                            productStatus: productStatus,
+                            howMuchUsed: howMuchUsed,
+                            receiverEmail: receiverEmail,
+                            receiverName: receiverName,
+                            receiverPhoneNumber: receiverPhoneNumber,
+                            orderStatus: orderStatus,
+                            paymentStatus: paymentStatus,
+                            timestamp: orderedDate,
+                            receiverPickUpLocation: receiverPickUpLocation,
+                            // deliveryInfos is NOT passed here
+                          ),
+                        ));
+                      }
+                    },
                       child: Card(
                         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                         shape: RoundedRectangleBorder(

@@ -33,6 +33,36 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
     );
   }
 
+    // Helper function to map color names to Color objects
+        Color _getColorFromString(String colorName) {
+          switch (colorName.toLowerCase()) {
+            case 'red':
+              return Colors.red;
+            case 'blue':
+              return Colors.blue;
+            case 'green':
+              return Colors.green;
+            case 'yellow':
+              return Colors.yellow;
+            case 'orange':
+              return Colors.orange;
+            case 'purple':
+              return Colors.purple;
+            case 'pink':
+              return Colors.pink;
+            case 'brown':
+              return Colors.brown;
+            case 'silver':
+              return Colors.grey;
+            case 'black':
+              return Colors.black;
+            case 'white':
+              return Colors.white;
+            default:
+              return Colors.grey; // Default color if the color name is not recognized
+          }
+        }
+
   // Helper function to calculate time difference
   String _getTimeAgo(Timestamp publishDate) {
     final now = DateTime.now();
@@ -148,25 +178,65 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                       final pickUpLocation = product['seller_ifos']['seller_pick_up_location'] ?? 'None';
 
                       return GestureDetector(
-                        onTap: () {
-                          // Navigate to AdvertisingProductDetailScreen
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AdvertisingProductDetailScreen(
-                                productName: product['name'],
-                                productPrice: product['price'],
-                                imageUrls: List<String>.from(product['imageUrls']),
-                                description: product['description'],
-                                quantity: product['quantity'],
-                                status: product['status'],
-                                howMuchUsed: product['how_much_used'] ?? "None",
-                                productId: productId,
-                                productOrderStatus : productOrderStatus,
-                                pickUpLocation : pickUpLocation,
+                        onTap: () async {
+                          // Fetch the order from the "orders" collection using the productId
+                          final orderQuery = await _firestore
+                              .collection('orders')
+                              .where('product_infos.product_id', isEqualTo: productId)
+                              .get();
+
+                          // Check if an order exists for this product
+                          if (orderQuery.docs.isNotEmpty) {
+                            final orderDoc = orderQuery.docs.first; // Get the first matching order
+                            final orderData = orderDoc.data() as Map<String, dynamic>;
+                            final deliveryID = orderDoc['delivery_person_id'];
+
+                            final deliveryDoc = await _firestore.collection('delivery').doc(deliveryID).get();
+                            final deliveryInfos = deliveryDoc.data();
+
+                            if(deliveryID != null)
+                            {
+                              // Navigate to AdvertisingProductDetailScreen with order details
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AdvertisingProductDetailScreen(
+                                  productName: product['name'],
+                                  productPrice: product['price'],
+                                  imageUrls: List<String>.from(product['imageUrls']),
+                                  description: product['description'],
+                                  quantity: product['quantity'],
+                                  status: product['status'],
+                                  howMuchUsed: product['how_much_used'] ?? "None",
+                                  productId: productId,
+                                  productOrderStatus: productOrderStatus,
+                                  pickUpLocation: pickUpLocation,
+                                  deliveryInfos: deliveryInfos!, // Only passed when not null
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                            }
+                            
+                          } else {
+                            // If no order is found, navigate without order details
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AdvertisingProductDetailScreen(
+                                  productName: product['name'],
+                                  productPrice: product['price'],
+                                  imageUrls: List<String>.from(product['imageUrls']),
+                                  description: product['description'],
+                                  quantity: product['quantity'],
+                                  status: product['status'],
+                                  howMuchUsed: product['how_much_used'] ?? "None",
+                                  productId: productId,
+                                  productOrderStatus: productOrderStatus,
+                                  pickUpLocation: pickUpLocation,
+                                ),
+                              ),
+                            );
+                          }
                         },
                         child: Card(
                           elevation: 2,

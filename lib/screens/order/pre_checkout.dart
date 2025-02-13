@@ -311,7 +311,7 @@ void showToastrMessage(String message) {
         "total_amount": _orderTotal(widget.totalAmount),
       },
       'status': orderStatus[0],
-      "delivery_person_id": '9IWiv0gCv1Y60CRwjwGqYsuGTtr2',
+      "delivery_person_id": null,
       "receiver_infos": {
         "receiver_name": _enteredFullName,
         "receiver_email": _enteredEmail,

@@ -10,6 +10,7 @@ class ActiveOrder extends StatefulWidget {
 class _ActiveOrderState extends State<ActiveOrder> {
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('this is Active Order page'),);
+    return Scaffold(
+      body: const Center(child: Text('this is Active Order page'),));
   }
 }

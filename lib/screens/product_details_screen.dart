@@ -504,6 +504,7 @@ class AdvertisingProductDetailScreen extends StatefulWidget {
   final String productId;
   final String productOrderStatus;
   final String pickUpLocation;
+  final Map<String, dynamic>? deliveryInfos;
 
   const AdvertisingProductDetailScreen({
     super.key,
@@ -517,6 +518,7 @@ class AdvertisingProductDetailScreen extends StatefulWidget {
     required this.productId,
     required this.productOrderStatus,
     required this.pickUpLocation,
+    this.deliveryInfos,
   });
 
   @override
@@ -542,34 +544,71 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
     });
   }
 
+  // Helper function to map color names to Color objects
+  Color _getColorFromString(String colorName) {
+    switch (colorName.toLowerCase()) {
+      case 'red':
+        return Colors.red;
+      case 'blue':
+        return Colors.blue;
+      case 'green':
+        return Colors.green;
+      case 'yellow':
+        return Colors.yellow;
+      case 'orange':
+        return Colors.orange;
+      case 'purple':
+        return Colors.purple;
+      case 'pink':
+        return Colors.pink;
+      case 'brown':
+        return Colors.brown;
+      case 'silver':
+        return Colors.grey;
+      case 'black':
+        return Colors.black;
+      case 'white':
+        return Colors.white;
+      default:
+        return Colors.grey; // Default color if the color name is not recognized
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      appBar:  AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(onPressed: () {
-          Navigator.pop(context);
-        },
-         icon: const Icon(Icons.arrow_back , color: Colors.black87,),
-         ),
-      ),
+
       body: SingleChildScrollView(
         child: Column(
           children: [
-             CarouselSlider(
-                options: CarouselOptions(
-                  height: 300,
-                  autoPlay: widget.imageUrls.length >1,
-                  enlargeCenterPage: true,
-                  viewportFraction: 1.0,
-                ),
-                items: widget.imageUrls.map((imageUrl) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return
-                      Hero(tag: widget.productId,
-                       child:  Container(
+             // Back button at the top-left
+          Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 30, left: 16), // Add padding for spacing
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.arrow_back, color: Colors.black87),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10), // Add some spacing between the back button and the carousel
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 300,
+                autoPlay: widget.imageUrls.length > 1,
+                enlargeCenterPage: true,
+                viewportFraction: 1.0,
+              ),
+              items: widget.imageUrls.map((imageUrl) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Hero(
+                      tag: widget.productId,
+                      child: Container(
                         width: MediaQuery.of(context).size.width,
                         margin: const EdgeInsets.symmetric(horizontal: 5.0),
                         decoration: BoxDecoration(
@@ -580,12 +619,11 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                           ),
                         ),
                       ),
-                       );  
-                    },
-                  );
-                }).toList(),
-              ),
-            
+                    );
+                  },
+                );
+              }).toList(),
+            ),
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -600,17 +638,15 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                     ),
                   ),
                   const SizedBox(height: 8),
-                      Text(
-                        '${widget.productPrice.toStringAsFixed(0)} JOD',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
-                      ),
-
+                  Text(
+                    '${widget.productPrice.toStringAsFixed(0)} JOD',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
                   const SizedBox(height: 25),
-
                   const Text(
                     'Description',
                     style: TextStyle(
@@ -622,7 +658,7 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                   AnimatedCrossFade(
                     firstChild: Text(
                       widget.description,
-                      maxLines: 4,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     secondChild: Text(widget.description),
@@ -640,203 +676,308 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                       },
                       child: Text(_isExpanded ? 'Show Less' : 'Show More'),
                     ),
-
-                    const SizedBox(height: 30),
-
-
-                     if(widget.productOrderStatus == "Not requested yet")
+                  const SizedBox(height: 30),
+                  if (widget.productOrderStatus == "Not requested yet")
                     Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 16),
-                          width: double.infinity,
-                          color: Colors.blueGrey[100],
-                          child: Row(
-                            children: [
-                              const Text(
-                                'Product order status : ',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                widget.productOrderStatus,
-                                  style: const TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                   ),
-
-                   if(widget.productOrderStatus == "It has been purchased")
-                   Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 16),
-                          width: double.infinity,
-                          color: Colors.green[400],
-                          child: Row(
-                            children: [
-                              const Text(
-                                'Product order status : ',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                widget.productOrderStatus,
-                                  style: const TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                   ),
-
-                     if(widget.productOrderStatus == "It has been purchased")
-                      Padding(padding: const EdgeInsets.symmetric(vertical: 14),
-                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                       children: [
-                        Icon(Icons.delivery_dining_sharp , color: Colors.green[600],),
-                        const SizedBox(width: 6,),
-                         const Text('Your Delivery captin will contact you soon.',
-                         textAlign: TextAlign.center,
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                      width: double.infinity,
+                      color: Colors.blueGrey[100],
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Product order status : ',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
                             ),
-                       ],
-                     ),
+                          ),
+                          Text(
+                            widget.productOrderStatus,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-
-
-
-                    if(widget.productOrderStatus == "It has been favorited")
-                   Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 16),
-                          width: double.infinity,
-                          color: Colors.orange[300],
-                          child: Row(
-                            children: [
-                              const Text(
-                                'Product order status : ',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                widget.productOrderStatus,
-                                  style: const TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                   ),
-                   const SizedBox(height: 14,),
-
-                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 16),
-                    width: double.infinity,
-                    color: Colors.blueGrey[100],
-                     child: Row(
-                            children: [
-                              const Text(
-                                'Status : ',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                widget.status,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                   ),
-
-                  const SizedBox(height: 14,),
+                    ),
+                  if (widget.productOrderStatus == "It has been purchased")
                     Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 16),
-                    width: double.infinity,
-                    color: Colors.blueGrey[100],
-                     child: Row(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                      width: double.infinity,
+                      color: Colors.green[400],
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Product order status : ',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            widget.productOrderStatus,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                              if (widget.productOrderStatus == "confirmed")
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                      width: double.infinity,
+                       color: const Color.fromARGB(255, 162, 210, 233),
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Product order status : ',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            widget.productOrderStatus,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                     if (widget.productOrderStatus == "confirmed")
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.delivery_dining_sharp, color: Colors.green[600]),
+                          const SizedBox(width: 6),
+                          const Text(
+                            'Your Delivery captain will contact you soon.',
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  if (widget.productOrderStatus == "confirmed")
+                    const SizedBox(height: 15),
+                  if (widget.productOrderStatus == "confirmed")
+                    const Divider(),
+                  if (widget.productOrderStatus == "confirmed")
+                    const SizedBox(height: 15),
+                  if (widget.productOrderStatus == "confirmed")
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CircleAvatar(
+                          radius: 25,
+                          backgroundImage: widget.deliveryInfos?['image_url'] != null &&
+                                  widget.deliveryInfos!['image_url'].isNotEmpty
+                              ? NetworkImage(widget.deliveryInfos!['image_url']) as ImageProvider
+                              : const AssetImage('assets/images/profile_placeholder.jpg'),
+                        ),
+                        Text(
+                          widget.deliveryInfos!['name'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (widget.productOrderStatus == "confirmed")
+                    const SizedBox(height: 16),
+                  if (widget.productOrderStatus == "confirmed")
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          Text(
+                            '${widget.deliveryInfos!['Vehicle_Infos']['vehicle_type']} : ${widget.deliveryInfos!['Vehicle_Infos']['vehicle_model']}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Spacer(),
+                          Row(
                             children: [
-                              const Text(
-                                'Number : ',
-                                style: TextStyle(
-                                  fontSize: 20,
+                              Text(
+                                'Color: ${widget.deliveryInfos!['Vehicle_Infos']['Vehicle_Color']}',
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Text(
-                                widget.quantity.toString(),
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                              const SizedBox(width: 8),
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  color: _getColorFromString(
+                                      widget.deliveryInfos!['Vehicle_Infos']['Vehicle_Color']),
+                                  shape: BoxShape.circle,
                                 ),
                               ),
                             ],
                           ),
-                   ),
+                        ],
+                      ),
+                    ),
+                  if (widget.productOrderStatus == "confirmed")
+                    const SizedBox(height: 16),
+                  if (widget.productOrderStatus == "confirmed")
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Number: ${widget.deliveryInfos!['Vehicle_Infos']['vehicle_number']}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    if (widget.productOrderStatus == "confirmed")
+                    const SizedBox(height: 16,),
+
+                    if (widget.productOrderStatus == "confirmed")
+                    const Divider(),
+
+                    if (widget.productOrderStatus == "confirmed")
+                    const SizedBox(height: 11,),
+
+
+                  if (widget.productOrderStatus == "It has been favorited")
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                      width: double.infinity,
+                      color: Colors.orange[300],
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Product order status : ',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            widget.productOrderStatus,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   const SizedBox(height: 14),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                     width: double.infinity,
                     color: Colors.blueGrey[100],
-                     child: Row(
-                            children: [
-                              const Text(
-                                'Duration of use : ',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                widget.howMuchUsed,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Status : ',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
-                   ),
-
-                   const SizedBox(height: 14,),
-                 
-
-                 Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 16),
+                        ),
+                        Text(
+                          widget.status,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                     width: double.infinity,
                     color: Colors.blueGrey[100],
-                     child: Row(
-                            children: [
-                              const Text(
-                                'Area : ',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                widget.pickUpLocation,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Number : ',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
-                   ),
-                  const SizedBox(height: 14,),
-                 
+                        ),
+                        Text(
+                          widget.quantity.toString(),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                    width: double.infinity,
+                    color: Colors.blueGrey[100],
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Duration of use : ',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          widget.howMuchUsed,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                    width: double.infinity,
+                    color: Colors.blueGrey[100],
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Area : ',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          widget.pickUpLocation,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
                 ],
               ),
             ),

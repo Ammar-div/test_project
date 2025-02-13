@@ -1,11 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
+import 'package:test_project/screens/delivery/active_order.dart'; // For date formatting
 
 class DeliveryOrderDetails extends StatefulWidget {
   final String categoryName;
   final Map<String, dynamic> orderData;
   final Map<String, dynamic> productData;
   final String orderId;
+  final String productId;
 
   const DeliveryOrderDetails({
     super.key,
@@ -13,6 +18,7 @@ class DeliveryOrderDetails extends StatefulWidget {
     required this.orderData,
     required this.productData,
     required this.orderId,
+    required this.productId,
   });
 
   @override
@@ -20,6 +26,18 @@ class DeliveryOrderDetails extends StatefulWidget {
 }
 
 class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
+
+  void showToastrMessage(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+      backgroundColor: const Color.fromARGB(255, 106, 179, 116),
+      textColor: const Color.fromARGB(255, 255, 255, 255),
+      fontSize: 16.0,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final order = widget.orderData;
@@ -84,12 +102,60 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add action for marking the order as delivered
+        onPressed: () async {
+          final orderDoc = await FirebaseFirestore.instance.collection('orders').doc(widget.orderId).get();
+          final deliveryID = orderDoc['delivery_person_id'];
+
+          if(deliveryID == null)
+          {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('The order has been taken.')));
+            return;
+          }
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => const Center(
+              child: CircularProgressIndicator(
+                    color: Color.fromARGB(255, 158, 203, 214), // Set the spinner color to white
+                  ),
+            ),
+          );
+
+          final user = FirebaseAuth.instance.currentUser;
+             final orderInfo = {
+            "status": "confirmed",
+            "delivery_person_id": user!.uid,
+            };
+
+            final productInfo = {
+              "product_order_status" : "confirmed",
+            };
+
+            await FirebaseFirestore.instance.collection('products').doc(widget.productId).update(productInfo);
+
+      await FirebaseFirestore.instance
+        .collection('orders')
+        .doc(widget.orderId)
+        .update(orderInfo);
+
+        // Close loading indicator
+        Navigator.pop(context);
+
+        showToastrMessage("You have take the order, good luck!");
+         // Navigate to ActiveScreen after the toast message
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ActiveOrder(), // Replace with your ActiveScreen widget
+        ),
+      );
         },
+
         backgroundColor: Colors.blue.shade800,
         child: const Icon(Icons.done, color: Colors.white),
       ),
+
+
     );
   }
 

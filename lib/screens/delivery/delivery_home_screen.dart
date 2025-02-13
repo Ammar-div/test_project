@@ -21,12 +21,33 @@ class DeliveryHomeScreen extends StatefulWidget {
 class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
   int _page = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
+  Stream? ordersList;
+  late List<Widget> _screens; // Declare _screens as a late variable
 
-  // List of screens to display based on the selected index
-  final List<Widget> _screens = [
-    // Home Screen (index 0) - Fetch and display orders
-   StreamBuilder<QuerySnapshot>(
-  stream: FirebaseFirestore.instance.collection('orders').snapshots(),
+  @override
+  void initState() {
+    super.initState();
+    _refreshOrders(); // Initialize the orders list
+    _initializeScreens(); // Initialize the _screens list
+  }
+
+  Future<void> _refreshOrders() async {
+    setState(() {
+      ordersList = FirebaseFirestore.instance
+          .collection('orders')
+          .orderBy('timestamp', descending: false)
+          .snapshots();
+    });
+  }
+
+  void _initializeScreens() {
+    _screens = [
+      // Home Screen (index 0) - Fetch and display orders
+     StreamBuilder<QuerySnapshot>(
+  stream: FirebaseFirestore.instance
+      .collection('orders')
+      .where('delivery_person_id', isNull: true) // Only fetch orders where delivery_person_id is null
+      .snapshots(),
   builder: (ctx, snapshot) {
     if (snapshot.connectionState == ConnectionState.waiting) {
       return const Center(child: CircularProgressIndicator());
@@ -42,8 +63,10 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
 
     final orders = snapshot.data!.docs;
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 40.0), // Add space from the top
+    return RefreshIndicator(
+      onRefresh: () async {
+        await _refreshOrders(); // Refresh the orders list
+      },
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         itemCount: orders.length,
@@ -53,7 +76,6 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
           final productId = order['product_infos']['product_id'];
           final sellerLocation = order['seller_location'];
           final receiverLocation = order['receiver_infos']['receiver_pick_up_location'];
-          
 
           return FutureBuilder<DocumentSnapshot>(
             future: FirebaseFirestore.instance.collection('products').doc(productId).get(),
@@ -92,14 +114,19 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                   final categoryName = categoryData['name'] ?? 'Null Category';
 
                   return InkWell(
-                    onTap : () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => DeliveryOrderDetails(
-                        categoryName : categoryName,
-                        orderData : order,
-                        productData : productData,
-                         orderId: orders[index].id, // Pass the document ID here
-                      ) ));
-                    } ,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (ctx) => DeliveryOrderDetails(
+                            categoryName: categoryName,
+                            orderData: order,
+                            productData: productData,
+                            orderId: orders[index].id, // Pass the document ID here
+                            productId: productId,
+                          ),
+                        ),
+                      );
+                    },
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       decoration: BoxDecoration(
@@ -158,7 +185,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                               ],
                             ),
                             const SizedBox(height: 12),
-                    
+
                             // Category and Icon
                             Row(
                               children: [
@@ -211,7 +238,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                               ],
                             ),
                             const SizedBox(height: 12),
-                    
+
                             // Delivery Icons and Take Button
                             Row(
                               children: [
@@ -265,11 +292,12 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
     );
   },
 ),
-    OrdersSummary(), // OrdersSummary (index 1)
-    EarningSummary(), // EarningSummary (index 2)
-    ActiveOrder(), // ActiveOrder (index 3)
-    DeliveryPersonalData(deliveryData: {}, deliveryId: ''), // Placeholder, will be replaced
-  ];
+      OrdersSummary(), // OrdersSummary (index 1)
+      EarningSummary(), // EarningSummary (index 2)
+      ActiveOrder(), // ActiveOrder (index 3)
+      DeliveryPersonalData(deliveryData: {}, deliveryId: ''), // Placeholder, will be replaced
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
