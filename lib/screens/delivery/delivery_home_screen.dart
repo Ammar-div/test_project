@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:test_project/active_order_data.dart';
 import 'package:test_project/screens/delivery/active_order.dart';
-import 'package:test_project/screens/delivery/delivery_order_details.dart';
+import 'package:test_project/screens/delivery/active_order.dart';
 import 'package:test_project/screens/delivery/delivery_personal_data.dart';
 import 'package:test_project/screens/delivery/earning_summary.dart';
 import 'package:test_project/screens/delivery/orders_summary.dart';
@@ -19,6 +22,19 @@ class DeliveryHomeScreen extends StatefulWidget {
 }
 
 class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
+  final GlobalKey _loadingKey = GlobalKey();
+
+    void showToastrMessage(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+      backgroundColor: const Color.fromARGB(255, 106, 179, 116),
+      textColor: const Color.fromARGB(255, 255, 255, 255),
+      fontSize: 16.0,
+    );
+  }
+
   int _page = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
   Stream? ordersList;
@@ -29,7 +45,30 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
     super.initState();
     _refreshOrders(); // Initialize the orders list
     _initializeScreens(); // Initialize the _screens list
+    _fetchActiveOrder(); // Fetch the active order data
   }
+
+
+  Future<void> _fetchActiveOrder() async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) return;
+
+  final doc = await FirebaseFirestore.instance
+      .collection('delivery_captains')
+      .doc(user.uid)
+      .get();
+
+  if (doc.exists) {
+    final activeOrder = doc.data()!['active_order'] as Map<String, dynamic>;
+    activeOrderNotifier.value = ActiveOrderData(
+      categoryName: activeOrder['categoryName'],
+      orderData: activeOrder['orderData'],
+      productData: activeOrder['productData'],
+      orderId: activeOrder['orderId'],
+      productId: activeOrder['productId'],
+    );
+  }
+}
 
   Future<void> _refreshOrders() async {
     setState(() {
@@ -113,21 +152,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                   final categoryData = productSnapshot.data!.data() as Map<String, dynamic>;
                   final categoryName = categoryData['name'] ?? 'Null Category';
 
-                  return InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (ctx) => DeliveryOrderDetails(
-                            categoryName: categoryName,
-                            orderData: order,
-                            productData: productData,
-                            orderId: orders[index].id, // Pass the document ID here
-                            productId: productId,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
+                  return Container(
                       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -260,7 +285,100 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                                   ),
                                 const Spacer(),
                                 ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    try {
+                                      final orderDoc = await FirebaseFirestore.instance.collection('orders').doc(orders[index].id).get();
+                                      final deliveryID = orderDoc['delivery_person_id'];
+
+                                      if (deliveryID != null) {
+                                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('The order has been taken.')));
+                                        return;
+                                      }
+
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (context) => WillPopScope(
+                                          onWillPop: () async => false, // Prevent dialog from being dismissed
+                                          child: Center(
+                                            key: _loadingKey, // Use the GlobalKey
+                                            child: const CircularProgressIndicator(
+                                              color: Color.fromARGB(255, 158, 203, 214),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+
+                                      final user = FirebaseAuth.instance.currentUser;
+                                      final acceptanceDate = DateTime.now(); // Get the current date and time
+                                      final orderInfo = {
+                                        "status": "confirmed",
+                                        "delivery_person_id": user!.uid,
+                                        "acceptance_date": Timestamp.fromDate(acceptanceDate), // Convert DateTime to Timestamp
+                                      };
+
+                                      // Extract productId from the order data
+                                      final orderData = orders[index].data() as Map<String, dynamic>;
+                                      final productId = orderData['product_infos']['product_id']; // Ensure this is the correct path
+
+                                      final productInfo = {
+                                        "product_order_status": "confirmed",
+                                      };
+
+                                      // Update Firestore documents
+                                      await FirebaseFirestore.instance.collection('products').doc(productId).update(productInfo);
+                                      await FirebaseFirestore.instance.collection('orders').doc(orders[index].id).update(orderInfo);
+
+                                      // Store the active order data in Firestore for the delivery captain
+                                      await FirebaseFirestore.instance
+                                          .collection('delivery_captains')
+                                          .doc(user.uid)
+                                          .set({
+                                        'active_order': {
+                                          'categoryName': categoryData['name'] ?? 'Null Category',
+                                          'orderData': {
+                                            ...orderData, // Include all order data
+                                            'acceptance_date': Timestamp.fromDate(acceptanceDate), // Convert DateTime to Timestamp
+                                          },
+                                          'productData': productData,
+                                          'orderId': orders[index].id,
+                                          'productId': productId,
+                                        },
+                                      });
+
+                                      // Close loading indicator
+                                      if (_loadingKey.currentContext != null) {
+                                        Navigator.of(_loadingKey.currentContext!).pop();
+                                      }
+
+                                      showToastrMessage("You have taken the order, good luck!");
+
+                                      // Update the ValueNotifier with the active order data
+                                      activeOrderNotifier.value = ActiveOrderData(
+                                        categoryName: categoryData['name'] ?? 'Null Category',
+                                        orderData: {
+                                          ...orderData, // Include all order data
+                                          'acceptance_date': Timestamp.fromDate(acceptanceDate), // Convert DateTime to Timestamp
+                                        },
+                                        productData: productData,
+                                        orderId: orders[index].id,
+                                        productId: productId,
+                                      );
+
+                                      // Navigate to the ActiveOrder screen only if the widget is still mounted
+                                      if (mounted) {
+                                        setState(() {
+                                          _page = 3; // Assuming ActiveOrder is at index 3
+                                        });
+                                      }
+                                    } catch (e) {
+                                      // Close loading indicator in case of error
+                                      if (_loadingKey.currentContext != null) {
+                                        Navigator.of(_loadingKey.currentContext!).pop();
+                                      }
+                                      showToastrMessage("An error occurred: $e");
+                                    }
+                                  },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
@@ -281,8 +399,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                           ],
                         ),
                       ),
-                    ),
-                  );
+                    );
                 },
               );
             },
@@ -294,7 +411,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
 ),
       OrdersSummary(), // OrdersSummary (index 1)
       EarningSummary(), // EarningSummary (index 2)
-      ActiveOrder(), // ActiveOrder (index 3)
+       const ActiveOrder(), // ActiveOrder (index 3)
       DeliveryPersonalData(deliveryData: {}, deliveryId: ''), // Placeholder, will be replaced
     ];
   }

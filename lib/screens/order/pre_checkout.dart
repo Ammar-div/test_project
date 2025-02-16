@@ -322,6 +322,9 @@ void showToastrMessage(String message) {
       "timestamp": Timestamp.fromDate(DateTime.now()),
       "seller_location": sellerLocation, 
       "seller_phone_number": sellerPhoneNumber,
+      "acceptance_date": null,
+      "pick_up_date": null,
+      "delivered_date": null,
     };
     final docRef = FirebaseFirestore.instance.collection("orders").doc();
     await docRef.set(orderInfos);

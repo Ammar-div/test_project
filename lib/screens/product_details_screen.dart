@@ -5,7 +5,7 @@ import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/screens/auth_screen.dart';
 import 'package:test_project/screens/order/pre_checkout.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 
 
 
@@ -685,7 +685,7 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                       child: Row(
                         children: [
                           const Text(
-                            'Product order status : ',
+                            'Order status : ',
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
@@ -734,7 +734,7 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                       child: Row(
                         children: [
                           const Text(
-                            'Product order status : ',
+                            'Order status : ',
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
@@ -767,13 +767,54 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                       ),
                     ),
 
-                  if (widget.productOrderStatus == "confirmed")
+                            if (widget.productOrderStatus == "picked up")
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                      width: double.infinity,
+                       color: Colors.orange[300],
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Order status : ',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            widget.productOrderStatus,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                     if (widget.productOrderStatus == "picked up")
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.delivery_dining_sharp, color: Colors.green[600]),
+                          const SizedBox(width: 6),
+                          const Text(
+                            'Captain is now heading to the buyer.',
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                     const SizedBox(height: 15),
-                  if (widget.productOrderStatus == "confirmed")
+                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                     const Divider(),
-                  if (widget.productOrderStatus == "confirmed")
+                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                     const SizedBox(height: 15),
-                  if (widget.productOrderStatus == "confirmed")
+                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -793,9 +834,9 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                         ),
                       ],
                     ),
-                  if (widget.productOrderStatus == "confirmed")
+                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                     const SizedBox(height: 16),
-                  if (widget.productOrderStatus == "confirmed")
+                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
@@ -830,30 +871,58 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                         ],
                       ),
                     ),
-                  if (widget.productOrderStatus == "confirmed")
+                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                     const SizedBox(height: 16),
-                  if (widget.productOrderStatus == "confirmed")
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Number: ${widget.deliveryInfos!['Vehicle_Infos']['vehicle_number']}',
+                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20 , right: 22),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Number: ${widget.deliveryInfos!['Vehicle_Infos']['vehicle_number']}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () async {
+                            // Clean the phone number (remove non-numeric characters)
+                            final String phoneNumber = widget.deliveryInfos!['phone_number'].replaceAll(RegExp(r'[^0-9]'), '');
+                            final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+
+                            // Check if the device can launch the phone dialer
+                            if (await canLaunchUrl(phoneUri)) {
+                              await launchUrl(phoneUri);
+                            } else {
+                              // Handle the case where the device cannot make phone calls
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Cannot make phone calls on this device.'),
+                                ),
+                              );
+                            }
+                          },
+                          child: Text(
+                            'Call: ${widget.deliveryInfos!['phone_number']}',
                             style: const TextStyle(
-                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                              // fontSize: 16, // Adjust the font size as needed
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                  ),
 
-                    if (widget.productOrderStatus == "confirmed")
+                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                     const SizedBox(height: 16,),
 
-                    if (widget.productOrderStatus == "confirmed")
+                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                     const Divider(),
 
-                    if (widget.productOrderStatus == "confirmed")
+                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                     const SizedBox(height: 11,),
 
 
@@ -865,7 +934,7 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                       child: Row(
                         children: [
                           const Text(
-                            'Product order status : ',
+                            'Order status : ',
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
@@ -889,7 +958,7 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                     child: Row(
                       children: [
                         const Text(
-                          'Status : ',
+                          'Product Status : ',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,

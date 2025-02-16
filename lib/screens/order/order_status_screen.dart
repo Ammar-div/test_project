@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OrderStatusScreen extends StatefulWidget {
   const OrderStatusScreen({
@@ -309,17 +310,17 @@ Color _getColorFromString(String colorName) {
                       ],
                     ),
 
-                    if(widget.orderStatus == "confirmed")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
                     const SizedBox(height: 15,),
                       
                       
-                    if(widget.orderStatus == "confirmed")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
                     const Divider(),
 
-                    if(widget.orderStatus == "confirmed")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
                     const SizedBox(height: 15,),
 
-                    if(widget.orderStatus == "confirmed")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -340,10 +341,10 @@ Color _getColorFromString(String colorName) {
                     ),
 
 
-                    if(widget.orderStatus == "confirmed")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
                     const SizedBox(height: 16,),
 
-                    if(widget.orderStatus == "confirmed")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
@@ -377,21 +378,51 @@ Color _getColorFromString(String colorName) {
                       ),
                     ),
 
-                    if(widget.orderStatus == "confirmed")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
                     const SizedBox(height: 16,),
 
-                    if(widget.orderStatus == "confirmed")
-                    Padding(padding: const EdgeInsets.only(left : 20),
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
+                    Padding(
+                    padding: const EdgeInsets.only(left: 20 , right: 22),
                     child: Row(
                       children: [
-                        Text('Number: ${widget.deliveryInfos!['Vehicle_Infos']['vehicle_number']}', 
-                               style: const TextStyle(
-                                fontWeight: FontWeight.bold,
+                        Text(
+                          'Number: ${widget.deliveryInfos!['Vehicle_Infos']['vehicle_number']}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () async {
+                            // Clean the phone number (remove non-numeric characters)
+                            final String phoneNumber = widget.deliveryInfos!['phone_number'].replaceAll(RegExp(r'[^0-9]'), '');
+                            final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+
+                            // Check if the device can launch the phone dialer
+                            if (await canLaunchUrl(phoneUri)) {
+                              await launchUrl(phoneUri);
+                            } else {
+                              // Handle the case where the device cannot make phone calls
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Cannot make phone calls on this device.'),
                                 ),
-                               ),
+                              );
+                            }
+                          },
+                          child: Text(
+                            'Call: ${widget.deliveryInfos!['phone_number']}',
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                              // fontSize: 16, // Adjust the font size as needed
+                            ),
+                          ),
+                        ),
                       ],
                     ),
-                    ),
+                  ),
 
                   ],
                 ),
@@ -463,14 +494,30 @@ Color _getColorFromString(String colorName) {
                       padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
                       width: double.infinity,
                       color: Colors.orange[300],
-                      child: Row(
+                      child: Column(
                         children: [
-                          Text('Order Status : ${widget.orderStatus}' ,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
+                          Row(
+                            children: [
+                              Text('Order Status : ${widget.orderStatus}' ,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
                           ),
+                          const SizedBox(height: 14,),
+                          Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.delivery_dining_sharp, color: Colors.green[600]),
+                          const SizedBox(width: 6),
+                          const Text(
+                            'Captain is on his way.',
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                         ],
                       ),
                     ),
