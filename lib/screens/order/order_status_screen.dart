@@ -20,6 +20,7 @@ class OrderStatusScreen extends StatefulWidget {
     required this.paymentStatus,
     required this.timestamp,
     required this.receiverPickUpLocation,
+    required this.orderID,
     this.deliveryInfos, // Make it optional with `?`
   });
 
@@ -37,6 +38,7 @@ class OrderStatusScreen extends StatefulWidget {
   final String paymentStatus;
   final Timestamp timestamp;
   final String receiverPickUpLocation;
+  final String orderID;
   final Map<String, dynamic>? deliveryInfos; // Make it nullable
 
   @override
@@ -54,6 +56,14 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} | ${dateTime.hour}:${dateTime.minute}'; // Customize the format as needed
   }
 
+
+late String _orderStatus; // Store the order status in the state
+
+  @override
+  void initState() {
+    super.initState();
+    _orderStatus = widget.orderStatus; // Initialize with the passed value
+  }
 
   // Helper function to map color names to Color objects
 Color _getColorFromString(String colorName) {
@@ -310,17 +320,17 @@ Color _getColorFromString(String colorName) {
                       ],
                     ),
 
-                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
                     const SizedBox(height: 15,),
                       
                       
-                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
                     const Divider(),
 
-                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
                     const SizedBox(height: 15,),
 
-                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -341,10 +351,10 @@ Color _getColorFromString(String colorName) {
                     ),
 
 
-                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
                     const SizedBox(height: 16,),
 
-                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
@@ -378,10 +388,10 @@ Color _getColorFromString(String colorName) {
                       ),
                     ),
 
-                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
                     const SizedBox(height: 16,),
 
-                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
                     Padding(
                     padding: const EdgeInsets.only(left: 20 , right: 22),
                     child: Row(
@@ -423,6 +433,41 @@ Color _getColorFromString(String colorName) {
                       ],
                     ),
                   ),
+                  if (_orderStatus == "awaiting acknowledgment")
+                  const SizedBox(height: 30,),
+
+                  if (_orderStatus == "awaiting acknowledgment")
+                    Align(
+                      alignment: Alignment.center,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          // Update the order status to "delivered"
+                          await FirebaseFirestore.instance
+                              .collection('orders')
+                              .doc(widget.orderID)
+                              .update({
+                                'status': 'delivered',
+                              });
+
+                          // Show a success message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Order acknowledged as delivered.'),
+                            ),
+                          );
+
+                          // Update the local state
+                          setState(() {
+                            _orderStatus = 'delivered';
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.green,
+                        ),
+                        child: const Text('Acknowledge Receipt'),
+                      ),
+                    ),
 
                   ],
                 ),

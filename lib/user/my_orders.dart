@@ -126,6 +126,7 @@ class _MyOrdersState extends State<MyOrders> {
                             paymentStatus: paymentStatus,
                             timestamp: orderedDate,
                             receiverPickUpLocation: receiverPickUpLocation,
+                            orderID : orderID,
                             deliveryInfos: deliveryInfos!, // Only passed when not null
                           ),
                         ));
@@ -146,6 +147,7 @@ class _MyOrdersState extends State<MyOrders> {
                             paymentStatus: paymentStatus,
                             timestamp: orderedDate,
                             receiverPickUpLocation: receiverPickUpLocation,
+                             orderID : orderID,
                             // deliveryInfos is NOT passed here
                           ),
                         ));

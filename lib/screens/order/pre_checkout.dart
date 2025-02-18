@@ -325,6 +325,7 @@ void showToastrMessage(String message) {
       "acceptance_date": null,
       "pick_up_date": null,
       "delivered_date": null,
+       "is_received": false,
     };
     final docRef = FirebaseFirestore.instance.collection("orders").doc();
     await docRef.set(orderInfos);
