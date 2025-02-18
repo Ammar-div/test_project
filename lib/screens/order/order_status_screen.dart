@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OrderStatusScreen extends StatefulWidget {
@@ -286,6 +287,9 @@ Color _getColorFromString(String colorName) {
               ),
               const SizedBox(height: 22,),
 
+
+
+
                Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10 , vertical: 20),
                 decoration: BoxDecoration(
@@ -329,6 +333,12 @@ Color _getColorFromString(String colorName) {
 
                     if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
                     const SizedBox(height: 15,),
+
+                    if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
+                    SizedBox(
+                      height: 150,
+                      child: Lottie.network('https://lottie.host/4fe98943-52d2-463a-a28c-ab6944352d4d/vXphnbGmh1.json'),
+                    ),
 
                     if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
                     Row(

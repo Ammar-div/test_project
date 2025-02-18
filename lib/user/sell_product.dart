@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'package:test_project/screens/HomeScreen.dart';
 
 class SellProduct extends StatefulWidget {
@@ -482,26 +483,14 @@ Future<void> _pickImageFromGallery() async {
 
   try {
     // Show a loading indicator
+
 showDialog(
   context: context,
   barrierDismissible: false,
-  builder: (context) => const Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CircularProgressIndicator(
-          color: Colors.white, // Set the spinner color to white
-        ),
-        SizedBox(height: 8),
-        Text(
-          'Posting....',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            decoration: TextDecoration.none, // Remove underline
-          ),
-        ),
-      ],
+  builder: (context) => Center(
+    child: SizedBox(
+      height: 150,
+      child: Lottie.network('https://lottie.host/635ac215-31e4-41bc-9ee4-a4fa4ddc9f76/8ki4C5LVhJ.json'),
     ),
   ),
 );
