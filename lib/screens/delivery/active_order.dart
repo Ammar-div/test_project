@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
-
 // Assuming you have a ValueNotifier defined elsewhere in your app
 import 'package:test_project/active_order_data.dart'; // Replace with the actual path
 
@@ -16,10 +15,32 @@ class ActiveOrder extends StatefulWidget {
 }
 
 class _ActiveOrderState extends State<ActiveOrder> {
+  bool _isLoading = false;
+  bool _isReceived = false; // Track whether the order has been received
 
-  bool _isPressed = false;
-   bool _isLoading = false;
+  @override
+  void initState() {
+    super.initState();
+    _checkIfReceived(); // Check Firestore for the "is_received" status on app startup
+  }
 
+  // Check Firestore to see if the order has been received
+  Future<void> _checkIfReceived() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final orderDoc = await FirebaseFirestore.instance
+        .collection('orders')
+        .where('delivery_person_id', isEqualTo: user.uid)
+        .get();
+
+    if (orderDoc.docs.isNotEmpty) {
+      final orderData = orderDoc.docs.first.data();
+      setState(() {
+        _isReceived = orderData['is_received'] ?? false;
+      });
+    }
+  }
 
   void showToastrMessage(String message) {
     Fluttertoast.showToast(
@@ -37,6 +58,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Order Details'),
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.blue.shade800,
         elevation: 0,
         centerTitle: true,
@@ -84,7 +106,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
                     _buildInfoRow(Icons.category, 'Category', activeOrderData.categoryName),
                     _buildInfoRow(Icons.shopping_cart, 'Quantity', order['product_infos']['quantity'].toString()),
                     _buildInfoRow(Icons.calendar_today, 'Order Date', formattedDate),
-                    _buildInfoRow(Icons.event_available, 'Acceptance Date', formattedAcceptanceDate), 
+                    _buildInfoRow(Icons.event_available, 'Acceptance Date', formattedAcceptanceDate),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -97,75 +119,80 @@ class _ActiveOrderState extends State<ActiveOrder> {
                     _buildInfoRow(Icons.email, 'Email', sellerInfo['seller_email']),
                     _buildInfoRow(Icons.phone, 'Phone', sellerInfo['seller_phone_number']),
                     _buildInfoRow(Icons.location_on, 'Location', sellerInfo['seller_pick_up_location']),
-                    if(!_isPressed)
                     const SizedBox(height: 16),
-                   if (!_isPressed)
-                    Align(
-                      alignment: Alignment.center,
-                      child: ElevatedButton(
-                        onPressed: _isLoading
-                            ? null // Disable the button when loading
-                            : () async {
-                                setState(() {
-                                  _isLoading = true; // Start loading
-                                });
-
-                                try {
-                                  final user = FirebaseAuth.instance.currentUser;
-                                  final orderDoc = await FirebaseFirestore.instance
-                                      .collection('orders')
-                                      .where('delivery_person_id', isEqualTo: user!.uid)
-                                      .get();
-                                  final orderDocument = orderDoc.docs.first;
-                                  final orderId = orderDocument.id;
-                                  final productId = orderDocument['product_infos']['product_id'];
-                                  final productInfo = {
-                                    "product_order_status": "picked up",
-                                  };
-
-                                  final orderInfo = {
-                                    "status": "picked up",
-                                    "pick_up_date": Timestamp.fromDate(DateTime.now()),
-                                  };
-
-                                  await FirebaseFirestore.instance
-                                      .collection('products')
-                                      .doc(productId)
-                                      .update(productInfo);
-                                  await FirebaseFirestore.instance
-                                      .collection('orders')
-                                      .doc(orderId)
-                                      .update(orderInfo);
-
-                                  showToastrMessage("Order Received");
-
+                    if (!_isReceived) // Show "Received" button only if not already received
+                      Align(
+                        alignment: Alignment.center,
+                        child: ElevatedButton(
+                          onPressed: _isLoading
+                              ? null // Disable the button when loading
+                              : () async {
                                   setState(() {
-                                    _isPressed = true;
+                                    _isLoading = true; // Start loading
                                   });
-                                } catch (e) {
-                                  showToastrMessage("Failed to update order: $e");
-                                } finally {
-                                  setState(() {
-                                    _isLoading = false; // Stop loading
-                                  });
-                                }
-                              },
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.green,
+
+                                  try {
+                                    final user = FirebaseAuth.instance.currentUser;
+                                    final orderDoc = await FirebaseFirestore.instance
+                                        .collection('orders')
+                                        .where('delivery_person_id', isEqualTo: user!.uid)
+                                        .get();
+                                    
+                                    final orderDocument = orderDoc.docs.first;
+                                    if(orderDocument['is_received'] == true)
+                                    {
+                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('You already received the order')));
+                                    }
+                                    final orderId = orderDocument.id;
+                                    final productId = orderDocument['product_infos']['product_id'];
+                                    final productInfo = {
+                                      "product_order_status": "picked up",
+                                    };
+
+                                    final orderInfo = {
+                                      "status": "picked up",
+                                      "pick_up_date": Timestamp.fromDate(DateTime.now()),
+                                      "is_received": true, // Update the "is_received" field
+                                    };
+
+                                    await FirebaseFirestore.instance
+                                        .collection('products')
+                                        .doc(productId)
+                                        .update(productInfo);
+                                    await FirebaseFirestore.instance
+                                        .collection('orders')
+                                        .doc(orderId)
+                                        .update(orderInfo);
+
+                                    showToastrMessage("Order Received");
+
+                                    setState(() {
+                                      _isReceived = true; // Update local state
+                                    });
+                                  } catch (e) {
+                                    showToastrMessage("Failed to update order: $e");
+                                  } finally {
+                                    setState(() {
+                                      _isLoading = false; // Stop loading
+                                    });
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.green,
+                          ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text('Received'),
                         ),
-                        child: _isLoading
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Text('Received'),
                       ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -179,32 +206,32 @@ class _ActiveOrderState extends State<ActiveOrder> {
                     _buildInfoRow(Icons.phone, 'Phone', receiverInfo['receiver_phone_number']),
                     _buildInfoRow(Icons.location_on, 'Location', receiverInfo['receiver_pick_up_location']),
                     const SizedBox(height: 16),
-                    if(_isPressed)
-                    Align(
-                      alignment: Alignment.center,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final user = FirebaseAuth.instance.currentUser;
-                          if (user == null) return;
-                      
-                          // Clear the active order data from Firestore
-                          await FirebaseFirestore.instance
-                              .collection('delivery_captains')
-                              .doc(user.uid)
-                              .update({'active_order': FieldValue.delete()});
-                      
-                          // Clear the ValueNotifier
-                          activeOrderNotifier.value = null;
-                      
-                          showToastrMessage("Order marked as completed.");
-                        },
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.green,
+                    if (_isReceived) // Show "Mark as Delivered" button only if received
+                      Align(
+                        alignment: Alignment.center,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final user = FirebaseAuth.instance.currentUser;
+                            if (user == null) return;
+
+                            // Clear the active order data from Firestore
+                            await FirebaseFirestore.instance
+                                .collection('delivery_captains')
+                                .doc(user.uid)
+                                .update({'active_order': FieldValue.delete()});
+
+                            // Clear the ValueNotifier
+                            activeOrderNotifier.value = null;
+
+                            showToastrMessage("Order marked as completed.");
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.green,
+                          ),
+                          child: const Text('Mark as Delivered'),
                         ),
-                        child: const Text('Mark as Completed'),
                       ),
-                    ),
                   ],
                 ),
               ],
