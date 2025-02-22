@@ -94,44 +94,42 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
   }
 
   // Function to add/remove a product from favorites
-  Future<void> _toggleFavorite() async {
-    final user = _auth.currentUser;
-    if (user == null) {
-      // Handle case where user is not logged in
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You must be logged in to add favorites')),
-      );
-      return;
-    }
-
-    final favoriteRef = _firestore
-        .collection('favorites')
-        .where('userId', isEqualTo: user.uid)
-        .where('productId', isEqualTo: widget.productId);
-
-    final favoriteSnapshot = await favoriteRef.get();
-
-    if (favoriteSnapshot.docs.isEmpty) {
-      // Add to favorites
-      await _firestore.collection('favorites').add({
-        'userId': user.uid,
-        'productId': widget.productId,
-        'productName': widget.productName,
-        'productPrice': widget.productPrice,
-        'imageUrl': widget.imageUrls[0],
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Product added to favorites')),
-      );
-    } else {
-      // Remove from favorites
-      await favoriteSnapshot.docs.first.reference.delete();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Product removed from favorites')),
-      );
-    }
+Future<void> _toggleFavorite() async {
+  final user = _auth.currentUser;
+  if (user == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('You must be logged in to add favorites')),
+    );
+    return;
   }
 
+  final favoriteRef = _firestore
+      .collection('favorites')
+      .where('userId', isEqualTo: user.uid)
+      .where('productId', isEqualTo: widget.productId);
+
+  final favoriteSnapshot = await favoriteRef.get();
+
+  if (favoriteSnapshot.docs.isEmpty) {
+    // Add to favorites
+    await _firestore.collection('favorites').add({
+      'userId': user.uid,
+      'productId': widget.productId,
+      'productName': widget.productName,
+      'productPrice': widget.productPrice,
+      'imageUrl': widget.imageUrls[0],
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Product added to favorites')),
+    );
+  } else {
+    // Remove from favorites
+    await favoriteSnapshot.docs.first.reference.delete();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Product removed from favorites')),
+    );
+  }
+}
 
   void _navigateToPreCheckout() async {
   DocumentSnapshot productDocumentObj = 
@@ -239,6 +237,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
                         ),
                       ),
                       const Spacer(),
+                      if (!_isSeller)
                       StreamBuilder<QuerySnapshot>(
                         stream: _auth.currentUser != null
                             ? _firestore
@@ -251,14 +250,30 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
                           final isFavorite = _auth.currentUser != null &&
                               favoriteSnapshot.hasData &&
                               favoriteSnapshot.data!.docs.isNotEmpty;
-
+                          
                           return AnimatedBuilder(
                             animation: _scaleAnimation,
                             builder: (context, child) {
                               return Transform.scale(
                                 scale: _scaleAnimation.value,
                                 child: IconButton(
-                                  onPressed: () {
+                                  onPressed: () async {
+                                     DocumentSnapshot productDocumentObj = 
+                                  await _firestore.collection('products').doc(widget.productId).get();
+                                    final sellerId = productDocumentObj["seller_ifos"]["seller_id"];
+                                     final user = FirebaseAuth.instance.currentUser;
+                                      if(user != null)
+                                      {
+                                        if(user.uid == sellerId)
+                                        {
+                                          // owner of the product
+                                          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: 
+                                          (ctx) => const HomeScreen(), ));
+                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The user can't favorite his own product.")));
+                                          return;
+                                        }
+                                      }
+
                                     if (_auth.currentUser == null) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(content: Text('You must be logged in to add favorites')),
@@ -300,6 +315,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
                         width: screenWidth * 0.80,
                         child: ElevatedButton(
                           onPressed: () async {
+                            final productDoc = await FirebaseFirestore.instance.collection('products').doc(widget.productId).get();
+                            final productOrderStatus = productDoc['product_order_status'];
+
+                            if(productOrderStatus == "delivered"
+                              || productOrderStatus == "picked up" || productOrderStatus == "confirmed") {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('The product has been ordered')),
+                              );
+                              return;
+                            }
+
+
                               final user = FirebaseAuth.instance.currentUser;
                               if (user == null) {
                                 // Show a dialog if the user is not logged in
@@ -450,7 +477,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
                       ),
                     ],
                   ),
+                  if(widget.howMuchUsed != 'Not specified')
                   const SizedBox(height: 16),
+                  if(widget.howMuchUsed != 'Not specified')
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -544,6 +573,15 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
     });
   }
 
+  Future<int> _getFavoriteCount(String productId) async {
+  final QuerySnapshot snapshot = await FirebaseFirestore.instance
+      .collection('favorites')
+      .where('productId', isEqualTo: productId)
+      .get();
+
+  return snapshot.docs.length;
+}
+
   // Helper function to map color names to Color objects
   Color _getColorFromString(String colorName) {
     switch (colorName.toLowerCase()) {
@@ -574,19 +612,18 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-             // Back button at the top-left
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+    body: SingleChildScrollView(
+      child: Column(
+        children: [
+          // Back button at the top-left
           Align(
             alignment: Alignment.topLeft,
             child: Padding(
-              padding: const EdgeInsets.only(top: 30, left: 16), // Add padding for spacing
+              padding: const EdgeInsets.only(top: 30, left: 16),
               child: IconButton(
                 onPressed: () {
                   Navigator.pop(context);
@@ -595,287 +632,304 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
               ),
             ),
           ),
-          const SizedBox(height: 10), // Add some spacing between the back button and the carousel
-            CarouselSlider(
-              options: CarouselOptions(
-                height: 300,
-                autoPlay: widget.imageUrls.length > 1,
-                enlargeCenterPage: true,
-                viewportFraction: 1.0,
-              ),
-              items: widget.imageUrls.map((imageUrl) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return Hero(
-                      tag: widget.productId,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          image: DecorationImage(
-                            image: NetworkImage(imageUrl),
-                            fit: BoxFit.cover,
-                          ),
+          const SizedBox(height: 10),
+          CarouselSlider(
+            options: CarouselOptions(
+              height: 300,
+              autoPlay: widget.imageUrls.length > 1,
+              enlargeCenterPage: true,
+              viewportFraction: 1.0,
+            ),
+            items: widget.imageUrls.map((imageUrl) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return Hero(
+                    tag: widget.productId,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        image: DecorationImage(
+                          image: NetworkImage(imageUrl),
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    );
+                    ),
+                  );
+                },
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.productName,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '${widget.productPrice.toStringAsFixed(0)} JOD',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+                const SizedBox(height: 25),
+                // Display the number of users who favorited the product
+                FutureBuilder<int>(
+                  future: _getFavoriteCount(widget.productId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      final favoriteCount = snapshot.data ?? 0;
+                      return Text(
+                        '$favoriteCount users have favorited this product',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      );
+                    }
                   },
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.productName,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                ),
+                const SizedBox(height: 25),
+                const Text(
+                  'Description',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 18,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${widget.productPrice.toStringAsFixed(0)} JOD',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                    ),
+                ),
+                const SizedBox(height: 8),
+                AnimatedCrossFade(
+                  firstChild: Text(
+                    widget.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 25),
-                  const Text(
-                    'Description',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 18,
-                    ),
+                  secondChild: Text(widget.description),
+                  crossFadeState: _isExpanded
+                      ? CrossFadeState.showSecond
+                      : CrossFadeState.showFirst,
+                  duration: const Duration(milliseconds: 300),
+                ),
+                if (_isOverflowing)
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _isExpanded = !_isExpanded;
+                      });
+                    },
+                    child: Text(_isExpanded ? 'Show Less' : 'Show More'),
                   ),
-                  const SizedBox(height: 8),
-                  AnimatedCrossFade(
-                    firstChild: Text(
-                      widget.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    secondChild: Text(widget.description),
-                    crossFadeState: _isExpanded
-                        ? CrossFadeState.showSecond
-                        : CrossFadeState.showFirst,
-                    duration: const Duration(milliseconds: 300),
-                  ),
-                  if (_isOverflowing)
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _isExpanded = !_isExpanded;
-                        });
-                      },
-                      child: Text(_isExpanded ? 'Show Less' : 'Show More'),
-                    ),
-                  const SizedBox(height: 30),
-                  if (widget.productOrderStatus == "Not requested yet")
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                      width: double.infinity,
-                      color: Colors.blueGrey[100],
-                      child: Row(
-                        children: [
-                          const Text(
-                            'Order status : ',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            widget.productOrderStatus,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  if (widget.productOrderStatus == "It has been purchased")
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                      width: double.infinity,
-                      color: Colors.green[400],
-                      child: Row(
-                        children: [
-                          const Text(
-                            'Product order status : ',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            widget.productOrderStatus,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                              if (widget.productOrderStatus == "confirmed")
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                      width: double.infinity,
-                       color: const Color.fromARGB(255, 162, 210, 233),
-                      child: Row(
-                        children: [
-                          const Text(
-                            'Order status : ',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            widget.productOrderStatus,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                     if (widget.productOrderStatus == "confirmed")
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.delivery_dining_sharp, color: Colors.green[600]),
-                          const SizedBox(width: 6),
-                          const Text(
-                            'Your Delivery captain will contact you soon.',
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                            if (widget.productOrderStatus == "picked up")
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                      width: double.infinity,
-                       color: Colors.orange[300],
-                      child: Row(
-                        children: [
-                          const Text(
-                            'Order status : ',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            widget.productOrderStatus,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                     if (widget.productOrderStatus == "picked up")
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.delivery_dining_sharp, color: Colors.green[600]),
-                          const SizedBox(width: 6),
-                          const Text(
-                            'Captain is now heading to the buyer.',
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                    const SizedBox(height: 15),
-                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                    const Divider(),
-                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                    const SizedBox(height: 15),
-                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                const SizedBox(height: 30),
+                if (widget.productOrderStatus == "Not requested yet")
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                    width: double.infinity,
+                    color: Colors.blueGrey[100],
+                    child: Row(
                       children: [
-                        CircleAvatar(
-                          radius: 25,
-                          backgroundImage: widget.deliveryInfos?['image_url'] != null &&
-                                  widget.deliveryInfos!['image_url'].isNotEmpty
-                              ? NetworkImage(widget.deliveryInfos!['image_url']) as ImageProvider
-                              : const AssetImage('assets/images/profile_placeholder.jpg'),
+                        const Text(
+                          'Order status : ',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Text(
-                          widget.deliveryInfos!['name'],
+                          widget.productOrderStatus,
                           style: const TextStyle(
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
-                            fontSize: 20,
                           ),
                         ),
                       ],
                     ),
-                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                    const SizedBox(height: 16),
-                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        children: [
-                          Text(
-                            '${widget.deliveryInfos!['Vehicle_Infos']['vehicle_type']} : ${widget.deliveryInfos!['Vehicle_Infos']['vehicle_model']}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
+                  ),
+                if (widget.productOrderStatus == "It has been purchased")
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                    width: double.infinity,
+                    color: Colors.green[400],
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Product order status : ',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
                           ),
-                          const Spacer(),
-                          Row(
-                            children: [
-                              Text(
-                                'Color: ${widget.deliveryInfos!['Vehicle_Infos']['Vehicle_Color']}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                  color: _getColorFromString(
-                                      widget.deliveryInfos!['Vehicle_Infos']['Vehicle_Color']),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            ],
+                        ),
+                        Text(
+                          widget.productOrderStatus,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                    const SizedBox(height: 16),
-                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
+                  ),
+                if (widget.productOrderStatus == "confirmed")
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                    width: double.infinity,
+                    color: const Color.fromARGB(255, 162, 210, 233),
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Order status : ',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          widget.productOrderStatus,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (widget.productOrderStatus == "confirmed")
                   Padding(
-                    padding: const EdgeInsets.only(left: 20 , right: 22),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.delivery_dining_sharp, color: Colors.green[600]),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Your Delivery captain will contact you soon.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                if (widget.productOrderStatus == "picked up")
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                    width: double.infinity,
+                    color: Colors.orange[300],
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Order status : ',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          widget.productOrderStatus,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (widget.productOrderStatus == "picked up")
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.delivery_dining_sharp, color: Colors.green[600]),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Captain is now heading to the buyer.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
+                  const SizedBox(height: 15),
+                if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
+                  const Divider(),
+                if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
+                  const SizedBox(height: 15),
+                if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      CircleAvatar(
+                        radius: 25,
+                        backgroundImage: widget.deliveryInfos?['image_url'] != null &&
+                                widget.deliveryInfos!['image_url'].isNotEmpty
+                            ? NetworkImage(widget.deliveryInfos!['image_url']) as ImageProvider
+                            : const AssetImage('assets/images/profile_placeholder.jpg'),
+                      ),
+                      Text(
+                        widget.deliveryInfos!['name'],
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
+                  const SizedBox(height: 16),
+                if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Text(
+                          '${widget.deliveryInfos!['Vehicle_Infos']['vehicle_type']} : ${widget.deliveryInfos!['Vehicle_Infos']['vehicle_model']}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        Row(
+                          children: [
+                            Text(
+                              'Color: ${widget.deliveryInfos!['Vehicle_Infos']['Vehicle_Color']}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: _getColorFromString(
+                                    widget.deliveryInfos!['Vehicle_Infos']['Vehicle_Color']),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
+                  const SizedBox(height: 16),
+                if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 22),
                     child: Row(
                       children: [
                         Text(
@@ -908,151 +962,145 @@ class _AdvertisingProductDetailScreenState extends State<AdvertisingProductDetai
                             style: const TextStyle(
                               color: Colors.blue,
                               decoration: TextDecoration.underline,
-                              // fontSize: 16, // Adjust the font size as needed
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-
-                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                    const SizedBox(height: 16,),
-
-                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                    const Divider(),
-
-                  if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                    const SizedBox(height: 11,),
-
-
-                  if (widget.productOrderStatus == "It has been favorited")
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                      width: double.infinity,
-                      color: Colors.orange[300],
-                      child: Row(
-                        children: [
-                          const Text(
-                            'Order status : ',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
+                if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
+                  const SizedBox(height: 16),
+                if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
+                  const Divider(),
+                if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
+                  const SizedBox(height: 11),
+                if (widget.productOrderStatus == "It has been favorited")
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                    width: double.infinity,
+                    color: Colors.orange[300],
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Order status : ',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Text(
-                            widget.productOrderStatus,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        ),
+                        Text(
+                          widget.productOrderStatus,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  width: double.infinity,
+                  color: Colors.blueGrey[100],
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Product Status : ',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  const SizedBox(height: 14),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    width: double.infinity,
-                    color: Colors.blueGrey[100],
-                    child: Row(
-                      children: [
-                        const Text(
-                          'Product Status : ',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      Text(
+                        widget.status,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Text(
-                          widget.status,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 14),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    width: double.infinity,
-                    color: Colors.blueGrey[100],
-                    child: Row(
-                      children: [
-                        const Text(
-                          'Number : ',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  width: double.infinity,
+                  color: Colors.blueGrey[100],
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Number : ',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Text(
-                          widget.quantity.toString(),
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      ),
+                      Text(
+                        widget.quantity.toString(),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 14),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    width: double.infinity,
-                    color: Colors.blueGrey[100],
-                    child: Row(
-                      children: [
-                        const Text(
-                          'Duration of use : ',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  width: double.infinity,
+                  color: Colors.blueGrey[100],
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Duration of use : ',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Text(
-                          widget.howMuchUsed,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      ),
+                      Text(
+                        widget.howMuchUsed,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 14),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    width: double.infinity,
-                    color: Colors.blueGrey[100],
-                    child: Row(
-                      children: [
-                        const Text(
-                          'Area : ',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  width: double.infinity,
+                  color: Colors.blueGrey[100],
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Area : ',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Text(
-                          widget.pickUpLocation,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      ),
+                      Text(
+                        widget.pickUpLocation,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 14),
-                ],
-              ),
+                ),
+                const SizedBox(height: 14),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

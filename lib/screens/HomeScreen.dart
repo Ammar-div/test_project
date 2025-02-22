@@ -110,6 +110,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     });
   }
 
+  Future<int> _getFavoriteCount(String productId) async {
+  final QuerySnapshot snapshot = await FirebaseFirestore.instance
+      .collection('favorites')
+      .where('productId', isEqualTo: productId)
+      .get();
+
+  return snapshot.docs.length;
+}
+
   void _getUserName() async {
     final user = _auth.currentUser;
     if(user != null)
@@ -196,20 +205,20 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final user = _auth.currentUser;
-    if (user != null) {
-      // Check for pending notifications when the user logs in
-      _notiService.checkPendingNotifications(user.uid);
-    }
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-      appBar: AppBar(
-        actions: [
-          if(user == null)
+ @override
+Widget build(BuildContext context) {
+  final user = _auth.currentUser;
+  if (user != null) {
+    // Check for pending notifications when the user logs in
+    _notiService.checkPendingNotifications(user.uid);
+  }
+  return Scaffold(
+    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+    appBar: AppBar(
+      actions: [
+        if (user == null)
           GestureDetector(
-           onTap: () async {
+            onTap: () async {
               final result = await Navigator.of(context).push(
                 MaterialPageRoute(builder: (ctx) => const AuthScreen()),
               );
@@ -221,239 +230,256 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             },
             child: const Padding(
               padding: EdgeInsets.only(right: 16),
-              child: Row(children: [
-                Icon(FontAwesomeIcons.user,size: 16,),
-                 SizedBox(width: 6,),
-                 Text('Sign In'),
-              ],),
+              child: Row(
+                children: [
+                  Icon(FontAwesomeIcons.user, size: 16),
+                  SizedBox(width: 6),
+                  Text('Sign In'),
+                ],
+              ),
             ),
           ),
-        if(user != null)
-           Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Row(children: [
-                 Text(userName),
-                const SizedBox(width: 8,),
-                const Icon(FontAwesomeIcons.userTie,size: 16,),
-              ],),
+        if (user != null)
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Row(
+              children: [
+                Text(userName),
+                const SizedBox(width: 8),
+                const Icon(FontAwesomeIcons.userTie, size: 16),
+              ],
             ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(10),
-          child: Container(),
-        ),
+          ),
+      ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(10),
+        child: Container(),
       ),
-      drawer: const MainDrawr(),
-      body: RefreshIndicator(
-        onRefresh: _refreshProducts, // Callback when user pulls to refresh
-        child: StreamBuilder<QuerySnapshot>(
-          stream: _productsStream,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+    ),
+    drawer: const MainDrawr(),
+    body: RefreshIndicator(
+      onRefresh: _refreshProducts, // Callback when user pulls to refresh
+      child: StreamBuilder<QuerySnapshot>(
+        stream: _productsStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
 
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Center(child: Text('No products found.'));
-            }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('No products found.'));
+          }
 
-            // Filter out products with "product_order_status" equal to "It has been purchased"
-            final products = snapshot.data!.docs.where((doc) {
-              final product = doc.data() as Map<String, dynamic>;
-              return product['product_order_status'] != 'It has been purchased';
-            }).toList();
+          // Filter out products with "product_order_status" equal to "It has been purchased"
+          final products = snapshot.data!.docs.where((doc) {
+            final product = doc.data() as Map<String, dynamic>;
+            return product['product_order_status'] == 'Not requested yet';
+          }).toList();
 
-            if (products.isEmpty) {
-              return const Center(child: Text('No available products.'));
-            }
+          if (products.isEmpty) {
+            return const Center(child: Text('No available products.'));
+          }
 
-            return CustomScrollView(
-              slivers: [
-                const SliverToBoxAdapter(
-                  child: Column(
-                    children: [
-                      AllCategories(),
-                      SizedBox(height: 16),
-                    ],
-                  ),
+          return CustomScrollView(
+            slivers: [
+              const SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    AllCategories(),
+                    SizedBox(height: 16),
+                  ],
                 ),
-                SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 3 / 5.5,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final product = products[index].data() as Map<String, dynamic>;
-                      final imageUrl = product['imageUrls'][0];
-                      final productId = products[index].id;
-                      final publishDate = product['publishDate'] as Timestamp;
-                      final timeAgo = _getTimeAgo(publishDate); // Calculate time ago
+              ),
+              SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 3 / 5.5,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final product = products[index].data() as Map<String, dynamic>;
+                    final imageUrl = product['imageUrls'][0];
+                    final productId = products[index].id;
+                    final publishDate = product['publishDate'] as Timestamp;
+                    final timeAgo = _getTimeAgo(publishDate); // Calculate time ago
 
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProductDetailScreen(
-                                productName: product['name'],
-                                productPrice: product['price'],
-                                imageUrls: List<String>.from(product['imageUrls']),
-                                description: product['description'],
-                                quantity: product['quantity'],
-                                status: product['status'],
-                                howMuchUsed: product['how_much_used'] ?? 'Not specified',
-                                productId: productId,
-                              ),
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductDetailScreen(
+                              productName: product['name'],
+                              productPrice: product['price'],
+                              imageUrls: List<String>.from(product['imageUrls']),
+                              description: product['description'],
+                              quantity: product['quantity'],
+                              status: product['status'],
+                              howMuchUsed: product['how_much_used'] ?? 'Not specified',
+                              productId: productId,
                             ),
-                          );
-                        },
-                        child: Card(
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Expanded(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Hero(
-                                    tag: productId,
-                                    child: Image.network(
-                                      imageUrl,
-                                      fit: BoxFit.cover,
-                                    ),
+                        );
+                      },
+                      child: Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Hero(
+                                  tag: productId,
+                                  child: Image.network(
+                                    imageUrl,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  product['name'],
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                product['name'],
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                product['description'],
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text(
+                                  '${product['price'].toStringAsFixed(0)} JOD',
                                   style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
+                                    color: Colors.green,
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  product['description'],
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                  Text(
-                                    '${product['price'].toStringAsFixed(0)} JOD',
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.green,
-                                    ),
-                                  ),
-                                  StreamBuilder<QuerySnapshot>(
-                                    stream: _auth.currentUser != null
-                                        ? _firestore
-                                            .collection('favorites')
-                                            .where('userId', isEqualTo: _auth.currentUser?.uid)
-                                            .where('productId', isEqualTo: productId)
-                                            .snapshots()
-                                        : const Stream<QuerySnapshot>.empty(),
-                                    builder: (context, favoriteSnapshot) {
-                                      final isFavorite = _auth.currentUser != null &&
-                                          favoriteSnapshot.hasData &&
-                                          favoriteSnapshot.data!.docs.isNotEmpty;
+                                StreamBuilder<QuerySnapshot>(
+                                  stream: _auth.currentUser != null
+                                      ? _firestore
+                                          .collection('favorites')
+                                          .where('userId', isEqualTo: _auth.currentUser?.uid)
+                                          .where('productId', isEqualTo: productId)
+                                          .snapshots()
+                                      : const Stream<QuerySnapshot>.empty(),
+                                  builder: (context, favoriteSnapshot) {
+                                    final isFavorite = _auth.currentUser != null &&
+                                        favoriteSnapshot.hasData &&
+                                        favoriteSnapshot.data!.docs.isNotEmpty;
 
-                                      return AnimatedBuilder(
-                                        animation: _scaleAnimation,
-                                        builder: (context, child) {
-                                          return Transform.scale(
-                                            scale: _scaleAnimation.value,
-                                            child: IconButton(
-                                              onPressed: () {
-                                                if (_auth.currentUser == null) {
+                                    return AnimatedBuilder(
+                                      animation: _scaleAnimation,
+                                      builder: (context, child) {
+                                        return Transform.scale(
+                                          scale: _scaleAnimation.value,
+                                          child: IconButton(
+                                            onPressed: () async {
+                                              DocumentSnapshot productDocumentObj =
+                                                  await _firestore.collection('products').doc(productId).get();
+                                              final sellerId = productDocumentObj["seller_ifos"]["seller_id"];
+                                              final user = FirebaseAuth.instance.currentUser;
+                                              if (user != null) {
+                                                if (user.uid == sellerId) {
+                                                  // owner of the product
                                                   ScaffoldMessenger.of(context).showSnackBar(
-                                                    const SnackBar(content: Text('You must be logged in to add favorites')),
-                                                  );
-                                                } else {
-                                                  setState(() {
-                                                    _isFavorite = !_isFavorite;
-                                                  });
-
-                                                  if (_isFavorite) {
-                                                    _animationController.forward().then((_) {
-                                                      _animationController.reverse();
-                                                    });
-                                                  } else {
-                                                    _animationController.reverse();
-                                                  }
-
-                                                  _toggleFavorite(
-                                                    productId,
-                                                    product['name'],
-                                                    product['price'],
-                                                    imageUrl,
-                                                  );
+                                                      const SnackBar(content: Text("The user can't favorite his own product.")));
+                                                  return;
                                                 }
-                                              },
-                                              icon: Icon(
-                                                isFavorite ? Icons.favorite : Icons.favorite_border,
-                                                size: 19,
-                                                color: isFavorite ? Colors.red : null,
-                                              ),
+                                              }
+
+                                              if (_auth.currentUser == null) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(content: Text('You must be logged in to add favorites')),
+                                                );
+                                              } else {
+                                                setState(() {
+                                                  _isFavorite = !_isFavorite;
+                                                });
+
+                                                if (_isFavorite) {
+                                                  _animationController.forward().then((_) {
+                                                    _animationController.reverse();
+                                                  });
+                                                } else {
+                                                  _animationController.reverse();
+                                                }
+
+                                                _toggleFavorite(
+                                                  productId,
+                                                  product['name'],
+                                                  product['price'],
+                                                  imageUrl,
+                                                );
+                                              }
+                                            },
+                                            icon: Icon(
+                                              isFavorite ? Icons.favorite : Icons.favorite_border,
+                                              size: 19,
+                                              color: isFavorite ? Colors.red : null,
                                             ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                              // Display how long ago the product was posted
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
-                                child: Text(
-                                  timeAgo,
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                  ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            // Display how long ago the product was posted
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
+                              child: Text(
+                                timeAgo,
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                    childCount: products.length,
-                  ),
+                      ),
+                    );
+                  },
+                  childCount: products.length,
                 ),
-              ],
-            );
-          },
-        ),
+              ),
+            ],
+          );
+        },
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class NotiService {

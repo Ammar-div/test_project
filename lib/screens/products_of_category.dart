@@ -46,6 +46,15 @@ class _ProductsOfCategoryState extends State<ProductsOfCategory> with SingleTick
   }
 
 
+Future<int> _getFavoriteCount(String productId) async {
+  final QuerySnapshot snapshot = await FirebaseFirestore.instance
+      .collection('favorites')
+      .where('productId', isEqualTo: productId)
+      .get();
+
+  return snapshot.docs.length;
+}
+
     // Function to add/remove a product from favorites
   Future<void> _toggleFavorite(String productId, String productName, double productPrice, String imageUrl) async {
     final user = _auth.currentUser;
@@ -108,208 +117,224 @@ class _ProductsOfCategoryState extends State<ProductsOfCategory> with SingleTick
 
 
 
-   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-      appBar: AppBar(
-        title: Text('${widget.categoryName}s'),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(10),
-          child: Container(),
-        ),
+  @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+    appBar: AppBar(
+      title: Text('${widget.categoryName}s'),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(10),
+        child: Container(),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('products').where('categoryId' , isEqualTo: widget.categoryId).snapshots(),   // select all products
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    ),
+    body: StreamBuilder<QuerySnapshot>(
+      stream: _firestore
+          .collection('products')
+          .where('categoryId', isEqualTo: widget.categoryId)
+          .where('product_order_status', isEqualTo: 'Not requested yet')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No products found.'));
-          }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text('No products found.'));
+        }
 
-          final products = snapshot.data!.docs;
+        final products = snapshot.data!.docs;
 
-          return CustomScrollView(
-            slivers: [
+        return CustomScrollView(
+          slivers: [
+            // Product Grid Section
+            SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 3 / 5,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final product = products[index].data() as Map<String, dynamic>;
+                  final imageUrl = product['imageUrls'][0]; // Use the first image
+                  final productId = products[index].id; // Get the document ID
+                  final publishDate = product['publishDate'] as Timestamp;
+                  final timeAgo = _getTimeAgo(publishDate); // Calculate time ago
 
-              // Product Grid Section
-              SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 3 / 5,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final product = products[index].data() as Map<String, dynamic>;
-                    final imageUrl = product['imageUrls'][0]; // Use the first image
-                    final productId = products[index].id; // Get the document ID
-                    final publishDate = product['publishDate'] as Timestamp;
-                    final timeAgo = _getTimeAgo(publishDate); // Calculate time ago
-
-                    return GestureDetector(
-                      onTap: () {
-                        // Navigate to ProductDetailScreen
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProductDetailScreen(
-                              productName: product['name'],
-                              productPrice: product['price'],
-                              imageUrls: List<String>.from(product['imageUrls']),
-                              description: product['description'],
-                              quantity: product['quantity'],
-                              status: product['status'],
-                              howMuchUsed: product['how_much_used'] ?? 'Not specified', // Handle null
-                              productId: productId,
+                  return GestureDetector(
+                    onTap: () {
+                      // Navigate to ProductDetailScreen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductDetailScreen(
+                            productName: product['name'],
+                            productPrice: product['price'],
+                            imageUrls: List<String>.from(product['imageUrls']),
+                            description: product['description'],
+                            quantity: product['quantity'],
+                            status: product['status'],
+                            howMuchUsed: product['how_much_used'] ?? 'Not specified', // Handle null
+                            productId: productId,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Hero(
+                                tag: productId,
+                                child: Image.network(
+                                  imageUrl,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                           ),
-                        );
-                      },
-                      child: Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Hero(
-                                  tag: productId,
-                                  child: Image.network(
-                                    imageUrl,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              product['name'],
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                product['name'],
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              product['description'],
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text(
+                                '${product['price'].toStringAsFixed(0)} JOD',
                                 style: const TextStyle(
-                                  fontSize: 17,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
+                                  color: Colors.green,
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                product['description'],
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Text(
-                                  '${product['price'].toStringAsFixed(0)} JOD',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green,
-                                  ),
-                                ),
-                                StreamBuilder<QuerySnapshot>(
-                                    stream: _auth.currentUser != null
-                                        ? _firestore
-                                            .collection('favorites')
-                                            .where('userId', isEqualTo: _auth.currentUser?.uid)
-                                            .where('productId', isEqualTo: productId)
-                                            .snapshots()
-                                        : Stream<QuerySnapshot>.empty(),
-                                    builder: (context, favoriteSnapshot) {
-                                      final isFavorite = _auth.currentUser != null &&
-                                          favoriteSnapshot.hasData &&
-                                          favoriteSnapshot.data!.docs.isNotEmpty;
+                              StreamBuilder<QuerySnapshot>(
+                                stream: _auth.currentUser != null
+                                    ? _firestore
+                                        .collection('favorites')
+                                        .where('userId', isEqualTo: _auth.currentUser?.uid)
+                                        .where('productId', isEqualTo: productId)
+                                        .snapshots()
+                                    : const Stream<QuerySnapshot>.empty(),
+                                builder: (context, favoriteSnapshot) {
+                                  final isFavorite = _auth.currentUser != null &&
+                                      favoriteSnapshot.hasData &&
+                                      favoriteSnapshot.data!.docs.isNotEmpty;
 
-                                      return AnimatedBuilder(
-                                        animation: _scaleAnimation,
-                                        builder: (context, child) {
-                                          return Transform.scale(
-                                            scale: _scaleAnimation.value,
-                                            child: IconButton(
-                                              onPressed: () {
-                                                if (_auth.currentUser == null) {
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    const SnackBar(content: Text('You must be logged in to add favorites')),
-                                                  );
-                                                } else {
-                                                  setState(() {
-                                                    _isFavorite = !_isFavorite;
-                                                  });
+                                  return AnimatedBuilder(
+                                    animation: _scaleAnimation,
+                                    builder: (context, child) {
+                                      return Transform.scale(
+                                        scale: _scaleAnimation.value,
+                                        child: IconButton(
+                                          onPressed: () async {
+                                            DocumentSnapshot productDocumentObj =
+                                                await _firestore.collection('products').doc(productId).get();
+                                            final sellerId = productDocumentObj["seller_ifos"]["seller_id"];
+                                            final user = FirebaseAuth.instance.currentUser;
+                                            if (user != null) {
+                                              if (user.uid == sellerId) {
+                                                // owner of the product
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                    const SnackBar(content: Text("The user can't favorite his own product.")));
+                                                return;
+                                              }
+                                            }
 
-                                                  if (_isFavorite) {
-                                                    _animationController.forward().then((_) {
-                                                      _animationController.reverse();
-                                                    });
-                                                  } else {
-                                                    _animationController.reverse();
-                                                  }
+                                            if (_auth.currentUser == null) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(content: Text('You must be logged in to add favorites')),
+                                              );
+                                            } else {
+                                              setState(() {
+                                                _isFavorite = !_isFavorite;
+                                              });
 
-                                                  _toggleFavorite(
-                                                    productId,
-                                                    product['name'],
-                                                    product['price'],
-                                                    imageUrl,
-                                                  );
-                                                }
-                                              },
-                                              icon: Icon(
-                                                isFavorite ? Icons.favorite : Icons.favorite_border,
-                                                color: isFavorite ? Colors.red : null,
-                                              ),
-                                            ),
-                                          );
-                                        },
+                                              if (_isFavorite) {
+                                                _animationController.forward().then((_) {
+                                                  _animationController.reverse();
+                                                });
+                                              } else {
+                                                _animationController.reverse();
+                                              }
+
+                                              _toggleFavorite(
+                                                productId,
+                                                product['name'],
+                                                product['price'],
+                                                imageUrl,
+                                              );
+                                            }
+                                          },
+                                          icon: Icon(
+                                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                                            color: isFavorite ? Colors.red : null,
+                                          ),
+                                        ),
                                       );
                                     },
-                                  ),
-                              ],
-                            ),
-                            // Display how long ago the product was posted
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0 , horizontal: 10),
-                              child: Text(
-                                timeAgo,
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer, 
-                                ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          // Display how long ago the product was posted
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
+                            child: Text(
+                              timeAgo,
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onPrimaryContainer,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                  childCount: products.length,
-                ),
+                    ),
+                  );
+                },
+                childCount: products.length,
               ),
-            ],
-          );
-        },
-      ),
-    );
-  }
+            ),
+          ],
+        );
+      },
+    ),
+  );
+}
 }

@@ -215,10 +215,8 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                 ),
                               ),
                             );
-                            }
-                            
-                          } else {
-                            // If no order is found, navigate without order details
+                            } 
+                            else {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -237,7 +235,28 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                               ),
                             );
                           }
-                        },
+                            
+                          } 
+                          else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AdvertisingProductDetailScreen(
+                                  productName: product['name'],
+                                  productPrice: product['price'],
+                                  imageUrls: List<String>.from(product['imageUrls']),
+                                  description: product['description'],
+                                  quantity: product['quantity'],
+                                  status: product['status'],
+                                  howMuchUsed: product['how_much_used'] ?? "None",
+                                  productId: productId,
+                                  productOrderStatus: productOrderStatus,
+                                  pickUpLocation: pickUpLocation,
+                                ),
+                              ),
+                            );
+                          }
+                        }, // onTap
                         child: Card(
                           elevation: 2,
                           shape: RoundedRectangleBorder(
