@@ -1,13 +1,14 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 import 'package:test_project/screens/order/order_confirmation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-
-
-
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
+import 'package:test_project/widgets/keys.dart';
 
 final List<String> pickUpLocation = [
   "Al Yasmin",
@@ -39,7 +40,6 @@ final List<String> pickUpLocation = [
   "Al Madina Al Tibiah",
   "Tabarbor",
 ];
-
 
 class PreCheckout extends StatefulWidget {
   const PreCheckout({
@@ -76,30 +76,25 @@ class _PreCheckoutState extends State<PreCheckout> {
   var _enteredFullName = '';
 
   String? _selectedPickUpLocation;
-  late TextEditingController searchController; // Controller for search bar
-  List<String> filteredPickUpLocations = []; // Filtered list for search
-
+  late TextEditingController searchController;
+  List<String> filteredPickUpLocations = [];
+  Map<String, dynamic>? IntentPaymentData;
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
+      FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
     super.initState();
-    // Initialize controllers
     userEmailController = TextEditingController();
     userFullNameController = TextEditingController();
     userPhoneNumberController = TextEditingController();
-
     searchController = TextEditingController();
-    filteredPickUpLocations = pickUpLocation; // Initialize with all locations
-
-    // Fetch user data and set initial values for controllers
+    filteredPickUpLocations = pickUpLocation;
     fetchUserData();
   }
 
-   @override
+  @override
   void dispose() {
     userEmailController.dispose();
     userFullNameController.dispose();
@@ -115,7 +110,6 @@ class _PreCheckoutState extends State<PreCheckout> {
     final userFullName = userDoc['name'];
     final userPhoneNumber = userDoc['phone_number'];
 
-    // Set initial values for controllers
     setState(() {
       userEmailController.text = userEmail;
       userFullNameController.text = userFullName;
@@ -123,10 +117,7 @@ class _PreCheckoutState extends State<PreCheckout> {
     });
   }
 
- 
-
-  // Function to filter locations based on search input
-void _filterLocations(String query) {
+  void _filterLocations(String query) {
     setState(() {
       if (query.isEmpty) {
         filteredPickUpLocations = List.from(pickUpLocation);
@@ -139,87 +130,248 @@ void _filterLocations(String query) {
     });
   }
 
-  // Function to show the searchable dropdown dialog
   Future<void> _showSearchableDropdown(BuildContext context) async {
-  await showDialog(
-    context: context,
-    builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            title: const Text('Select Pick Up Location'),
-            content: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.5,
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: searchController,
-                    decoration: const InputDecoration(
-                      hintText: 'Search for a location...',
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (query) {
-                      setState(() {
-                        _filterLocations(query);
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: filteredPickUpLocations.length,
-                      itemBuilder: (context, index) {
-                        final location = filteredPickUpLocations[index];
-                        return ListTile(
-                          title: Text(location),
-                          onTap: () {
-                            // ✅ Update main widget state
-                            this.setState(() {
-                              _selectedPickUpLocation = location;
-                            });
-
-                            // Clear search and reset list
-                            setState(() {
-                              searchController.clear();
-                              filteredPickUpLocations = List.from(pickUpLocation);
-                            });
-
-                            Navigator.pop(context); // Close dialog
-                          },
-                        );
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Select Pick Up Location'),
+              content: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.5,
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: searchController,
+                      decoration: const InputDecoration(
+                        hintText: 'Search for a location...',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (query) {
+                        setState(() {
+                          _filterLocations(query);
+                        });
                       },
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: filteredPickUpLocations.length,
+                        itemBuilder: (context, index) {
+                          final location = filteredPickUpLocations[index];
+                          return ListTile(
+                            title: Text(location),
+                            onTap: () {
+                              this.setState(() {
+                                _selectedPickUpLocation = location;
+                              });
+                              setState(() {
+                                searchController.clear();
+                                filteredPickUpLocations = List.from(pickUpLocation);
+                              });
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> showPaymentSheet() async {
+    try {
+      await stripe.Stripe.instance.presentPaymentSheet().then((val) {
+        IntentPaymentData = null;
+        // Navigate to OrderConfirmation after successful payment
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (ctx) => const OrderConfirmation(),
+          ),
+        );
+      }).onError((errorMsg, sTrace) {
+        if (kDebugMode) {
+          print(errorMsg.toString() + sTrace.toString());
+        }
+      });
+    } on stripe.StripeException catch (error) {
+      if (kDebugMode) {
+        print(error);
+      }
+      showDialog(
+        context: context,
+        builder: (c) => const AlertDialog(
+          content: Text('Cancelled'),
+        ),
       );
-    },
-  );
+    } catch (errorMsg) {
+      if (kDebugMode) {
+        print(errorMsg);
+      }
+      print(errorMsg.toString());
+    }
+  }
+
+Future<Map<String, dynamic>> MakeIntentForPayment(String amountToBeCharge, String currency) async {
+  try {
+    // Convert the amount to a double, multiply by 100, and then convert to an integer
+    int amountInCents = (double.parse(amountToBeCharge) * 100).round();
+
+    Map<String, dynamic> paymentInfo = {
+      "amount": amountInCents.toString(), // Use the integer value in cents
+      "currency": currency,
+      "payment_method_types[]": "card",
+    };
+
+    var responseFromStripeAPI = await http.post(
+      Uri.parse("https://api.stripe.com/v1/payment_intents"),
+      body: paymentInfo,
+      headers: {
+        "Authorization": "Bearer $SecretKey",
+        "Content-type": "application/x-www-form-urlencoded"
+      },
+    );
+
+    print("response from API = " + responseFromStripeAPI.body);
+
+    return jsonDecode(responseFromStripeAPI.body);
+  } catch (errorMsg) {
+    if (kDebugMode) {
+      print(errorMsg);
+    }
+    print(errorMsg.toString());
+    rethrow;
+  }
 }
 
-  // List of order statuses
-  final List<String> orderStatus = [
-    "pending",
-    "delivered",
-    "canceled",
-    "picked up",
-  ];
+  Future<void> paymentSheetInitialization(String amountToBeCharge, String currency) async {
+    try {
+      IntentPaymentData = await MakeIntentForPayment(amountToBeCharge, currency);
 
-  // List of product statuses
-  final List<String> paymentStatus = [
-    "held",
-    "released",
-    "refunded",
-  ];
+      await stripe.Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: stripe.SetupPaymentSheetParameters(
+          allowsDelayedPaymentMethods: true,
+          paymentIntentClientSecret: IntentPaymentData!["client_secret"],
+          style: ThemeMode.dark,
+          merchantDisplayName: "SellzBuy",
+        ),
+      ).then((val) {
+        print(val);
+      });
+
+      await showPaymentSheet();
+    } catch (errorMsg, s) {
+      if (kDebugMode) {
+        print(s);
+      }
+      print(errorMsg.toString());
+    }
+  }
+
+  Future<void> _confirmOrder() async {
+    if (_formkey.currentState?.validate() != true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please provide valid information')),
+      );
+      return;
+    }
+
+    if (_selectedPickUpLocation == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Select Pick Up Location.'))
+      );
+      return;
+    }
+
+    try {
+      final productDoc = await FirebaseFirestore.instance.collection('products').doc(widget.productId).get();
+      final sellerLocation = productDoc['seller_ifos']['seller_pick_up_location'];
+      final sellerPhoneNumber = productDoc['seller_ifos']['seller_phone_number'] ?? 'None';
+
+      await flutterLocalNotificationsPlugin.cancelAll();
+
+             // Open payment sheet with the total amount
+      await paymentSheetInitialization(
+      _orderTotal(widget.totalAmount).toString(), // Pass the amount as a string
+      'USD',
+      );
+
+      _formkey.currentState?.save();
+
+      final productInfo = {
+        "product_order_status": "It has been purchased",
+      };
+
+      await FirebaseFirestore.instance
+          .collection('products')
+          .doc(widget.productId)
+          .update(productInfo);
+
+      final userId = user!.uid;
+      final orderInfos = {
+        "buyer_id": userId,
+        "seller_id": widget.sellerId,
+        "product_infos": {
+          "product_id": widget.productId,
+          "quantity": widget.quantity,
+          "image_url": widget.imageUrl,
+          "total_amount": _orderTotal(widget.totalAmount),
+        },
+        'status': "pending",
+        "delivery_person_id": null,
+        "receiver_infos": {
+          "receiver_name": _enteredFullName,
+          "receiver_email": _enteredEmail,
+          "receiver_phone_number": _enteredPhoneNumber,
+          "receiver_pick_up_location": _selectedPickUpLocation,
+        },
+        "payment_status": "held",
+        "timestamp": Timestamp.fromDate(DateTime.now()),
+        "seller_location": sellerLocation,
+        "seller_phone_number": sellerPhoneNumber,
+        "acceptance_date": null,
+        "pick_up_date": null,
+        "delivered_date": null,
+        "is_received": false,
+      };
+      final docRef = FirebaseFirestore.instance.collection("orders").doc();
+      await docRef.set(orderInfos);
 
 
-   // Helper method to create a bullet point
+      showToastrMessage("Your order has been placed successfully.");
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (ctx) => const OrderConfirmation(),
+        ),
+      );
+    } catch (e) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Something went wrong: $e')),
+      );
+    }
+  }
+
+  double _orderTotal(double productPrice) {
+    var DeliveryFee = 3;
+    var ServiceFee = 0.35;
+    productPrice = (productPrice + DeliveryFee + ServiceFee);
+    return productPrice;
+  }
+
+
+     // Helper method to create a bullet point
 Widget _buildBulletPoint(String text) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -243,6 +395,7 @@ Widget _buildBulletPoint(String text) {
   );
 }
 
+
 void showToastrMessage(String message) {
     Fluttertoast.showToast(
       msg: message,
@@ -255,128 +408,20 @@ void showToastrMessage(String message) {
   }
 
 
-  Future<void> _confirmOrder() async {
-  if (_formkey.currentState?.validate() != true) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please provide valid information')),
-    );
-    return;
-  }
-
-  if(_selectedPickUpLocation == null)
-  {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Select Pick Up Location.'))
-    );
-    return;
-  }
-
-  try {
-
-    final productDoc = await FirebaseFirestore.instance.collection('products').doc(widget.productId).get();
-    final sellerLocation = productDoc['seller_ifos']['seller_pick_up_location'];
-    final sellerPhoneNumber = productDoc['seller_ifos']['seller_phone_number'] ?? 'None';
-    // Cancel all notifications
-    await flutterLocalNotificationsPlugin.cancelAll();
-
-    // Show a loading indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-
-    // Save the form data
-    _formkey.currentState?.save();
-
-    // Update the product_order_status
-    final productInfo = {
-      "product_order_status": "It has been purchased",
-    };
-
-    await FirebaseFirestore.instance
-        .collection('products')
-        .doc(widget.productId)
-        .update(productInfo);
-
-    // Save order information in Firestore
-    final userId = user!.uid;
-    final orderInfos = {
-      "buyer_id": userId,
-      "seller_id": widget.sellerId,
-      "product_infos": {
-        "product_id": widget.productId,
-        "quantity": widget.quantity,
-        "image_url": widget.imageUrl,
-        "total_amount": _orderTotal(widget.totalAmount),
-      },
-      'status': orderStatus[0],
-      "delivery_person_id": null,
-      "receiver_infos": {
-        "receiver_name": _enteredFullName,
-        "receiver_email": _enteredEmail,
-        "receiver_phone_number": _enteredPhoneNumber,
-        "receiver_pick_up_location": _selectedPickUpLocation, // Add the selected pick-up location
-      },
-      "payment_status": paymentStatus[0],
-      "timestamp": Timestamp.fromDate(DateTime.now()),
-      "seller_location": sellerLocation, 
-      "seller_phone_number": sellerPhoneNumber,
-      "acceptance_date": null,
-      "pick_up_date": null,
-      "delivered_date": null,
-       "is_received": false,
-    };
-    final docRef = FirebaseFirestore.instance.collection("orders").doc();
-    await docRef.set(orderInfos);
-
-    // Close loading indicator
-    Navigator.pop(context);
-
-    showToastrMessage("Your order has been placed successfully.");
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (ctx) => const OrderConfirmation(),
-      ),
-    );
-  } catch (e) {
-    Navigator.pop(context); // Close loading indicator if an error occurs
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Something went wrong: $e')),
-    );
-  }
-}
-
-
-  double _orderTotal(double productPrice)
-  {
-    var DeliveryFee = 3;
-    var ServiceFee = 0.35;
-    productPrice = (productPrice + DeliveryFee + ServiceFee);
-    return productPrice;
-  }
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Set the background color of the page
       backgroundColor: const Color.fromARGB(255, 153, 191, 216),
       body: Center(
         child: SingleChildScrollView(
           child: Container(
-            // Add padding around the card to make it look better
             padding: const EdgeInsets.all(16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Card(
-                  // Set the background color of the card to white
                   color: Colors.white,
-                  // Add elevation to create a shadow behind the card
                   elevation: 5,
-                  // Add border radius to the card
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -385,14 +430,13 @@ void showToastrMessage(String message) {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // "Order Detail" text with bottom border
                         Container(
                           alignment: Alignment.centerLeft,
                           decoration: const BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: Colors.grey, // Border color
-                                width: 1.0, // Border width
+                                color: Colors.grey,
+                                width: 1.0,
                               ),
                             ),
                           ),
@@ -405,7 +449,6 @@ void showToastrMessage(String message) {
                           ),
                         ),
                         const SizedBox(height: 18),
-                        // Product image and details row
                         Row(
                           children: [
                             Image.network(
@@ -437,59 +480,48 @@ void showToastrMessage(String message) {
                           ],
                         ),
                         const SizedBox(height: 16),
-
-                            Row(
-                              children: [
-                                Text('Product price: ${widget.totalAmount}'),
-                                const Spacer(),
-                                Text('Quantity: ${widget.quantity}'),
-                              ],
-                            ),
-                            const SizedBox(height: 5,),
-
-                            const Divider(),
-
-                            const SizedBox(height: 16,),
-
-                           const Row(
-                              children: [
-                                 Text('Delivery fee'),
-                                 Spacer(),
-                                 Text('3 JOD'),
-                              ],
-                            ),
-                            const SizedBox(height: 8,),
-
-                            const Row(
-                              children: [
-                                 Text('Service fee'),
-                                 Spacer(),
-                                 Text('0.35 JOD'),
-                              ],
-                            ),
-                            const SizedBox(height: 8,),
-                             Row(
-                              children: [
-                                 const Text('Order Total(incl. tax)',style: 
-                                 TextStyle(fontWeight: FontWeight.bold),),
-                                 const Spacer(),
-                                 Text('${_orderTotal(widget.totalAmount).toString()} JOD'),
-                              ],
-                            ),
-                            const SizedBox(height: 8,),
-
-  
+                        Row(
+                          children: [
+                            Text('Product price: ${widget.totalAmount}'),
+                            const Spacer(),
+                            Text('Quantity: ${widget.quantity}'),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        const Divider(),
+                        const SizedBox(height: 16),
+                        const Row(
+                          children: [
+                            Text('Delivery fee'),
+                            const Spacer(),
+                            Text('3 JOD'),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        const Row(
+                          children: [
+                            Text('Service fee'),
+                            const Spacer(),
+                            Text('0.35 JOD'),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Text('Order Total(incl. tax)', style: TextStyle(fontWeight: FontWeight.bold)),
+                            const Spacer(),
+                            Text('${_orderTotal(widget.totalAmount).toString()} JOD'),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
                 Card(
-                  // Set the background color of the card to white
                   color: Colors.white,
-                  // Add elevation to create a shadow behind the card
                   elevation: 5,
-                  // Add border radius to the card
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -500,14 +532,13 @@ void showToastrMessage(String message) {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // "Order Header" text with bottom border
                           Container(
                             alignment: Alignment.centerLeft,
                             decoration: const BoxDecoration(
                               border: Border(
                                 bottom: BorderSide(
-                                  color: Colors.grey, // Border color
-                                  width: 1.0, // Border width
+                                  color: Colors.grey,
+                                  width: 1.0,
                                 ),
                               ),
                             ),
@@ -520,15 +551,13 @@ void showToastrMessage(String message) {
                             ),
                           ),
                           const SizedBox(height: 0),
-          
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _buildBulletPoint("Enter the recipient's information"),
                             ],
                           ),
-                          const SizedBox(height: 0,),
-                          // Email TextFormField
+                          const SizedBox(height: 0),
                           TextFormField(
                             controller: userEmailController,
                             decoration: const InputDecoration(labelText: 'Email Address'),
@@ -536,68 +565,61 @@ void showToastrMessage(String message) {
                             autocorrect: false,
                             textCapitalization: TextCapitalization.none,
                             validator: (value) {
-                                if (value == null ||
-                                    value.trim().isEmpty ||
-                                    !value.contains('@')) {
-                                  return 'Please enter a valid email address.';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                _enteredEmail = value!;
-                              },
+                              if (value == null || value.trim().isEmpty || !value.contains('@')) {
+                                return 'Please enter a valid email address.';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredEmail = value!;
+                            },
                           ),
                           const SizedBox(height: 16),
-                          // Full Name TextFormField
                           TextFormField(
                             controller: userFullNameController,
                             decoration: const InputDecoration(labelText: 'Full Name'),
                             keyboardType: TextInputType.name,
-                             validator: (value) {
-                                if (value == null ||value.trim().isEmpty ||value.contains('@') || value.contains('_') || value.contains('-') || value.trim().length<=2) {
-                                  return 'Please enter a valid name.';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                _enteredFullName = value!;
-                              },
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty || value.contains('@') || value.contains('_') || value.contains('-') || value.trim().length <= 2) {
+                                return 'Please enter a valid name.';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredFullName = value!;
+                            },
                           ),
                           const SizedBox(height: 16),
-                          // Phone Number TextFormField
                           TextFormField(
                             controller: userPhoneNumberController,
                             decoration: const InputDecoration(labelText: 'Phone Number'),
                             keyboardType: TextInputType.phone,
-                             validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Phone number is required.';
-                                  }
-                                  if (value.trim().length <= 9) {
-                                    return 'Phone number must be max 10 characters.';
-                                  }
-                                  if(value.trim().length != 10 && value.trim().length != 13)
-                                  {
-                                    return 'Phone number must be 10 characters or starting with +962';
-                                  }
-                                  if (!value.startsWith('077') && !value.startsWith('078') && !value.startsWith('079') && !value.startsWith('+96277') && !value.startsWith('+96278') && !value.startsWith('+96279')) {
-                                    return 'Phone number must be "077" or "078" or "079" or "+962" .';
-                                  }
-                                  return null;
-                                },
-                                onSaved: (value) {
-                                  _enteredPhoneNumber = value!;
-                                },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Phone number is required.';
+                              }
+                              if (value.trim().length <= 9) {
+                                return 'Phone number must be max 10 characters.';
+                              }
+                              if (value.trim().length != 10 && value.trim().length != 13) {
+                                return 'Phone number must be 10 characters or starting with +962';
+                              }
+                              if (!value.startsWith('077') && !value.startsWith('078') && !value.startsWith('079') && !value.startsWith('+96277') && !value.startsWith('+96278') && !value.startsWith('+96279')) {
+                                return 'Phone number must be "077" or "078" or "079" or "+962" .';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredPhoneNumber = value!;
+                            },
                           ),
-
-                          const SizedBox(height: 16,),
-
-                           Column(
+                          const SizedBox(height: 16),
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
                                 'Pick up location',
-                                style: TextStyle(fontSize: 16,),
+                                style: TextStyle(fontSize: 16),
                               ),
                               const SizedBox(height: 8),
                               InkWell(
@@ -617,17 +639,14 @@ void showToastrMessage(String message) {
                               ),
                             ],
                           ),
-
-
-                          const SizedBox(height: 22,),
+                          const SizedBox(height: 22),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              // Back Button
                               Flexible(
-                                flex: 3, // 3 parts of the available space
+                                flex: 3,
                                 child: SizedBox(
-                                  width: double.infinity, // Take full width of the Flexible
+                                  width: double.infinity,
                                   child: ElevatedButton(
                                     onPressed: () {
                                       Navigator.pop(context);
@@ -641,7 +660,7 @@ void showToastrMessage(String message) {
                                     ),
                                     child: const Center(
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center, // Center contents horizontally
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Icon(Icons.arrow_back_ios_new, color: Colors.white),
                                           SizedBox(width: 6),
@@ -652,14 +671,13 @@ void showToastrMessage(String message) {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 16), // Add spacing between buttons
-                              // Checkout Button
+                              const SizedBox(width: 16),
                               Flexible(
-                                flex: 3, // 3 parts of the available space
+                                flex: 3,
                                 child: SizedBox(
-                                  width: double.infinity, // Take full width of the Flexible
+                                  width: double.infinity,
                                   child: ElevatedButton(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       _confirmOrder();
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -671,7 +689,7 @@ void showToastrMessage(String message) {
                                     ),
                                     child: const Center(
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center, // Center contents horizontally
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Icon(Icons.check_circle_outline, color: Colors.white),
                                           SizedBox(width: 6),

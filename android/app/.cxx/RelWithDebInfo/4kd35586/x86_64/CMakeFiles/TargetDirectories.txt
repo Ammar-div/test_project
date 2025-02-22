@@ -1,0 +1,2 @@
+C:/Users/Taweel/Desktop/test_project/android/app/.cxx/RelWithDebInfo/4kd35586/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/Taweel/Desktop/test_project/android/app/.cxx/RelWithDebInfo/4kd35586/x86_64/CMakeFiles/rebuild_cache.dir
