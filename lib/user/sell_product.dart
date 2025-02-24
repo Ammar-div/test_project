@@ -1,14 +1,13 @@
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
 import 'package:test_project/screens/HomeScreen.dart';
-
 class SellProduct extends StatefulWidget {
   const SellProduct({
     super.key,
@@ -305,18 +304,18 @@ class _SellProductContState extends State<SellProductCont> {
   ];
 
 
-   @override
+
+
+  @override
   void initState() {
     super.initState();
     productPriceController = TextEditingController();
     productNameController = TextEditingController();
-    productDescriptionController = TextEditingController(); // Initialize the controller
+    productDescriptionController = TextEditingController();
     quantityController = TextEditingController();
     searchController = TextEditingController();
-    filteredPickUpLocations = pickUpLocation; // Initialize with all locations
+    filteredPickUpLocations = pickUpLocation;
   }
-
-  
 
   @override
   void dispose() {
@@ -327,6 +326,38 @@ class _SellProductContState extends State<SellProductCont> {
     searchController.dispose();
     super.dispose();
   }
+
+
+// Function to save card information
+  Future<void> _saveCardInformation() async {
+  try {
+    // Create a PaymentMethod using Stripe
+    final paymentMethod = await stripe.Stripe.instance.createPaymentMethod(
+      params: stripe.PaymentMethodParams.card(
+        paymentMethodData: stripe.PaymentMethodData(
+          billingDetails: stripe.BillingDetails(
+            email: FirebaseAuth.instance.currentUser?.email,
+          ),
+        ),
+      ),
+    );
+
+    // Save the PaymentMethod ID to Firestore
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .update({
+        'stripePaymentMethodId': paymentMethod.id,
+      });
+    }
+
+    showToastrMessage("Card information saved successfully.");
+  } catch (e) {
+    showToastrMessage("Failed to save card information: $e");
+  }
+}
 
  // Function to filter locations based on search input
 void _filterLocations(String query) {
@@ -454,123 +485,128 @@ Future<void> _pickImageFromGallery() async {
     );
   }
 
-  Future<void> _createProduct() async {
-  if (_formKey.currentState?.validate() != true) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please provide valid information')),
-    );
-    return;
-  }
-
-  // Validate price input
-  double? productPrice;
-  try {
-    productPrice = double.parse(productPriceController.text);
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Invalid price format')),
-    );
-    return;
-  }
-
-   // Check if at least one image is selected
-  if (_selectedImages.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please select at least one image')),
-    );
-    return;
-  }
-
-  try {
-    // Show a loading indicator
-
-showDialog(
-  context: context,
-  barrierDismissible: false,
-  builder: (context) => Center(
-    child: SizedBox(
-      height: 150,
-      child: Lottie.network('https://lottie.host/635ac215-31e4-41bc-9ee4-a4fa4ddc9f76/8ki4C5LVhJ.json'),
-    ),
-  ),
-);
-
-
-    // Fetch current user details
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
+   Future<void> _createProduct() async {
+    if (_formKey.currentState?.validate() != true) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User not logged in')),
+        const SnackBar(content: Text('Please provide valid information')),
       );
       return;
     }
 
-    final userId = user.uid;
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    if (!userDoc.exists) {
+    // Validate price input
+    double? productPrice;
+    try {
+      productPrice = double.parse(productPriceController.text);
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User details not found')),
+        const SnackBar(content: Text('Invalid price format')),
       );
       return;
     }
 
-    final email = userDoc['email'] ?? 'N/A';
-    final name = userDoc['name'] ?? 'N/A';
-    final phoneNumber = userDoc['phone_number'];
-
-    // Upload images and get their URLs
-    List<String> imageUrls = [];
-    if (_selectedImages.isNotEmpty) {
-      imageUrls = await _uploadImages(_selectedImages);
+    // Check if at least one image is selected
+    if (_selectedImages.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select at least one image')),
+      );
+      return;
     }
 
-    // Convert the enum to a string
-    final statusString = _selectedProductStatus?.toString().split('.').last;
+    try {
+      // Show a loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Center(
+          child: SizedBox(
+            height: 150,
+            child: Lottie.network(
+                'https://lottie.host/635ac215-31e4-41bc-9ee4-a4fa4ddc9f76/8ki4C5LVhJ.json'),
+          ),
+        ),
+      );
 
-    final howMuchUsedString = _selectedProductStatus == ProductStatus.Used
+      // Save card information
+      await _saveCardInformation();
+
+      // Fetch current user details
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not logged in')),
+        );
+        return;
+      }
+
+      final userId = user.uid;
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      if (!userDoc.exists) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User details not found')),
+        );
+        return;
+      }
+
+      final email = userDoc['email'] ?? 'N/A';
+      final name = userDoc['name'] ?? 'N/A';
+      final phoneNumber = userDoc['phone_number'];
+
+      // Upload images and get their URLs
+      List<String> imageUrls = [];
+      if (_selectedImages.isNotEmpty) {
+        imageUrls = await _uploadImages(_selectedImages);
+      }
+
+      // Convert the enum to a string
+      final statusString = _selectedProductStatus?.toString().split('.').last;
+
+      final howMuchUsedString = _selectedProductStatus == ProductStatus.Used
           ? _selectedHowMuchUsed?.toString()
-          : null; // Only store if status is "Used"
+          : null;
 
-    // Save product details in Firestore
-    final productInfo = {
-      "name": productNameController.text,
-      "price": productPrice,
-      "categoryId": widget.categoryId,
-      "description": productDescriptionController.text,
-      'publishDate': Timestamp.fromDate(DateTime.now()), // Convert DateTime to Timestamp
-      "imageUrls": imageUrls, // Store the uploaded image URLs
-      "seller_ifos": {
-        "seller_id": userId,
-        "seller_name": name,
-        "seller_email": email,
-        "seller_pick_up_location": _selectedPickUpLocation, // Add the selected pick-up location
-        "seller_phone_number": phoneNumber,
-      },
-      "status": statusString,
-      "how_much_used": howMuchUsedString, // Nullable field
-      "quantity": int.parse(quantityController.text), // Add the number of products
-      "product_order_status": "Not requested yet",
-    };
-    final docRef = FirebaseFirestore.instance.collection("products").doc();
-    await docRef.set(productInfo);
+      // Save product details in Firestore
+      final productInfo = {
+        "name": productNameController.text,
+        "price": productPrice,
+        "categoryId": widget.categoryId,
+        "description": productDescriptionController.text,
+        'publishDate': Timestamp.fromDate(DateTime.now()),
+        "imageUrls": imageUrls,
+        "seller_ifos": {
+          "seller_id": userId,
+          "seller_name": name,
+          "seller_email": email,
+          "seller_pick_up_location": _selectedPickUpLocation,
+          "seller_phone_number": phoneNumber,
+        },
+        "status": statusString,
+        "how_much_used": howMuchUsedString,
+        "quantity": int.parse(quantityController.text),
+        "product_order_status": "Not requested yet",
+      };
+      final docRef = FirebaseFirestore.instance.collection("products").doc();
+      await docRef.set(productInfo);
 
-    // Close loading indicator
-    Navigator.pop(context);
+      // Close loading indicator
+      Navigator.pop(context);
 
-    showToastrMessage("Your product has been posted successfully.");
+      showToastrMessage("Your product has been posted successfully.");
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (ctx) => const HomeScreen(),
-      ),
-    );
-  } catch (e) {
-    Navigator.pop(context); // Close loading indicator if an error occurs
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to create product: $e')),
-    );
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (ctx) => const HomeScreen(),
+        ),
+      );
+    } catch (e) {
+      Navigator.pop(context); // Close loading indicator if an error occurs
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to create product: $e')),
+      );
+    }
   }
-}
 
   // Helper method to create a bullet point
 Widget _buildBulletPoint(String text) {
@@ -828,10 +864,24 @@ Widget build(BuildContext context) {
             ],
           ),
 
-
+        // Add Card Input Field
+              const SizedBox(height: 25),
+              stripe.CardField(
+                onCardChanged: (card) {
+                  // Handle card changes if needed
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Card Details',
+                ),
+              ),
                 
               
             const SizedBox(height: 25),
+
+             
+
+
 
             TextFormField(
               controller: productPriceController,

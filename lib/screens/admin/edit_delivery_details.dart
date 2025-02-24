@@ -2,10 +2,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 
 class EditDeliveryDetailsScreen extends StatefulWidget {
   final String userId;
@@ -358,25 +360,13 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
               const SizedBox(height: 16),
 
                         const Text(
-                            'Select Vehicle Type',
+                            'Vehicle Type',
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                           ListTile(
                             title: const Text('Car'),
                             leading: Radio<String>(
                               value: 'car',
-                              groupValue: _selectedVehicleType,
-                              onChanged: (value) {
-                                setState(() {
-                                  _selectedVehicleType = value!;
-                                });
-                              },
-                            ),
-                          ),
-                          ListTile(
-                            title: const Text('Truck'),
-                            leading: Radio<String>(
-                              value: 'truck',
                               groupValue: _selectedVehicleType,
                               onChanged: (value) {
                                 setState(() {
@@ -508,4 +498,3 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
     );
   }
 }
-

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:test_project/screens/admin/crud_operations.dart';
 
@@ -10,10 +11,11 @@ import 'package:test_project/screens/admin/crud_operations.dart';
 final _firebase = FirebaseAuth.instance;
 
 class VehichleInfosScreen extends StatefulWidget {
-  const VehichleInfosScreen( {super.key , required this.userData,});
+  const VehichleInfosScreen( {super.key , required this.userData,
+  this.cardDetails,});
 
   final Map<String , dynamic > userData;
-
+  final stripe.CardFieldInputDetails? cardDetails;
 
   @override
   State<VehichleInfosScreen> createState() {
@@ -113,6 +115,26 @@ Future<void> _submit() async {
       }
     });
 
+     // Save card information if available
+      if (widget.cardDetails != null) {
+        final paymentMethod = await stripe.Stripe.instance.createPaymentMethod(
+          params: stripe.PaymentMethodParams.card(
+            paymentMethodData: stripe.PaymentMethodData(
+              billingDetails: stripe.BillingDetails(
+                email: widget.userData['email'],
+              ),
+            ),
+          ),
+        );
+
+        await FirebaseFirestore.instance
+            .collection('delivery')
+            .doc(userCredentials.user!.uid)
+            .update({
+          'stripePaymentMethodId': paymentMethod.id,
+        });
+      }
+
     Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => const CrudOperationsScreen(),));
     showToastrMessage("User and vehicle information saved successfully.");
   } on FirebaseAuthException catch (error) {
@@ -160,18 +182,6 @@ Future<void> _submit() async {
                             title: const Text('Car'),
                             leading: Radio<String>(
                               value: 'car',
-                              groupValue: _selectedVehicleType,
-                              onChanged: (value) {
-                                setState(() {
-                                  _selectedVehicleType = value!;
-                                });
-                              },
-                            ),
-                          ),
-                          ListTile(
-                            title: const Text('Truck'),
-                            leading: Radio<String>(
-                              value: 'truck',
                               groupValue: _selectedVehicleType,
                               onChanged: (value) {
                                 setState(() {

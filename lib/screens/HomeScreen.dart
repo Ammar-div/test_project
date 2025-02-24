@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late Stream<QuerySnapshot> _productsStream;
-  final NotiService _notiService = NotiService();
+  
   String userName = '';
 
   @override
@@ -61,53 +61,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       });
     }
   });
-
-    // Listen for product status changes
-    _listenForProductStatusChanges();
-  }
-
-  void _listenForProductStatusChanges() {
-    final user = _auth.currentUser;
-    if (user == null) {
-      print('User is not logged in. Notifications will not be triggered.');
-      return;
-    }
-
-    print('Listening for product status changes for seller: ${user.uid}');
-
-    _firestore
-        .collection('products')
-        .where('seller_ifos.seller_id', isEqualTo: user.uid) // Only listen to products owned by the seller
-        .snapshots()
-        .listen((snapshot) {
-      print('Received ${snapshot.docChanges.length} changes in product status.');
-
-      for (var change in snapshot.docChanges) {
-        if (change.type == DocumentChangeType.modified) {
-          final product = change.doc.data() as Map<String, dynamic>;
-          print('Product status changed: ${product['product_order_status']}');
-
-          if (product['product_order_status'] == 'It has been purchased') {
-            print('Notification triggered for seller: ${user.uid}');
-
-            // Show notification only if the current user is the seller
-            _notiService.showNotification(
-              title: 'Product Purchased',
-              body: 'One of your products has been purchased!',
-            );
-
-            // Store the notification in Firestore for later
-            _firestore.collection('notifications').add({
-              'userId': user.uid,
-              'title': 'Product Purchased',
-              'body': 'One of your products has been purchased!',
-              'read': false,
-              'timestamp': FieldValue.serverTimestamp(),
-            });
-          }
-        }
-      }
-    });
   }
 
   Future<int> _getFavoriteCount(String productId) async {
@@ -208,10 +161,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
  @override
 Widget build(BuildContext context) {
   final user = _auth.currentUser;
-  if (user != null) {
-    // Check for pending notifications when the user logs in
-    _notiService.checkPendingNotifications(user.uid);
-  }
   return Scaffold(
     backgroundColor: Theme.of(context).colorScheme.primaryContainer,
     appBar: AppBar(
@@ -480,98 +429,4 @@ Widget build(BuildContext context) {
     ),
   );
 }
-}
-
-class NotiService {
-  final notificationsPlugin = FlutterLocalNotificationsPlugin();
-  bool _isInitialized = false;
-
-  bool get isInitialized => _isInitialized;
-
-  // Initialization
-  Future<void> initNotification() async {
-    if (_isInitialized) return; // prevent re-initialization
-
-    // Create notification channel for Android
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'daily_channel_id', // Same ID as in notificationDetails
-      'Daily Notifications',
-      description: 'Daily Notification Channel',
-      importance: Importance.max,
-    );
-
-    await notificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
-
-    // Prepare initialization settings
-    const initSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const initSettingsIOS = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
-
-    const initSettings = InitializationSettings(
-      android: initSettingsAndroid,
-      iOS: initSettingsIOS,
-    );
-
-    // Initialize the plugin
-    await notificationsPlugin.initialize(initSettings);
-    _isInitialized = true;
-  }
-
-  // Notifications Detail setup
-  NotificationDetails notificationDetails() {
-    return const NotificationDetails(
-      android: AndroidNotificationDetails(
-        'daily_channel_id',
-        'Daily Notifications',
-        channelDescription: 'Daily Notification Channel',
-        importance: Importance.max,
-        priority: Priority.high,
-      ),
-      iOS: DarwinNotificationDetails(),
-    );
-  }
-
-  // Show notification
-  Future<void> showNotification({
-    int id = 0,
-    String? title,
-    String? body,
-  }) async {
-    try {
-      print('Attempting to show notification...');
-      await notificationsPlugin.show(
-        id,
-        title,
-        body,
-        notificationDetails(),
-      );
-      print('Notification shown successfully.');
-    } catch (e) {
-      print('Error showing notification: $e');
-    }
-  }
-
-  Future<void> checkPendingNotifications(String userId) async {
-    final firestore = FirebaseFirestore.instance;
-    final notifications = await firestore
-        .collection('notifications')
-        .where('userId', isEqualTo: userId) // Only fetch notifications for the seller
-        .where('read', isEqualTo: false)
-        .get();
-
-    for (var doc in notifications.docs) {
-      final data = doc.data();
-      await showNotification(
-        title: data['title'],
-        body: data['body'],
-      );
-      // Mark the notification as read
-      await doc.reference.update({'read': true});
-    }
-  }
 }

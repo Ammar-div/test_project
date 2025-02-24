@@ -1,11 +1,12 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test_project/screens/admin/admin_signup.dart';
 import 'package:test_project/screens/admin/category_to_be_edited.dart';
 import 'package:test_project/screens/admin/edit_delivery_details.dart';
 import 'package:test_project/screens/admin/edit_user_details.dart';
-
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 
 class CrudOperationsScreen extends StatefulWidget {
   const CrudOperationsScreen({super.key});
@@ -19,7 +20,27 @@ class CrudOperationsScreen extends StatefulWidget {
 class _CrudOperationsScreenState extends State<CrudOperationsScreen> {
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
+bool _hasCardInformation = false;
 
+@override
+  void initState() {
+    super.initState();
+    _checkCardInformation();
+  }
+
+
+  Future<void> _checkCardInformation() async {
+    final adminDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+
+    if (adminDoc.exists && adminDoc['stripePaymentMethodId'] != null) {
+      setState(() {
+        _hasCardInformation = true;
+      });
+    }
+  }
 
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
@@ -103,33 +124,135 @@ class _CrudOperationsScreenState extends State<CrudOperationsScreen> {
     return usersList;
   }
 
+
+  void _showAddCardDialog(BuildContext context) {
+  stripe.CardFieldInputDetails? _newCardDetails;
+
+  showDialog(
+    context: context,
+    builder: (ctx) {
+      return AlertDialog(
+        title: const Text('Add Card Information'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            stripe.CardField(
+              onCardChanged: (card) {
+                _newCardDetails = card;
+              },
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Card Details',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              if (_newCardDetails == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please enter card details')),
+                );
+                return;
+              }
+
+              final user = FirebaseAuth.instance.currentUser;
+              if (user == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('User not logged in')),
+                );
+                return;
+              }
+
+              try {
+                // Create a PaymentMethod using Stripe
+                final paymentMethod = await stripe.Stripe.instance.createPaymentMethod(
+                  params: stripe.PaymentMethodParams.card(
+                    paymentMethodData: stripe.PaymentMethodData(
+                      billingDetails: stripe.BillingDetails(
+                        email: user.email, // Use the logged-in user's email
+                      ),
+                    ),
+                  ),
+                );
+
+                // Save the PaymentMethod ID to the admin's document
+                await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user.uid) // Use the logged-in user's UID
+                    .update({
+                  'stripePaymentMethodId': paymentMethod.id,
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Card information saved successfully')),
+                );
+
+                setState(() {
+                  _hasCardInformation = true;
+                });
+
+                Navigator.pop(ctx);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to save card information: $e')),
+                );
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: OutlinedButton(
-          onPressed: () {
-             _openAddExpenseOverlay();
-          },
-          style: OutlinedButton.styleFrom(
-            side: BorderSide(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            width: 1.5,
-          ),
-          ),
-           child: Text('Category' , style: TextStyle(
-          color: Theme.of(context).colorScheme.primaryContainer,
-        ),)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_add),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (ctx) => const AdminSignUpScreen()),
-              );
-            },
-          ),
-        ],
+    onPressed: () {
+      _openAddExpenseOverlay();
+    },
+    style: OutlinedButton.styleFrom(
+      side: BorderSide(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        width: 1.5,
+      ),
+    ),
+    child: Text(
+      'Category',
+      style: TextStyle(
+        color: Theme.of(context).colorScheme.primaryContainer,
+      ),
+    ),
+  ),
+  automaticallyImplyLeading: false,
+  actions: [
+    if (!_hasCardInformation)
+      IconButton(
+        icon: const Icon(Icons.credit_card),
+        onPressed: () {
+          _showAddCardDialog(context);
+        },
+      ),
+    IconButton(
+      icon: const Icon(Icons.person_add),
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (ctx) => const AdminSignUpScreen()),
+        );
+      },
+    ),
+  ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(80),
           child: Padding(

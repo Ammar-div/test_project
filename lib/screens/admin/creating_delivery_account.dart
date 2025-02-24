@@ -1,12 +1,14 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:test_project/screens/admin/vehichle_infos.dart';
 import 'package:test_project/widgets/user_image_picker.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 
-final _firebase = FirebaseAuth.instance;
+
 
 class CreatingDeliveryAccountScreen extends StatefulWidget {
   const CreatingDeliveryAccountScreen({super.key});
@@ -33,7 +35,8 @@ class _CreatingDeliveryAccountScreenState extends State<CreatingDeliveryAccountS
   var _isAuthenticating = false;
   final formatter = DateFormat.yMd();
 
-
+// Add a variable to store card details
+stripe.CardFieldInputDetails? _cardDetails;
 
   String get formattedDate
   {
@@ -91,65 +94,98 @@ class _CreatingDeliveryAccountScreenState extends State<CreatingDeliveryAccountS
     );
   }
 
+  // Function to save card information
+  Future<void> _saveCardInformation() async {
+  try {
+    // Create a PaymentMethod using Stripe
+    final paymentMethod = await stripe.Stripe.instance.createPaymentMethod(
+      params: stripe.PaymentMethodParams.card(
+        paymentMethodData: stripe.PaymentMethodData(
+          billingDetails: stripe.BillingDetails(
+            email: FirebaseAuth.instance.currentUser?.email,
+          ),
+        ),
+      ),
+    );
+
+    // Save the PaymentMethod ID to Firestore
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('delivery')
+          .doc(user.uid)
+          .update({
+        'stripePaymentMethodId': paymentMethod.id,
+      });
+    }
+
+    showToastrMessage("Card information saved successfully.");
+  } catch (e) {
+    showToastrMessage("Failed to save card information: $e");
+  }
+}
+
 
  Future<void> moveToVehicleInfosScreen() async {
-    final isValid = _form.currentState!.validate();
+  final isValid = _form.currentState!.validate();
 
-    if (!isValid) {
-      return;
-    }
-
-    
-      if (_selectedImage == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select an image.')),
-        );
-        return;
-      }
-
-
-      if(_enteredDate == null || _enteredDateOfBirth == null)
-      {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter both dates.')),
-        );
-        return;
-      }
-
-    _form.currentState!.save();
-
-    try {
-      setState(() {
-        _isAuthenticating = true;
-      });
-      
-      Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => VehichleInfosScreen(
-          userData: {
-          'email': _enteredEmail,
-          'password': _enteredPassword,
-          'national_id': _enteredNationalID,
-          'name': _enteredFullName,
-          'phone_number': _enteredPhoneNumber,
-          'location': _enteredLocation,
-          'D.O.B': _enteredDateOfBirth,
-          'Joining_Date': _enteredDate,
-          'image': _selectedImage,
-        },
-      )));
-      
-    } on FirebaseAuthException catch (error) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error.message ?? 'Authentication failed.'),
-        ),
-      );
-    } finally {
-      setState(() {
-        _isAuthenticating = false;
-      });
-    }
+  if (!isValid) {
+    return;
   }
+
+  if (_selectedImage == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please select an image.')),
+    );
+    return;
+  }
+
+  if (_enteredDate == null || _enteredDateOfBirth == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please enter both dates.')),
+    );
+    return;
+  }
+
+  _form.currentState!.save();
+
+  try {
+    setState(() {
+      _isAuthenticating = true;
+    });
+
+    // Pass card details to the next screen
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) => VehichleInfosScreen(
+          userData: {
+            'email': _enteredEmail,
+            'password': _enteredPassword,
+            'national_id': _enteredNationalID,
+            'name': _enteredFullName,
+            'phone_number': _enteredPhoneNumber,
+            'location': _enteredLocation,
+            'D.O.B': _enteredDateOfBirth,
+            'Joining_Date': _enteredDate,
+            'image': _selectedImage,
+          },
+          cardDetails: _cardDetails, // Pass card details
+        ),
+      ),
+    );
+  } on FirebaseAuthException catch (error) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error.message ?? 'Authentication failed.'),
+      ),
+    );
+  } finally {
+    setState(() {
+      _isAuthenticating = false;
+    });
+  }
+}
 
 
   @override
@@ -357,7 +393,21 @@ class _CreatingDeliveryAccountScreenState extends State<CreatingDeliveryAccountS
 
                            const SizedBox(height: 20),
 
-                          const SizedBox(height: 20),
+                           // Add Card Input Field
+                          const SizedBox(height: 25),
+                          stripe.CardField(
+                          onCardChanged: (card) {
+                            setState(() {
+                              _cardDetails = card;
+                            });
+                          },
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Card Details',
+                          ),
+                        ),
+
+                          const SizedBox(height: 25),
                           if (_isAuthenticating)
                             const CircularProgressIndicator(),
                           if (!_isAuthenticating)

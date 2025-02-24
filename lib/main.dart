@@ -16,9 +16,6 @@ var kColorScheme = ColorScheme.fromSeed(
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize notifications and await the result
-  await NotiService().initNotification();
   
   WidgetsFlutterBinding.ensureInitialized();
   Stripe.publishableKey = PublishableKey;
