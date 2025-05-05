@@ -366,7 +366,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: Colors.blue.shade800, size: 20),
+          Icon(icon, color: Colors.blue.shade800, size: 16),
           const SizedBox(width: 10),
           Text(
             '$label: ',
@@ -379,7 +379,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
           Text(
             value,
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               color: Colors.black54,
             ),
           ),

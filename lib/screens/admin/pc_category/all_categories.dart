@@ -44,7 +44,7 @@ getOnTheLoad() async {
                     const Text('Category',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 12,
                     ),
                     ),
                     TextButton(

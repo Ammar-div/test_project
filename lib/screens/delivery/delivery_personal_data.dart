@@ -47,7 +47,7 @@ class DeliveryPersonalData extends StatelessWidget {
                     deliveryData!['name'],
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 26,
+                      fontSize: 21,
                     ),
                   ),
                 ],

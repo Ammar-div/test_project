@@ -121,7 +121,7 @@ Future<void> deleteCategoryDetail(String id, String imageUrl) async {
                           Text(name,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 20,
+                              fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center,

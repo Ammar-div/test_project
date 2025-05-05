@@ -103,7 +103,7 @@ class _OrdersSummaryState extends State<OrdersSummary> {
                                 'Order ID: ${order['buyer_id']}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                 ),
                               ),
                               const SizedBox(height: 8),

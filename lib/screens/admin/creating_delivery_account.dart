@@ -284,7 +284,7 @@ stripe.CardFieldInputDetails? _cardDetails;
                                         ),
                                         Text(
                                           _enteredDate == null
-                                              ? 'No date selected'
+                                              ? 'N/A'
                                               : formatter.format(_enteredDate!),
                                         ),
                                       ],
@@ -298,7 +298,7 @@ stripe.CardFieldInputDetails? _cardDetails;
                                         ),
                                         Text(
                                           _enteredDateOfBirth == null
-                                              ? 'No D.O.B selected'
+                                              ? 'N/A'
                                               : formatter.format(_enteredDateOfBirth!),
                                         ),
                                       ],
