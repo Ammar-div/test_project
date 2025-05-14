@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 
@@ -151,7 +152,7 @@ Future<void> _pickImageFromGallery() async {
       gravity: ToastGravity.TOP,
       backgroundColor: const Color.fromARGB(255, 106, 179, 116),
       textColor: const Color.fromARGB(255, 255, 255, 255),
-      fontSize: 16.0,
+      fontSize: 16.0.sp,
     );
   }
 
@@ -252,14 +253,14 @@ Widget _buildBulletPoint(String text) {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+         Text(
           '• ',
-          style: TextStyle(fontSize: 30),
+          style: TextStyle(fontSize: 30.h),
         ),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(fontSize: 16),
+            style:  TextStyle(fontSize: 16.h),
           ),
         ),
       ],
@@ -282,16 +283,16 @@ Widget build(BuildContext context) {
         key: _formKey,
         child: Column(
           children: [
-            const SizedBox(height: 16,),
+             SizedBox(height: 16.h),
              Text('Add Images',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.onPrimaryContainer,
-              fontSize: 30,
+              fontSize: 30.sp,
             ),
             textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 10,),
+             SizedBox(height: 10.h),
 
              Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -299,10 +300,10 @@ Widget build(BuildContext context) {
                 _buildBulletPoint('The first image you take is the image that will appear in the main page.'),
               ],
             ),
-            const SizedBox(height: 30,),
+             SizedBox(height: 30.h),
             if (_imageUrls.isNotEmpty || _selectedImages.isNotEmpty)
               SizedBox(
-                height: 130,
+                height: 130.h,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: _imageUrls.length + _selectedImages.length,
@@ -314,11 +315,11 @@ Widget build(BuildContext context) {
                         child: Stack(
                           children: [
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(8.r),
                               child: Image.network(
                                 _imageUrls[index],
-                                width: 130,
-                                height: 130,
+                                width: 130.w,
+                                height: 130.h,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -345,11 +346,11 @@ Widget build(BuildContext context) {
                         child: Stack(
                           children: [
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(8.r),
                               child: Image.file(
                                 _selectedImages[fileIndex],
-                                width: 130,
-                                height: 130,
+                                width: 130.w,
+                                height: 130.h,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -372,7 +373,7 @@ Widget build(BuildContext context) {
                   },
                 ),
               ),
-            const SizedBox(height: 18),
+             SizedBox(height: 18.h),
 
             // Buttons to add more images
             Row(
@@ -383,7 +384,7 @@ Widget build(BuildContext context) {
                   icon: const Icon(Icons.camera),
                   label: const Text('Camera'),
                 ),
-                const SizedBox(width: 8),
+                 SizedBox(width: 8.w),
                 ElevatedButton.icon(
                   onPressed: _pickImageFromGallery,
                   icon: const Icon(Icons.photo),
@@ -391,7 +392,7 @@ Widget build(BuildContext context) {
                 ),
               ],
             ),
-            const SizedBox(height: 30),
+             SizedBox(height: 30.h),
             TextFormField(
               controller: widget.productNameController,
               decoration: const InputDecoration(labelText: 'Main Title'),
@@ -556,17 +557,17 @@ Widget build(BuildContext context) {
                 return null;
               },
             ),
-            const SizedBox(height: 16),
-            const SizedBox(height: 24),
+             SizedBox(height: 16.h),
+             SizedBox(height: 24.h),
             SizedBox(
-              width: double.infinity,
+              width: double.infinity.w,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                     side: BorderSide(
                       color: Theme.of(context).colorScheme.primary,
-                      width: 2,
+                      width: 2.w,
                     ),
                   ),
                 ),
@@ -574,9 +575,9 @@ Widget build(BuildContext context) {
                   _editProduct();
                 },
                 child: _isUpdating
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
+                    ?  SizedBox(
+                        height: 20.h,
+                        width: 20.w,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                         ),

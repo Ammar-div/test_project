@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class UserImagePicker extends StatefulWidget {
   const UserImagePicker({
@@ -42,15 +43,15 @@ class _UserImagePickerState extends State<UserImagePicker> {
       context: context,
       builder: (ctx) {
         return Container(
-          padding: const EdgeInsets.all(20),
-          height: 150,
+          padding:  EdgeInsets.all(20),
+          height: 150.h,
           child: Column(
             children: [
               const Text(
                 'Choose Image Source',
                 //style: Theme.of(context).textTheme.headline6,
               ),
-              const SizedBox(height: 10),
+               SizedBox(height: 10.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [

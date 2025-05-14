@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:test_project/screens/HomeScreen.dart';
 import 'package:url_launcher/url_launcher.dart'; // Import the intl package
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DeliveryPersonalData extends StatelessWidget {
   final Map<String, dynamic>? deliveryData;
@@ -45,26 +46,26 @@ class DeliveryPersonalData extends StatelessWidget {
                   ),
                   Text(
                     deliveryData!['name'],
-                    style: const TextStyle(
+                    style:  TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 21,
+                      fontSize: 21.sp,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 50),
-              const Row(
+               SizedBox(height: 50.h),
+               Row(
                 children: [
                   Text(
                     "Captain's information",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 19,
+                      fontSize: 19.sp,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+               SizedBox(height: 20.h),
               Row(
                 children: [
                   const Text(
@@ -185,19 +186,19 @@ class DeliveryPersonalData extends StatelessWidget {
               Divider(
                 color: Colors.grey[300],
               ),
-              const SizedBox(height: 40),
-              const Row(
+               SizedBox(height: 40.h),
+               Row(
                 children: [
                   Text(
                     "Vehicle information",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 19,
+                      fontSize: 19.sp,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+               SizedBox(height: 20.h),
               Row(
                 children: [
                   const Text(
@@ -278,7 +279,7 @@ class DeliveryPersonalData extends StatelessWidget {
               Divider(
                 color: Colors.grey[300],
               ),
-              const SizedBox(height: 30),
+               SizedBox(height: 30.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -295,11 +296,11 @@ class DeliveryPersonalData extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Row(
+                    child:  Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.logout),
-                        SizedBox(width: 8),
+                        SizedBox(width: 8.w),
                         Text('Log out'),
                       ],
                     ),
@@ -310,11 +311,11 @@ class DeliveryPersonalData extends StatelessWidget {
                       foregroundColor: Colors.black,
                     ),
                     onPressed: _openWhatsApp,
-                    child: const Row(
+                    child:  Row(
                       mainAxisSize: MainAxisSize.min, // Ensure the Row takes only the required space
                       children: [
                         Icon(Icons.phone), // Add the phone icon
-                        SizedBox(width: 8), // Add some spacing between the icon and text
+                        SizedBox(width: 8.w), // Add some spacing between the icon and text
                         Text('Support'),
                       ],
                     ),

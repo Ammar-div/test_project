@@ -6,6 +6,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 final _firebase = FirebaseAuth.instance;
 
 class AdminSignUpScreen extends StatefulWidget {
@@ -58,7 +60,7 @@ class _AdminSignUpScreenState extends State<AdminSignUpScreen> {
        timeInSecForIosWeb: 3,
         backgroundColor: const Color.fromARGB(255, 106, 179, 116),
         textColor: const Color.fromARGB(255, 255, 255, 255),
-        fontSize: 16.0,
+        fontSize: 16.0.sp,
         webPosition: "right",
     );
   }
@@ -158,7 +160,7 @@ class _AdminSignUpScreenState extends State<AdminSignUpScreen> {
                   left: 20,
                   right: 20,
                 ),
-                width: 200,
+                width: 200.w,
                 child: Image.asset('assets/images/logo.png'),
               ),
               Card(
@@ -191,12 +193,12 @@ class _AdminSignUpScreenState extends State<AdminSignUpScreen> {
                                 _selectedImage = pickedImage;
                               },
                             ),
-                           const SizedBox(height: 20),
+                            SizedBox(height: 20.h),
                           
                             LocationInput(
                               onSelectLocation: _saveLocation,
                             ),
-                           const SizedBox(height: 20),
+                            SizedBox(height: 20.h),
                           TextFormField(
                             decoration:
                                 const InputDecoration(labelText: 'Email Address'),
@@ -306,7 +308,7 @@ class _AdminSignUpScreenState extends State<AdminSignUpScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 20,),
+                             SizedBox(height: 20.h),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             
@@ -335,7 +337,7 @@ class _AdminSignUpScreenState extends State<AdminSignUpScreen> {
                             ),
 
 
-                          const SizedBox(height: 20),
+                           SizedBox(height: 20.h),
                           if (_isAuthenticating)
                             const CircularProgressIndicator(),
                           if (!_isAuthenticating)

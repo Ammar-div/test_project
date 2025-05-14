@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/screens/product_details_screen.dart';
 import 'package:test_project/screens/products_of_category.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MyFavorites extends StatefulWidget {
   @override
@@ -166,10 +167,10 @@ class _MyFavoritesState extends State<MyFavorites> with SingleTickerProviderStat
                             child: Card(
                               margin: const EdgeInsets.all(8),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                side: const BorderSide(
+                                borderRadius: BorderRadius.circular(8.r),
+                                side:  BorderSide(
                                   color: Color.fromRGBO(50, 18, 0, 1),
-                                  width: 2,
+                                  width: 2.w,
                                 ),
                               ),
                               clipBehavior: Clip.hardEdge,
@@ -179,8 +180,8 @@ class _MyFavoritesState extends State<MyFavorites> with SingleTickerProviderStat
                                   // Image with loading indicator
                                   Image.network(
                                     imageUrl,
-                                    height: 300,
-                                    width: double.infinity,
+                                    height: 300.h,
+                                    width: double.infinity.w,
                                     fit: BoxFit.cover,
                                     loadingBuilder: (context, child, loadingProgress) {
                                       if (loadingProgress == null) return child;
@@ -199,14 +200,14 @@ class _MyFavoritesState extends State<MyFavorites> with SingleTickerProviderStat
                                       );
                                     },
                                   ),
-                                  const SizedBox(height: 8),
+                                   SizedBox(height: 8.h),
                                   Padding(
                                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 6),
                                     child: Text(
                                       productName,
                                       textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        fontSize: 22,
+                                      style:  TextStyle(
+                                        fontSize: 22.sp,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -218,10 +219,10 @@ class _MyFavoritesState extends State<MyFavorites> with SingleTickerProviderStat
                                       children: [
                                         Text(
                                           '${productPrice.toStringAsFixed(0)} JOD',
-                                          style: const TextStyle(
+                                          style:  TextStyle(
                                             color: Colors.green,
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 20,
+                                            fontSize: 20.sp,
                                           ),
                                         ),
                                         StreamBuilder<QuerySnapshot>(
@@ -274,7 +275,7 @@ class _MyFavoritesState extends State<MyFavorites> with SingleTickerProviderStat
                               ),
                             ),
                           ),
-                          const SizedBox(height: 25),
+                           SizedBox(height: 25.h),
                         ],
                       );
                     },

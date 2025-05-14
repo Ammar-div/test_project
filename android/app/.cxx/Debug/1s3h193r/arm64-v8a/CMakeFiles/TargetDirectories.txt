@@ -1,0 +1,2 @@
+C:/Users/Lenovo/Documents/GitHub/test_project/android/app/.cxx/Debug/1s3h193r/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/Lenovo/Documents/GitHub/test_project/android/app/.cxx/Debug/1s3h193r/arm64-v8a/CMakeFiles/rebuild_cache.dir

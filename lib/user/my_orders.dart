@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/screens/order/order_status_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MyOrders extends StatefulWidget {
   const MyOrders({super.key, required this.userId});
@@ -48,8 +49,8 @@ class _MyOrdersState extends State<MyOrders> {
             }
 
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Center(
-                child: Text('No Orders Found, Try adding one', style: TextStyle(fontSize: 11),),
+              return  Center(
+                child: Text('No Orders Found, Try adding one', style: TextStyle(fontSize: 11.r),),
               );
             }
 
@@ -156,17 +157,17 @@ class _MyOrdersState extends State<MyOrders> {
                       child: Card(
                         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                         shape: RoundedRectangleBorder(
-                          side: const BorderSide(
+                          side:  BorderSide(
                             color: Colors.grey, // Border color
-                            width: 2, // Border width
+                            width: 2.w, // Border width
                           ),
-                          borderRadius: BorderRadius.circular(8.0), // Border radius
+                          borderRadius: BorderRadius.circular(8.0.r), // Border radius
                         ),
                         child: ListTile(
                           leading: Image.network(
                             imageUrl,
-                            height: 60,
-                            width: 60,
+                            height: 60.h,
+                            width: 60.w,
                             fit: BoxFit.cover,
                           ),
                           title: Row(
@@ -176,9 +177,9 @@ class _MyOrdersState extends State<MyOrders> {
                                 flex: 1, // Takes 1 part of the available space
                                 child: Text(
                                   productMainTitle,
-                                  style: const TextStyle(
+                                  style:  TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 20,
+                                    fontSize: 20.r,
                                   ),
                                   maxLines: 1, // Limit to one line
                                   overflow: TextOverflow.ellipsis, // Add ellipsis if text overflows

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/user/my_orders.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 
@@ -16,15 +17,15 @@ Widget _buildBulletPoint(String text) {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+         Text(
           '• ',
-          style: TextStyle(fontSize: 30),
+          style: TextStyle(fontSize: 30.sp),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 11),
           child: Text(
               text,
-              style: const TextStyle(fontSize: 14),
+              style:  TextStyle(fontSize: 14.sp),
             ),
           
         ),
@@ -53,7 +54,7 @@ Widget _buildBulletPoint(String text) {
                 elevation: 5,
                 // Add border radius to the card
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(20),
@@ -63,23 +64,23 @@ Widget _buildBulletPoint(String text) {
                         // "Order Header" text with bottom border
                         Container(
                           alignment: Alignment.centerLeft,
-                          decoration: const BoxDecoration(
+                          decoration:  BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
                                 color: Colors.grey, // Border color
-                                width: 1.0, // Border width
+                                width: 1.0.w, // Border width
                               ),
                             ),
                           ),
-                          child: const Text(
+                          child:  Text(
                             'Order Confirmed',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                              fontSize: 20.sp,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 22,),
+                         SizedBox(height: 22.h),
 
 
                         Padding(padding:const EdgeInsets.all(10),
@@ -89,17 +90,17 @@ Widget _buildBulletPoint(String text) {
                           ),
                          ),
 
-                         const SizedBox(height: 16,),
+                          SizedBox(height: 16.h),
 
                           Padding(padding: const EdgeInsets.symmetric(vertical: 14),
                      child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                        children: [
                         Icon(Icons.delivery_dining_sharp , color: Colors.green[600],size: 28,),
-                        const SizedBox(width: 6,),
-                         const Text('Your Delivery captin will contact you soon.',
+                         SizedBox(width: 6.w),
+                          Text('Your Delivery captin will contact you soon.',
                          style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 14.sp,
                          ),
                          textAlign: TextAlign.center,
                             ),
@@ -109,13 +110,13 @@ Widget _buildBulletPoint(String text) {
 
 
 
-                         const SizedBox(height: 16,),
+                          SizedBox(height: 16.h),
 
                          const Text('You can see your order status in the "my orders" screen.' , 
                          textAlign: TextAlign.center,
                          ),
 
-                          const SizedBox(height: 13,),
+                           SizedBox(height: 13.h),
 
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -124,7 +125,7 @@ Widget _buildBulletPoint(String text) {
                             Flexible(
                               flex: 3, // 3 parts of the available space
                               child: SizedBox(
-                                width: double.infinity, // Take full width of the Flexible
+                                width: double.infinity.w, // Take full width of the Flexible
                                 child: ElevatedButton(
                                   onPressed: () {
                                     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => const HomeScreen()));
@@ -133,15 +134,15 @@ Widget _buildBulletPoint(String text) {
                                     backgroundColor: Colors.yellow[800],
                                     foregroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(8.r),
                                     ),
                                   ),
-                                  child: const Center(
+                                  child:  Center(
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center, // Center contents horizontally
                                       children: [
                                         Icon(Icons.arrow_back_ios_new, color: Colors.white),
-                                        SizedBox(width: 6),
+                                        SizedBox(width: 6.w),
                                         Text('Home Screen'),
                                       ],
                                     ),
@@ -149,12 +150,12 @@ Widget _buildBulletPoint(String text) {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 16), // Add spacing between buttons
+                             SizedBox(width: 16.w), // Add spacing between buttons
                             // Checkout Button
                             Flexible(
                               flex: 3, // 3 parts of the available space
                               child: SizedBox(
-                                width: double.infinity, // Take full width of the Flexible
+                                width: double.infinity.w, // Take full width of the Flexible
                                 child: ElevatedButton(
                                   onPressed: () {
                                     final user = FirebaseAuth.instance.currentUser;
@@ -166,15 +167,15 @@ Widget _buildBulletPoint(String text) {
                                     backgroundColor: Colors.green[600],
                                     foregroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(8.r),
                                     ),
                                   ),
-                                  child: const Center(
+                                  child:  Center(
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center, // Center contents horizontally
                                       children: [
                                         Icon(Icons.local_shipping, color: Colors.white),
-                                        SizedBox(width: 6),
+                                        SizedBox(width: 6.w),
                                         Text('Order Status'),
                                       ],
                                     ),

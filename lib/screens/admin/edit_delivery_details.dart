@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class EditDeliveryDetailsScreen extends StatefulWidget {
   final String userId;
@@ -187,7 +188,7 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
       gravity: ToastGravity.TOP,
       backgroundColor: const Color.fromARGB(255, 106, 179, 116),
       textColor: const Color.fromARGB(255, 255, 255, 255),
-      fontSize: 16.0,
+      fontSize: 16.0.sp,
     );
   }
 
@@ -223,7 +224,7 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
                       : null,
                 ),
               ),
-              const SizedBox(height: 18),
+               SizedBox(height: 18.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -232,7 +233,7 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
                     icon: const Icon(Icons.camera),
                     label: const Text('Camera'),
                   ),
-                  const SizedBox(width: 8),
+                   SizedBox(width: 8.w),
                   ElevatedButton.icon(
                     onPressed: _pickImageFromGallery,
                     icon: const Icon(Icons.photo),
@@ -240,42 +241,42 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+               SizedBox(height: 16.h),
 
               TextFormField(
                 controller: fullNameController,
                 decoration: const InputDecoration(labelText: 'Full Name'),
                 readOnly: true,
               ),
-              const SizedBox(height: 16),
+               SizedBox(height: 16.h),
               TextFormField(
                 controller: nationalIDController,
                 decoration: const InputDecoration(labelText: 'National ID'),
                 readOnly: true,
               ),
-              const SizedBox(height: 30),
+               SizedBox(height: 30.h),
 
              Row(
               children: [
-                const Text('Joining Date : ', style: TextStyle(fontSize: 16),),
+                 Text('Joining Date : ', style: TextStyle(fontSize: 16.sp),),
                 Text(
                    widget.initialJoiningDate == null ? 'No date selected'
-                    : formatter.format(widget.initialJoiningDate!), style: const TextStyle(fontSize: 16),
+                    : formatter.format(widget.initialJoiningDate!), style:  TextStyle(fontSize: 16.sp),
                  ),
               ],
              ),
-              const SizedBox(height: 30),
+               SizedBox(height: 30.h),
 
               Row(
               children: [
-                const Text('Date Of Birth : ', style: TextStyle(fontSize: 16),),
+                 Text('Date Of Birth : ', style: TextStyle(fontSize: 16.sp),),
                 Text(
                    widget.initialDateOfBirth == null ? 'No date selected'
-                    : formatter.format(widget.initialDateOfBirth!), style: const TextStyle(fontSize: 16),
+                    : formatter.format(widget.initialDateOfBirth!), style:  TextStyle(fontSize: 16.sp),
                  ),
               ],
              ),
-              const SizedBox(height: 16),
+               SizedBox(height: 16.h),
 
               TextFormField(
                 controller: emailController,
@@ -288,7 +289,7 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+               SizedBox(height: 16.h),
               
               TextFormField(
                 controller: phoneNumberController,
@@ -312,7 +313,7 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
               },
               ),
 
-              const SizedBox(height: 16),
+               SizedBox(height: 16.h),
 
                 TextFormField(
                 controller: locationController,
@@ -325,7 +326,7 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+               SizedBox(height: 16.h),
 
               TextFormField(
                 controller: vehicleModelController,
@@ -339,7 +340,7 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+               SizedBox(height: 16.h),
 
 
               TextFormField(
@@ -357,11 +358,11 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
                    return null;
                  },
               ),
-              const SizedBox(height: 16),
+               SizedBox(height: 16.h),
 
-                        const Text(
+                         Text(
                             'Vehicle Type',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                           ),
                           ListTile(
                             title: const Text('Car'),
@@ -388,15 +389,15 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
                             ),
                           ),
 
-                        const SizedBox(height: 50,),
+                         SizedBox(height: 50.h),
 
                          Row(
                             children: [
-                              const Text(
+                               Text(
                                 'Vehicle Color: ',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                               ),
-                              const SizedBox(width: 15),
+                               SizedBox(width: 15.w),
                               // Dropdown for vehicle colors
                                  Row(
                                    children: [
@@ -414,11 +415,11 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
                                          child: Row(
                                       children: [
                                         Container(
-                                          width: 16,
-                                          height: 16,
+                                          width: 16.w,
+                                          height: 16.h,
                                           color: vehichle_color[key],
                                         ),
-                                        const SizedBox(width: 15,),
+                                         SizedBox(width: 15.w),
                                         Text(key),
                                       ],
                                     ),
@@ -437,16 +438,16 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
 
 
 
-              const SizedBox(height: 24),
+               SizedBox(height: 24.h),
               SizedBox(
-                width: double.infinity,
+                width: double.infinity.w,
                 child: ElevatedButton( 
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                       side: BorderSide(
                         color: Theme.of(context).colorScheme.primary,
-                        width: 2,
+                        width: 2.w,
                       ),
                     ),
                   ),
@@ -484,9 +485,9 @@ Future<void> updateDeliveryDetail(String id, Map<String, dynamic> updateInfo) as
                       });
                     }
                   },
-                  child: _isUpdating ? const SizedBox(
-                    height: 18, // Adjust the height for the spinner
-                    width: 18,  // Adjust the width for the spinner
+                  child: _isUpdating ?  SizedBox(
+                    height: 18.h, // Adjust the height for the spinner
+                    width: 18.w,  // Adjust the width for the spinner
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ) : const Text('Update'),
                 ),

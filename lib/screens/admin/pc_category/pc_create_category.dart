@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PcCreateCategory extends StatefulWidget {
   const PcCreateCategory({super.key});
@@ -141,13 +142,13 @@ class _PcCreateCategoryState extends State<PcCreateCategory> {
                         : null,
                   ),
                 ),
-                const SizedBox(height: 18),
+                 SizedBox(height: 18.h),
                 ElevatedButton.icon(
                   onPressed: _pickImageFromGallery,
                   icon: const Icon(Icons.photo),
                   label: const Text('Gallery'),
                 ),
-                const SizedBox(height: 16),
+                 SizedBox(height: 16.h),
                 TextFormField(
                   controller: nameController,
                   decoration: const InputDecoration(labelText: 'Name'),
@@ -160,9 +161,9 @@ class _PcCreateCategoryState extends State<PcCreateCategory> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 40),
+                 SizedBox(height: 40.h),
                 SizedBox(
-                  width: screenWidth * 0.75,
+                  width: screenWidth * 0.75.w,
                   child: ElevatedButton(
                     onPressed: _createCategory,
                     style: ElevatedButton.styleFrom(
@@ -170,7 +171,7 @@ class _PcCreateCategoryState extends State<PcCreateCategory> {
                         borderRadius: BorderRadius.circular(10),
                         side: BorderSide(
                           color: Theme.of(context).colorScheme.primary,
-                          width: 2,
+                          width: 2.w,
                         ),
                       ),
                     ),

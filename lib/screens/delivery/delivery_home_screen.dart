@@ -10,6 +10,7 @@ import 'package:test_project/screens/delivery/earning_summary.dart';
 import 'package:test_project/screens/delivery/orders_summary.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DeliveryHomeScreen extends StatefulWidget {
   final Map<String, dynamic>? deliveryData;
@@ -31,7 +32,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
       gravity: ToastGravity.TOP,
       backgroundColor: const Color.fromARGB(255, 106, 179, 116),
       textColor: const Color.fromARGB(255, 255, 255, 255),
-      fontSize: 16.0,
+      fontSize: 16.0.sp,
     );
   }
 
@@ -163,7 +164,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(16.r),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.2),
@@ -184,9 +185,9 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                                 Flexible(
                                   child: Text(
                                     '$sellerLocation -> $receiverLocation',
-                                    style: const TextStyle(
+                                    style:  TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 18,
+                                      fontSize: 18.sp,
                                       color: Colors.white,
                                     ),
                                     overflow: TextOverflow.ellipsis,
@@ -196,20 +197,20 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(12.r),
                                   ),
                                   child: Text(
                                     'x$quantity',
-                                    style: const TextStyle(
+                                    style:  TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                      fontSize: 16.sp,
                                       color: Colors.white,
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 12),
+                             SizedBox(height: 12.h),
 
                             // Category and Icon
                             Row(
@@ -248,21 +249,21 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                                                                                                 ? 'assets/images/power-supply.png'
                                                                                                 : 'assets/images/question-sign.png',
                                   ),
-                                  width: 24,
-                                  height: 24,
+                                  width: 24.w,
+                                  height: 24.h,
                                 ),
-                                const SizedBox(width: 8),
+                                 SizedBox(width: 8.w),
                                 Text(
                                   categoryName,
-                                  style: const TextStyle(
+                                  style:  TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    fontSize: 16.sp,
                                     color: Colors.white,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 12),
+                             SizedBox(height: 12.h),
 
                             // Delivery Icons and Take Button
                             Row(
@@ -272,7 +273,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                                   size: 18,
                                   color: Colors.white,
                                 ),
-                                const SizedBox(width: 10),
+                                 SizedBox(width: 10.w),
                                 if (categoryName == 'Mouse' ||
                                     categoryName == 'Keyboard' ||
                                     categoryName == 'GPU' ||
@@ -382,7 +383,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(12.r),
                                     ),
                                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                   ),
@@ -430,7 +431,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
         index: _page,
-        height: 65.0,
+        height: 65.0.h,
         items: const [
           Icon(Icons.home, size: 30),
           Icon(Icons.delivery_dining, size: 30), // OrdersSummary (index 1)

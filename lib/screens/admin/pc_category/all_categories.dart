@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/screens/products_of_category.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 class AllCategories extends StatefulWidget {
@@ -41,23 +42,23 @@ getOnTheLoad() async {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Category',
+                     Text('Category',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                      fontSize: 12.sp,
                     ),
                     ),
                     TextButton(
                      onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => VerticalAllCategories()));
                      },
-                     child: const Text('See All',style: TextStyle(fontSize: 11),),
+                     child:  Text('See All',style: TextStyle(fontSize: 11.sp),),
                      ),
                   ],
                 ),
            
                   SizedBox(
-                    height: 120, // Limit the height to fit 4 categories
+                    height: 120.h, // Limit the height to fit 4 categories
                     child: StreamBuilder(
                         stream: categoriesStream,
                         builder: (context , AsyncSnapshot snapshot) {
@@ -84,11 +85,11 @@ getOnTheLoad() async {
                                     radius: 30,
                                     backgroundImage: NetworkImage(db["imageUrl"]),
                                   ),
-                                  const SizedBox(height: 8), // Add spacing between image and text
+                                   SizedBox(height: 8.h), // Add spacing between image and text
                                   Text(
                                     db["name"],
                                     textAlign: TextAlign.center, // Center the text
-                                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                                    style:  TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
@@ -180,9 +181,9 @@ Widget build(BuildContext context) {
                             margin: const EdgeInsets.all(8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
-                              side: const BorderSide(
+                              side:  BorderSide(
                                 color: Color.fromRGBO(50, 18, 0, 1), // RGB color (50, 18, 0)
-                                width: 2, // Border width
+                                width: 2.w, // Border width
                               ),
                             ),
                             clipBehavior: Clip.hardEdge,
@@ -192,8 +193,8 @@ Widget build(BuildContext context) {
                                 // Image with individual loading indicator
                                 Image.network(
                                   db["imageUrl"],
-                                  height: 300,
-                                  width: double.infinity,
+                                  height: 300.h,
+                                  width: double.infinity.w,
                                   fit: BoxFit.cover,
                                   loadingBuilder: (context, child, loadingProgress) {
                                     if (loadingProgress == null) return child;
@@ -211,14 +212,14 @@ Widget build(BuildContext context) {
                                     );
                                   },
                                 ),
-                                const SizedBox(height: 8),
+                                 SizedBox(height: 8.h),
                                 Padding(
                                   padding: const EdgeInsets.fromLTRB(0,0,0,6),
                                   child: Text(
                                     db["name"],
                                     textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontSize: 22,
+                                    style:  TextStyle(
+                                      fontSize: 22.sp,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -227,7 +228,7 @@ Widget build(BuildContext context) {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 25), // Add vertical space after each card
+                         SizedBox(height: 25.h), // Add vertical space after each card
                       ],
                     );
                   },

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/screens/product_details_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 
@@ -189,14 +190,14 @@ Widget build(BuildContext context) {
                     child: Card(
                       elevation: 2,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Expanded(
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(8.r),
                               child: Hero(
                                 tag: productId,
                                 child: Image.network(
@@ -212,8 +213,8 @@ Widget build(BuildContext context) {
                               product['name'],
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 17,
+                              style:  TextStyle(
+                                fontSize: 17.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -224,8 +225,8 @@ Widget build(BuildContext context) {
                               product['description'],
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 14,
+                              style:  TextStyle(
+                                fontSize: 14.sp,
                               ),
                             ),
                           ),
@@ -234,8 +235,8 @@ Widget build(BuildContext context) {
                             children: [
                               Text(
                                 '${product['price'].toStringAsFixed(0)} JOD',
-                                style: const TextStyle(
-                                  fontSize: 16,
+                                style:  TextStyle(
+                                  fontSize: 16.sp,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.green,
                                 ),
@@ -317,7 +318,7 @@ Widget build(BuildContext context) {
                               timeAgo,
                               textAlign: TextAlign.start,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 fontWeight: FontWeight.bold,
                                 color: Theme.of(context).colorScheme.onPrimaryContainer,
                               ),

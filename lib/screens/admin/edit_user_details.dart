@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class EditUserDetailsScreen extends StatefulWidget {
   final String userId;
@@ -104,7 +105,7 @@ class _EditUserDetailsScreenState extends State<EditUserDetailsScreen> {
       gravity: ToastGravity.TOP,
       backgroundColor: const Color.fromARGB(255, 106, 179, 116),
       textColor: const Color.fromARGB(255, 255, 255, 255),
-      fontSize: 16.0,
+      fontSize: 16.0.sp,
     );
   }
 
@@ -134,7 +135,7 @@ class _EditUserDetailsScreenState extends State<EditUserDetailsScreen> {
                       : null,
                 ),
               ),
-              const SizedBox(height: 18),
+               SizedBox(height: 18.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -143,7 +144,7 @@ class _EditUserDetailsScreenState extends State<EditUserDetailsScreen> {
                     icon: const Icon(Icons.camera),
                     label: const Text('Camera'),
                   ),
-                  const SizedBox(width: 8),
+                   SizedBox(width: 8.w),
                   ElevatedButton.icon(
                     onPressed: _pickImageFromGallery,
                     icon: const Icon(Icons.photo),
@@ -151,7 +152,7 @@ class _EditUserDetailsScreenState extends State<EditUserDetailsScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+               SizedBox(height: 16.h),
               TextFormField(
                 controller: emailController,
                 decoration: const InputDecoration(labelText: 'Email Address'),
@@ -163,7 +164,7 @@ class _EditUserDetailsScreenState extends State<EditUserDetailsScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+               SizedBox(height: 16.h),
               TextFormField(
                 controller: fullNameController,
                 decoration: const InputDecoration(labelText: 'Full Name'),
@@ -174,7 +175,7 @@ class _EditUserDetailsScreenState extends State<EditUserDetailsScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+               SizedBox(height: 16.h),
               TextFormField(
                 controller: userNameController,
                 decoration: const InputDecoration(labelText: 'Username'),
@@ -185,7 +186,7 @@ class _EditUserDetailsScreenState extends State<EditUserDetailsScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+               SizedBox(height: 16.h),
               TextFormField(
                 controller: phoneNumberController,
                 decoration: const InputDecoration(labelText: 'Phone Number'),
@@ -208,16 +209,16 @@ class _EditUserDetailsScreenState extends State<EditUserDetailsScreen> {
                 },
               ),
 
-              const SizedBox(height: 24),
+               SizedBox(height: 24.h),
               SizedBox(
-                width: double.infinity,
+                width: double.infinity.w,
                 child: ElevatedButton( 
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                       side: BorderSide(
                         color: Theme.of(context).colorScheme.primary,
-                        width: 2,
+                        width: 2.w,
                       ),
                     ),
                   ),
@@ -244,9 +245,9 @@ class _EditUserDetailsScreenState extends State<EditUserDetailsScreen> {
                     }
                   },
                   child: _isUpdating
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
+                      ?  SizedBox(
+                          height: 20.h,
+                          width: 20.h,
                           child: CircularProgressIndicator(
                             //color: Colors.white,
                             strokeWidth: 2,

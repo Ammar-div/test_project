@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+//flutter pub add flutter_screenutil
 
 class OrderStatusScreen extends StatefulWidget {
   const OrderStatusScreen({
@@ -114,7 +116,7 @@ Color _getColorFromString(String colorName) {
                   children: [
                     CarouselSlider(
                       options: CarouselOptions(
-                        height: 300,
+                        height: 300.h,
                         autoPlay: true,
                         enlargeCenterPage: true,
                         viewportFraction: 1.0,
@@ -137,23 +139,23 @@ Color _getColorFromString(String colorName) {
                         );
                       }).toList(),
                     ),
-                    const SizedBox(height: 20),
+                     SizedBox(height: 20.h),
                     Text(
                       widget.mainTitle,
-                      style: const TextStyle(
-                        fontSize: 23,
+                      style:  TextStyle(
+                        fontSize: 23.0.sp,
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 10),
+                     SizedBox(height: 10.h),
                     LayoutBuilder(
                       builder: (context, constraints) {
                         // Use a TextPainter to measure the text dimensions
                         final textPainter = TextPainter(
                           text: TextSpan(
                             text: widget.description,
-                            style: const TextStyle(fontSize: 16),
+                            style:  TextStyle(fontSize: 16.sp),
                           ),
                           maxLines: 4, // Match the maxLines in the Text widget
                           textDirection: TextDirection.ltr,
@@ -208,7 +210,7 @@ Color _getColorFromString(String colorName) {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+               SizedBox(height: 20.h),
           
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10 , vertical: 20),
@@ -225,7 +227,7 @@ Color _getColorFromString(String colorName) {
                           Text('Quantity'),
                       ],
                     ),
-                       const SizedBox(height: 8), // Add some spacing
+                        SizedBox(height: 8.h), // Add some spacing
                        const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 25),
                           child: Divider( // Add a divider here
@@ -233,7 +235,7 @@ Color _getColorFromString(String colorName) {
                             color: Color.fromARGB(255, 0, 0, 0), // Color of the line
                           ),
                         ),
-                        const SizedBox(height: 8), // Add some spacing
+                         SizedBox(height: 8.h), // Add some spacing
 
 
                     Row(
@@ -248,7 +250,7 @@ Color _getColorFromString(String colorName) {
                 ),
               ),
 
-              const SizedBox(height: 22,),
+               SizedBox(height: 22.h),
                Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10 , vertical: 20),
                 decoration: BoxDecoration(
@@ -264,7 +266,7 @@ Color _getColorFromString(String colorName) {
                           Text('How much used'),
                       ],
                     ),
-                       const SizedBox(height: 8), // Add some spacing
+                        SizedBox(height: 8.h), // Add some spacing
                        const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 25),
                           child: Divider( // Add a divider here
@@ -272,7 +274,7 @@ Color _getColorFromString(String colorName) {
                             color: Color.fromARGB(255, 0, 0, 0), // Color of the line
                           ),
                         ),
-                        const SizedBox(height: 8), // Add some spacing
+                         SizedBox(height: 8.h), // Add some spacing
 
 
                     Row(
@@ -285,7 +287,7 @@ Color _getColorFromString(String colorName) {
                   ],
                 ),
               ),
-              const SizedBox(height: 22,),
+               SizedBox(height: 22.h),
 
 
 
@@ -305,7 +307,7 @@ Color _getColorFromString(String colorName) {
                           fontSize: 15,
                         ),                    
                       ),
-                       const SizedBox(height: 8), // Add some spacing
+                        SizedBox(height: 8.h), // Add some spacing
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -315,7 +317,7 @@ Color _getColorFromString(String colorName) {
                       ],
                     ),
 
-                    const SizedBox(height: 8,),
+                     SizedBox(height: 8.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -325,18 +327,18 @@ Color _getColorFromString(String colorName) {
                     ),
 
                     if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
-                    const SizedBox(height: 15,),
+                     SizedBox(height: 15.h),
                       
                       
                     if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
                     const Divider(),
 
                     if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
-                    const SizedBox(height: 15,),
+                     SizedBox(height: 15.h),
 
                     if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up")
                     SizedBox(
-                      height: 150,
+                      height: 150.h,
                       child: Lottie.network('https://lottie.host/4fe98943-52d2-463a-a28c-ab6944352d4d/vXphnbGmh1.json'),
                     ),
 
@@ -362,7 +364,7 @@ Color _getColorFromString(String colorName) {
 
 
                     if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
-                    const SizedBox(height: 16,),
+                     SizedBox(height: 16.h),
 
                     if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
                     Padding(
@@ -383,10 +385,10 @@ Color _getColorFromString(String colorName) {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(width: 8), // Add some spacing between the text and the circle
+                                 SizedBox(width: 8.w), // Add some spacing between the text and the circle
                                 Container(
-                                  width: 20, // Diameter of the circle
-                                  height: 20, // Diameter of the circle
+                                  width: 20.w, // Diameter of the circle
+                                  height: 20.h, // Diameter of the circle
                                   decoration: BoxDecoration(
                                     color: _getColorFromString(widget.deliveryInfos!['Vehicle_Infos']['Vehicle_Color']), // Parse the color
                                     shape: BoxShape.circle, // Make it a circle
@@ -399,7 +401,7 @@ Color _getColorFromString(String colorName) {
                     ),
 
                     if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
-                    const SizedBox(height: 16,),
+                     SizedBox(height: 16.h),
 
                     if(widget.orderStatus == "confirmed" || widget.orderStatus == "picked up" || widget.orderStatus == "awaiting acknowledgment")
                     Padding(
@@ -444,7 +446,7 @@ Color _getColorFromString(String colorName) {
                     ),
                   ),
                   if (_orderStatus == "awaiting acknowledgment")
-                  const SizedBox(height: 30,),
+                   SizedBox(height: 30.h),
 
                   if (_orderStatus == "awaiting acknowledgment")
                     Align(
@@ -483,7 +485,7 @@ Color _getColorFromString(String colorName) {
                 ),
               ),
 
-              const SizedBox(height: 22,),
+               SizedBox(height: 22.h),
 
                Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20 , vertical: 20),
@@ -496,14 +498,14 @@ Color _getColorFromString(String colorName) {
                     if(widget.orderStatus == "pending")
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
-                      width: double.infinity,
+                      width: double.infinity.w,
                       color: Colors.blueGrey[100],
                       child: Row(
                         children: [
                           Text('Order Status : ${widget.orderStatus}' ,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                              fontSize: 18.sp,
                             ),
                           ),
                         ],
@@ -513,14 +515,14 @@ Color _getColorFromString(String colorName) {
                      if(widget.orderStatus == "delivered")
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
-                      width: double.infinity,
+                      width: double.infinity.w,
                       color: Colors.green[400],
                       child: Row(
                         children: [
                           Text('Order Status : ${widget.orderStatus}' ,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                              fontSize: 18.sp,
                             ),
                           ),
                         ],
@@ -530,14 +532,14 @@ Color _getColorFromString(String colorName) {
                      if(widget.orderStatus == "canceled")
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
-                      width: double.infinity,
+                      width: double.infinity.w,
                        color: Colors.red[200],
                       child: Row(
                         children: [
                           Text('Order Status : ${widget.orderStatus}' ,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                              fontSize: 18.sp,
                             ),
                           ),
                         ],
@@ -547,26 +549,26 @@ Color _getColorFromString(String colorName) {
                     if(widget.orderStatus == "picked up")
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
-                      width: double.infinity,
+                      width: double.infinity.w,
                       color: Colors.orange[300],
                       child: Column(
                         children: [
                           Row(
                             children: [
                               Text('Order Status : ${widget.orderStatus}' ,
-                                style: const TextStyle(
+                                style:  TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                                  fontSize: 18.sp,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 14,),
+                           SizedBox(height: 14.h),
                           Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.delivery_dining_sharp, color: Colors.green[600]),
-                          const SizedBox(width: 6),
+                           SizedBox(width: 6.w),
                           const Text(
                             'Captain is on his way.',
                             textAlign: TextAlign.center,
@@ -580,14 +582,14 @@ Color _getColorFromString(String colorName) {
                     if(widget.orderStatus == "confirmed")
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
-                      width: double.infinity,
+                      width: double.infinity.w,
                       color: const Color.fromARGB(255, 162, 210, 233),
                       child: Row(
                         children: [
                           Text('Order Status : ${widget.orderStatus}' ,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                              fontSize: 18.sp,
                             ),
                           ),
                         ],
@@ -595,18 +597,18 @@ Color _getColorFromString(String colorName) {
                     ),
 
 
-                    const SizedBox(height: 8,),
+                     SizedBox(height: 8.h),
                     if(widget.paymentStatus == "held")
                    Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
-                      width: double.infinity,
+                      width: double.infinity.w,
                       color: Colors.blueGrey[100],
                      child: Row(
                         children: [
                           Text('Payment Status : ${widget.paymentStatus}' ,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                              fontSize: 18.sp,
                             ),
                           ),
                         ],
@@ -616,14 +618,14 @@ Color _getColorFromString(String colorName) {
                   if(widget.paymentStatus == "released")
                    Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
-                      width: double.infinity,
+                      width: double.infinity.w,
                      color: Colors.green[400],
                      child: Row(
                         children: [
                           Text('Payment Status : ${widget.paymentStatus}' ,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                              fontSize: 18.sp,
                             ),
                           ),
                         ],
@@ -632,30 +634,30 @@ Color _getColorFromString(String colorName) {
 
                     if(widget.paymentStatus == "refunded")
                    Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
-                      width: double.infinity,
+                    padding:  EdgeInsets.symmetric(horizontal: 8,vertical: 12),
+                      width: double.infinity.w,
                      color: Colors.red[200],
                      child: Row(
                         children: [
                           Text('Payment Status : ${widget.paymentStatus}' ,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                              fontSize: 18.sp,
                             ),
                           ),
                         ],
                       ),
                    ),
 
-                    const SizedBox(height: 8,),
+                     SizedBox(height: 8.h),
 
                     Row(
                       children: [
                         Text(
                           'Ordered Date: ${_formatTimestamp(widget.timestamp)}', // Format and display the timestamp
-                          style: const TextStyle(
+                          style:  TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                            fontSize: 18.sp,
                           ),
                         ),
                       ],
@@ -664,7 +666,7 @@ Color _getColorFromString(String colorName) {
                   ],
                 ),
               ),
-              const SizedBox(height: 22,),
+               SizedBox(height: 22.h),
             ],
           ),
         ),

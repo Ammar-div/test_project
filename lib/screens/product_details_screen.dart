@@ -6,6 +6,7 @@ import 'package:test_project/screens/auth_screen.dart';
 import 'package:test_project/screens/order/pre_checkout.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 
@@ -185,7 +186,7 @@ Future<void> _toggleFavorite() async {
           children: [
             CarouselSlider(
             options: CarouselOptions(
-              height: 300,
+              height: 300.h,
               autoPlay: widget.imageUrls.length > 1, // Auto-play only if there is more than one image
               enlargeCenterPage: true,
               viewportFraction: 1.0,
@@ -200,7 +201,7 @@ Future<void> _toggleFavorite() async {
                       width: MediaQuery.of(context).size.width,
                       margin: const EdgeInsets.symmetric(horizontal: 5.0),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                         image: DecorationImage(
                           image: NetworkImage(imageUrl),
                           fit: BoxFit.cover,
@@ -212,7 +213,7 @@ Future<void> _toggleFavorite() async {
               );
             }).toList(),
           ),
-            const SizedBox(height: 20),
+             SizedBox(height: 20.h),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -220,12 +221,12 @@ Future<void> _toggleFavorite() async {
                 children: [
                   Text(
                     widget.productName,
-                    style: const TextStyle(
-                      fontSize: 24,
+                    style:  TextStyle(
+                      fontSize: 24.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                   SizedBox(height: 8.h),
                   Row(
                     children: [
                       Text(
@@ -306,13 +307,13 @@ Future<void> _toggleFavorite() async {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 25),
+                   SizedBox(height: 25.h),
 
                   // Conditionally display the Checkout button
                   if (!_isSeller)
                     Center(
                       child: SizedBox(
-                        width: screenWidth * 0.80,
+                        width: screenWidth * 0.80.w,
                         child: ElevatedButton(
                           onPressed: () async {
                             final productDoc = await FirebaseFirestore.instance.collection('products').doc(widget.productId).get();
@@ -379,7 +380,7 @@ Future<void> _toggleFavorite() async {
                             padding: const EdgeInsets.symmetric(vertical: 13),
                             backgroundColor: const Color.fromARGB(255, 72, 110, 255),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(8.r),
                             ),
                           ),
                           child: const Text(
@@ -391,7 +392,7 @@ Future<void> _toggleFavorite() async {
                         ),
                       ),
                     ),
-                  const SizedBox(height: 20),
+                   SizedBox(height: 20.h),
                   const Text(
                     'Description',
                     style: TextStyle(
@@ -399,7 +400,7 @@ Future<void> _toggleFavorite() async {
                       fontSize: 18,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                   SizedBox(height: 8.h),
                   AnimatedCrossFade(
                     firstChild: Text(
                       widget.description,
@@ -421,7 +422,7 @@ Future<void> _toggleFavorite() async {
                       },
                       child: Text(_isExpanded ? 'Show Less' : 'Show More'),
                     ),
-                  const SizedBox(height: 30),
+                   SizedBox(height: 30.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -429,21 +430,21 @@ Future<void> _toggleFavorite() async {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           border: Border.all(),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Row(
                           children: [
-                            const Text(
+                             Text(
                               'Status : ',
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 20.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
                               widget.status,
-                              style: const TextStyle(
-                                fontSize: 20,
+                              style:  TextStyle(
+                                fontSize: 20.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -454,21 +455,21 @@ Future<void> _toggleFavorite() async {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           border: Border.all(),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Row(
                           children: [
-                            const Text(
+                             Text(
                               'Number : ',
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 20.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
                               widget.quantity.toString(),
-                              style: const TextStyle(
-                                fontSize: 20,
+                              style:  TextStyle(
+                                fontSize: 20.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -478,27 +479,27 @@ Future<void> _toggleFavorite() async {
                     ],
                   ),
                   if(widget.howMuchUsed != 'Not specified')
-                  const SizedBox(height: 16),
+                   SizedBox(height: 16.h),
                   if(widget.howMuchUsed != 'Not specified')
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       border: Border.all(),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Row(
                       children: [
-                        const Text(
+                         Text(
                           'Duration of use : ',
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 20.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           widget.howMuchUsed,
-                          style: const TextStyle(
-                            fontSize: 20,
+                          style:  TextStyle(
+                            fontSize: 20.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -632,10 +633,10 @@ Widget build(BuildContext context) {
               ),
             ),
           ),
-          const SizedBox(height: 10),
+           SizedBox(height: 10.h),
           CarouselSlider(
             options: CarouselOptions(
-              height: 300,
+              height: 300.h,
               autoPlay: widget.imageUrls.length > 1,
               enlargeCenterPage: true,
               viewportFraction: 1.0,
@@ -649,7 +650,7 @@ Widget build(BuildContext context) {
                       width: MediaQuery.of(context).size.width,
                       margin: const EdgeInsets.symmetric(horizontal: 5.0),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                         image: DecorationImage(
                           image: NetworkImage(imageUrl),
                           fit: BoxFit.cover,
@@ -661,7 +662,7 @@ Widget build(BuildContext context) {
               );
             }).toList(),
           ),
-          const SizedBox(height: 20),
+           SizedBox(height: 20.h),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -669,21 +670,21 @@ Widget build(BuildContext context) {
               children: [
                 Text(
                   widget.productName,
-                  style: const TextStyle(
-                    fontSize: 24,
+                  style:  TextStyle(
+                    fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                 SizedBox(height: 8.h),
                 Text(
                   '${widget.productPrice.toStringAsFixed(0)} JOD',
-                  style: const TextStyle(
-                    fontSize: 20,
+                  style:  TextStyle(
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.green,
                   ),
                 ),
-                const SizedBox(height: 25),
+                 SizedBox(height: 25.h),
                 // Display the number of users who favorited the product
                 FutureBuilder<int>(
                   future: _getFavoriteCount(widget.productId),
@@ -696,8 +697,8 @@ Widget build(BuildContext context) {
                       final favoriteCount = snapshot.data ?? 0;
                       return Text(
                         '$favoriteCount users have favorited this product',
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style:  TextStyle(
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue,
                         ),
@@ -705,15 +706,15 @@ Widget build(BuildContext context) {
                     }
                   },
                 ),
-                const SizedBox(height: 25),
-                const Text(
+                 SizedBox(height: 25.h),
+                 Text(
                   'Description',
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
-                    fontSize: 18,
+                    fontSize: 18.sp,
                   ),
                 ),
-                const SizedBox(height: 8),
+                 SizedBox(height: 8.h),
                 AnimatedCrossFade(
                   firstChild: Text(
                     widget.description,
@@ -735,25 +736,25 @@ Widget build(BuildContext context) {
                     },
                     child: Text(_isExpanded ? 'Show Less' : 'Show More'),
                   ),
-                const SizedBox(height: 30),
+                 SizedBox(height: 30.h),
                 if (widget.productOrderStatus == "Not requested yet")
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    width: double.infinity,
+                    width: double.infinity.w,
                     color: Colors.blueGrey[100],
                     child: Row(
                       children: [
-                        const Text(
+                         Text(
                           'Order status : ',
                           style: TextStyle(
-                            fontSize: 17,
+                            fontSize: 17.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           widget.productOrderStatus,
-                          style: const TextStyle(
-                            fontSize: 17,
+                          style:  TextStyle(
+                            fontSize: 17.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -763,21 +764,21 @@ Widget build(BuildContext context) {
                 if (widget.productOrderStatus == "It has been purchased")
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    width: double.infinity,
+                    width: double.infinity.w,
                     color: Colors.green[400],
                     child: Row(
                       children: [
-                        const Text(
+                         Text(
                           'Product order status : ',
                           style: TextStyle(
-                            fontSize: 17,
+                            fontSize: 17.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           widget.productOrderStatus,
-                          style: const TextStyle(
-                            fontSize: 17,
+                          style:  TextStyle(
+                            fontSize: 17.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -787,7 +788,7 @@ Widget build(BuildContext context) {
                 if (widget.productOrderStatus == "confirmed")
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    width: double.infinity,
+                    width: double.infinity.w,
                     color: const Color.fromARGB(255, 162, 210, 233),
                     child: Row(
                       children: [
@@ -815,7 +816,7 @@ Widget build(BuildContext context) {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.delivery_dining_sharp, color: Colors.green[600]),
-                        const SizedBox(width: 6),
+                         SizedBox(width: 6.w),
                         const Text(
                           'Your Delivery captain will contact you soon.',
                           textAlign: TextAlign.center,
@@ -826,21 +827,21 @@ Widget build(BuildContext context) {
                 if (widget.productOrderStatus == "picked up")
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    width: double.infinity,
+                    width: double.infinity.w,
                     color: Colors.orange[300],
                     child: Row(
                       children: [
-                        const Text(
+                         Text(
                           'Order status : ',
                           style: TextStyle(
-                            fontSize: 17,
+                            fontSize: 17.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           widget.productOrderStatus,
-                          style: const TextStyle(
-                            fontSize: 17,
+                          style:  TextStyle(
+                            fontSize: 17.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -854,7 +855,7 @@ Widget build(BuildContext context) {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.delivery_dining_sharp, color: Colors.green[600]),
-                        const SizedBox(width: 6),
+                         SizedBox(width: 6.w),
                         const Text(
                           'Captain is now heading to the buyer.',
                           textAlign: TextAlign.center,
@@ -863,11 +864,11 @@ Widget build(BuildContext context) {
                     ),
                   ),
                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                  const SizedBox(height: 15),
+                   SizedBox(height: 15.h),
                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                   const Divider(),
                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                  const SizedBox(height: 15),
+                   SizedBox(height: 15.h),
                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -881,15 +882,15 @@ Widget build(BuildContext context) {
                       ),
                       Text(
                         widget.deliveryInfos!['name'],
-                        style: const TextStyle(
+                        style:  TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                          fontSize: 20.sp,
                         ),
                       ),
                     ],
                   ),
                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                  const SizedBox(height: 16),
+                   SizedBox(height: 16.h),
                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -910,10 +911,10 @@ Widget build(BuildContext context) {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(width: 8),
+                             SizedBox(width: 8.w),
                             Container(
-                              width: 20,
-                              height: 20,
+                              width: 20.w,
+                              height: 20.h,
                               decoration: BoxDecoration(
                                 color: _getColorFromString(
                                     widget.deliveryInfos!['Vehicle_Infos']['Vehicle_Color']),
@@ -926,7 +927,7 @@ Widget build(BuildContext context) {
                     ),
                   ),
                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                  const SizedBox(height: 16),
+                   SizedBox(height: 16.h),
                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 22),
@@ -969,22 +970,22 @@ Widget build(BuildContext context) {
                     ),
                   ),
                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                  const SizedBox(height: 16),
+                   SizedBox(height: 16.h),
                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                   const Divider(),
                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
-                  const SizedBox(height: 11),
+                   SizedBox(height: 11.h),
                 if (widget.productOrderStatus == "It has been favorited")
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    width: double.infinity,
+                    width: double.infinity.w,
                     color: Colors.orange[300],
                     child: Row(
                       children: [
-                        const Text(
+                         Text(
                           'Order status : ',
                           style: TextStyle(
-                            fontSize: 17,
+                            fontSize: 17.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -998,103 +999,103 @@ Widget build(BuildContext context) {
                       ],
                     ),
                   ),
-                const SizedBox(height: 14),
+                 SizedBox(height: 14.sp),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                  width: double.infinity,
+                  width: double.infinity.w,
                   color: Colors.blueGrey[100],
                   child: Row(
                     children: [
-                      const Text(
+                       Text(
                         'Product Status : ',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
                         widget.status,
-                        style: const TextStyle(
-                          fontSize: 20,
+                        style:  TextStyle(
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 14),
+                 SizedBox(height: 14.h),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                  width: double.infinity,
+                  width: double.infinity.w,
                   color: Colors.blueGrey[100],
                   child: Row(
                     children: [
-                      const Text(
+                       Text(
                         'Number : ',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
                         widget.quantity.toString(),
-                        style: const TextStyle(
-                          fontSize: 20,
+                        style:  TextStyle(
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 14),
+                 SizedBox(height: 14.h),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                  width: double.infinity,
+                  width: double.infinity.w,
                   color: Colors.blueGrey[100],
                   child: Row(
                     children: [
-                      const Text(
+                       Text(
                         'Duration of use : ',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
                         widget.howMuchUsed,
-                        style: const TextStyle(
-                          fontSize: 20,
+                        style:  TextStyle(
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 14),
+                 SizedBox(height: 14.h),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                  width: double.infinity,
+                  width: double.infinity.w,
                   color: Colors.blueGrey[100],
                   child: Row(
                     children: [
-                      const Text(
+                       Text(
                         'Area : ',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
                         widget.pickUpLocation,
-                        style: const TextStyle(
-                          fontSize: 20,
+                        style:  TextStyle(
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 14),
+                 SizedBox(height: 14.h),
               ],
             ),
           ),

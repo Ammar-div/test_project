@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/screens/admin/pc_category/pc_create_category.dart';
 import 'package:test_project/screens/admin/pc_category/pc_edit_category.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PcCategory extends StatefulWidget {
   const PcCategory({super.key});
@@ -119,9 +120,9 @@ Future<void> deleteCategoryDetail(String id, String imageUrl) async {
                       child: Row(
                         children: [
                           Text(name,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               color: Colors.white,
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center,
@@ -140,7 +141,7 @@ Future<void> deleteCategoryDetail(String id, String imageUrl) async {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
                                     const Text('Delete This Category?'),
-                                    const SizedBox(height: 17,),
+                                     SizedBox(height: 17.h),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                       children: [ 
@@ -173,7 +174,7 @@ Future<void> deleteCategoryDetail(String id, String imageUrl) async {
                           ? Image.network(
                               imageUrl,
                               fit: BoxFit.cover,
-                              width: double.infinity,
+                              width: double.infinity.w,
                               errorBuilder: (context, error, stackTrace) {
                                 return const Center(
                                   child: Icon(Icons.image_not_supported),

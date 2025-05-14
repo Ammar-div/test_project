@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test_project/screens/delivery/delivery_home_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 
@@ -18,15 +19,15 @@ class DeliverySuccessScreen extends StatelessWidget {
               color: Colors.green,
               size: 100,
             ),
-            const SizedBox(height: 20),
-            const Text(
+             SizedBox(height: 20.h),
+             Text(
               'Order Successfully Delivered!',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 24.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 20),
+             SizedBox(height: 20.h),
             ElevatedButton(
               onPressed: () {
                 // Navigate back to the home screen or any other screen

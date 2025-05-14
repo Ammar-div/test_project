@@ -5,18 +5,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:test_project/widgets/keys.dart';
 import 'firebase_options.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 var kColorScheme = ColorScheme.fromSeed(
   seedColor: const Color.fromARGB(255, 242, 223, 214),
 );
 
-
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   WidgetsFlutterBinding.ensureInitialized();
   Stripe.publishableKey = PublishableKey;
   await Stripe.instance.applySettings();
@@ -31,16 +28,23 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme : ThemeData().copyWith(
-        colorScheme: kColorScheme,
-        appBarTheme: const AppBarTheme().copyWith(
-          backgroundColor: kColorScheme.onPrimaryContainer,
-          foregroundColor: kColorScheme.primaryContainer,
-        ),
-      ),
-       home: const SplashScreen(),
+    return ScreenUtilInit(
+      designSize: const Size(360, 690),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (BuildContext coontext, Widget? child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData().copyWith(
+            colorScheme: kColorScheme,
+            appBarTheme: const AppBarTheme().copyWith(
+              backgroundColor: kColorScheme.onPrimaryContainer,
+              foregroundColor: kColorScheme.primaryContainer,
+            ),
+          ),
+          home: const SplashScreen(),
+        );
+      },
     );
   }
 }

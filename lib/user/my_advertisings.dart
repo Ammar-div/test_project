@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/screens/product_details_screen.dart';
 import 'package:test_project/user/edit_user_products.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MyAdvertisings extends StatefulWidget {
   const MyAdvertisings({super.key, required this.sellerUserId});
@@ -29,7 +30,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
       gravity: ToastGravity.TOP,
       backgroundColor: const Color.fromARGB(255, 106, 179, 116),
       textColor: const Color.fromARGB(255, 255, 255, 255),
-      fontSize: 16.0,
+      fontSize: 16.0.sp,
     );
   }
 
@@ -129,7 +130,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                       TextSpan(
                         text: 'You can ',
                         style: TextStyle(
-                          fontSize: 25,
+                          fontSize: 25.sp,
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
@@ -154,8 +155,8 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                     ),
                   ),
                 ),
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 18),
+                 SliverToBoxAdapter(
+                  child: SizedBox(height: 18.h),
                 ),
 
                 // Product Grid Section
@@ -260,14 +261,14 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                         child: Card(
                           elevation: 2,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Expanded(
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(8.r),
                                   child: Hero(
                                     tag: productId,
                                     child: Image.network(
@@ -283,8 +284,8 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                   product['name'],
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 13,
+                                  style:  TextStyle(
+                                    fontSize: 13.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -295,8 +296,8 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                   product['description'],
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 10,
+                                  style:  TextStyle(
+                                    fontSize: 10.sp,
                                   ),
                                 ),
                               ),
@@ -306,8 +307,8 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                   children: [
                                     Text(
                                       '${product['price'].toStringAsFixed(0)} JOD',
-                                      style: const TextStyle(
-                                        fontSize: 12,
+                                      style:  TextStyle(
+                                        fontSize: 12.sp,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.green,
                                       ),
@@ -319,7 +320,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                   timeAgo,
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
-                                    fontSize: 7,
+                                    fontSize: 7.sp,
                                     fontWeight: FontWeight.bold,
                                     color: Theme.of(context).colorScheme.onPrimaryContainer, 
                                   ),
@@ -327,7 +328,7 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                               SizedBox(height: 8.h),
                               if(productOrderStatus == "Not requested yet")
                               // Edit Button
                               Padding(
@@ -358,20 +359,20 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(10.r),
                                     ),
                                     backgroundColor: Colors.blue,
                                     foregroundColor: Colors.white,
                                   ),
-                                  child: const Row(
+                                  child:  Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(Icons.edit_square, color: Colors.white, size: 19),
-                                      SizedBox(width: 5),
+                                      SizedBox(width: 5.w),
                                       Text(
                                         'Edit',
                                         style: TextStyle(
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -440,20 +441,20 @@ class _MyAdvertisingsState extends State<MyAdvertisings> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(10.r),
                                     ),
                                     backgroundColor: Colors.red,
                                     foregroundColor: Colors.white,
                                   ),
-                                  child: const Row(
+                                  child:  Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(Icons.delete, color: Colors.white, size: 19),
-                                      SizedBox(width: 5),
+                                      SizedBox(width: 5.w),
                                       Text(
                                         'Delete',
                                         style: TextStyle(
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                           color: Colors.white,
                                         ),
                                       ),

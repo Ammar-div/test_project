@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:test_project/screens/admin/crud_operations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 final _firebase = FirebaseAuth.instance;
@@ -56,7 +57,7 @@ class _VehichleInfosScreenState extends State<VehichleInfosScreen> {
        timeInSecForIosWeb: 3,
         backgroundColor: const Color.fromARGB(255, 106, 179, 116),
         textColor: const Color.fromARGB(255, 255, 255, 255),
-        fontSize: 16.0,
+        fontSize: 16.0.sp,
         webPosition: "right",
     );
   }
@@ -174,9 +175,9 @@ Future<void> _submit() async {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [                        
-                            const Text(
+                             Text(
                             'Select Vehicle Type',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                           ),
                           ListTile(
                             title: const Text('Car'),
@@ -204,7 +205,7 @@ Future<void> _submit() async {
                           ),
 
 
-                           const SizedBox(height: 20),
+                            SizedBox(height: 20.h),
 
                              TextFormField(
                               decoration:
@@ -224,7 +225,7 @@ Future<void> _submit() async {
                                 _enteredVehicleNumber = value!;
                               },
                             ),
-                          const SizedBox(height: 10),
+                           SizedBox(height: 10.h),
 
                           TextFormField(
                             decoration:
@@ -246,7 +247,7 @@ Future<void> _submit() async {
 
                            
                           
-                            const SizedBox(height: 40,),
+                             SizedBox(height: 40.h),
 
                             DropdownButtonFormField(
                               value: _selectedVehicleColor,
@@ -261,11 +262,11 @@ Future<void> _submit() async {
                                     child: Row(
                                       children: [
                                         Container(
-                                          width: 16,
-                                          height: 16,
+                                          width: 16.w,
+                                          height: 16.h,
                                           color: oneVehicleColorObj.value,
                                         ),
-                                        const SizedBox(width: 8,),
+                                         SizedBox(width: 8.w),
                                         Text(oneVehicleColorObj.key),
                                       ],
                                     ),),
@@ -277,7 +278,7 @@ Future<void> _submit() async {
                              
 
 
-                          const SizedBox(height: 80),
+                           SizedBox(height: 80.h),
                           if (_isAuthenticating)
                             const CircularProgressIndicator(),
                           if (!_isAuthenticating)

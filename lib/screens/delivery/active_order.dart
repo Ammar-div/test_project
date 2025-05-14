@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:test_project/active_order_data.dart';
 import 'package:test_project/screens/delivery/delivery_success_screen.dart'; // Replace with the actual path
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ActiveOrder extends StatefulWidget {
   const ActiveOrder({super.key});
@@ -50,7 +51,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
       gravity: ToastGravity.TOP,
       backgroundColor: const Color.fromARGB(255, 106, 179, 116),
       textColor: const Color.fromARGB(255, 255, 255, 255),
-      fontSize: 16.0,
+      fontSize: 16.0.sp,
     );
   }
 
@@ -64,7 +65,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
         gravity: ToastGravity.TOP,
         backgroundColor: const Color.fromARGB(255, 106, 179, 116),
         textColor: const Color.fromARGB(255, 255, 255, 255),
-        fontSize: 16.0,
+        fontSize: 16.0.sp,
       );
     });
   }
@@ -84,10 +85,10 @@ class _ActiveOrderState extends State<ActiveOrder> {
         valueListenable: activeOrderNotifier,
         builder: (context, activeOrderData, child) {
           if (activeOrderData == null) {
-            return const Center(
+            return  Center(
               child: Text(
                 'No active order found.',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+                style: TextStyle(fontSize: 18.sp, color: Colors.grey),
               ),
             );
           }
@@ -208,9 +209,9 @@ class _ActiveOrderState extends State<ActiveOrder> {
                             backgroundColor: Colors.green,
                           ),
                           child: _isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
+                              ?  SizedBox(
+                                  width: 20.w,
+                                  height: 20.h,
                                   child: CircularProgressIndicator(
                                     color: Colors.white,
                                     strokeWidth: 2,
@@ -304,14 +305,14 @@ class _ActiveOrderState extends State<ActiveOrder> {
                           backgroundColor: Colors.green,
                         ),
                         child: _isMarkingDelivered
-                            ? const Row(
+                            ?  Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                    Text('Mark as Delivered'),
-                                   SizedBox(width: 8), // Add spacing between text and spinner
+                                   SizedBox(width: 8.w), // Add spacing between text and spinner
                                    SizedBox(
-                                    width: 20,
-                                    height: 20,
+                                    width: 20.w,
+                                    height: 20.h,
                                     child: CircularProgressIndicator(
                                       color: Colors.white,
                                       strokeWidth: 2,
@@ -337,7 +338,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -346,8 +347,8 @@ class _ActiveOrderState extends State<ActiveOrder> {
           children: [
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 20,
+              style:  TextStyle(
+                fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue,
               ),
@@ -367,19 +368,19 @@ class _ActiveOrderState extends State<ActiveOrder> {
       child: Row(
         children: [
           Icon(icon, color: Colors.blue.shade800, size: 16),
-          const SizedBox(width: 10),
+           SizedBox(width: 10.w),
           Text(
             '$label: ',
-            style: const TextStyle(
-              fontSize: 16,
+            style:  TextStyle(
+              fontSize: 16.sp,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
           ),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 14,
+            style:  TextStyle(
+              fontSize: 14.sp,
               color: Colors.black54,
             ),
           ),

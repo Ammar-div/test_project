@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OrdersSummary extends StatefulWidget {
   const OrdersSummary({super.key});
@@ -101,17 +102,17 @@ class _OrdersSummaryState extends State<OrdersSummary> {
                             children: [
                               Text(
                                 'Order ID: ${order['buyer_id']}',
-                                style: const TextStyle(
+                                style:  TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                                  fontSize: 14.sp,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                               SizedBox(height: 8.h),
                               Text('Product: ${productData['name']}'),
                               Text('Category: $categoryName'),
                               Text('Quantity: ${order['product_infos']['quantity']}'),
                               Text('Total Amount: \$${order['product_infos']['total_amount']}'),
-                              const SizedBox(height: 8),
+                               SizedBox(height: 8.h),
                               Text(
                                 'Receiver Info:',
                                 style: TextStyle(
@@ -122,7 +123,7 @@ class _OrdersSummaryState extends State<OrdersSummary> {
                               Text('Name: ${order['receiver_infos']['receiver_name']}'),
                               Text('Phone: ${order['receiver_infos']['receiver_phone_number']}'),
                               Text('Pickup Location: ${order['receiver_infos']['receiver_pick_up_location']}'),
-                              const SizedBox(height: 8),
+                               SizedBox(height: 8.h),
                               Text(
                                 'Seller Info:',
                                 style: TextStyle(
@@ -132,7 +133,7 @@ class _OrdersSummaryState extends State<OrdersSummary> {
                               ),
                               Text('Seller Location: ${order['seller_location']}'),
                               Text('Seller Phone: ${order['seller_phone_number']}'),
-                              const SizedBox(height: 8),
+                               SizedBox(height: 8.h),
                               Text(
                                 'Delivery Date: $formattedDeliveredDate',
                                 style: TextStyle(

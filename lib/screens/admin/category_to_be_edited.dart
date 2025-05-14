@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test_project/screens/admin/pc_category/pc_category.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CategoryToBeEdited extends StatelessWidget {
   const CategoryToBeEdited({super.key});
@@ -14,16 +15,16 @@ class CategoryToBeEdited extends StatelessWidget {
           children: [
             // Elevated Button at the top
             Padding(
-              padding: const EdgeInsets.only(top: 50),
+              padding:  EdgeInsets.only(top: 50),
               child: SizedBox(
-                width: screenWidth * 0.75,
+                width: screenWidth * 0.75.w,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: const Text(
+                  child:  Text(
                     'Back',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -59,14 +60,14 @@ class CategoryToBeEdited extends StatelessWidget {
                           children: [
                             Container(
                               color: Colors.black87,
-                              width: double.infinity,
-                              child: const Padding(
+                              width: double.infinity.w,
+                              child:  Padding(
                                 padding: EdgeInsets.symmetric(vertical: 7),
                                 child: Text(
                                   'PC',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 20,
+                                    fontSize: 20.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
                                   textAlign: TextAlign.center,
@@ -77,7 +78,7 @@ class CategoryToBeEdited extends StatelessWidget {
                               child: Image.asset(
                                 'assets/images/pc.jpg',
                                 fit: BoxFit.cover,
-                                width: double.infinity,
+                                width: double.infinity.w,
                               ),
                             ),
                           ],
@@ -97,14 +98,14 @@ class CategoryToBeEdited extends StatelessWidget {
                           children: [
                             Container(
                               color: Colors.black87,
-                              width: double.infinity,
-                              child: const Padding(
+                              width: double.infinity.w,
+                              child:  Padding(
                                 padding: EdgeInsets.symmetric(vertical: 7),
                                 child: Text(
                                   'Clothes',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 20,
+                                    fontSize: 20.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
                                   textAlign: TextAlign.center,
@@ -115,7 +116,7 @@ class CategoryToBeEdited extends StatelessWidget {
                               child: Image.asset(
                                 'assets/images/clothing.jpg',
                                 fit: BoxFit.cover,
-                                width: double.infinity,
+                                width: double.infinity.w,
                               ),
                             ),
                           ],
@@ -135,14 +136,14 @@ class CategoryToBeEdited extends StatelessWidget {
                           children: [
                             Container(
                               color: Colors.black87,
-                              width: double.infinity,
-                              child: const Padding(
+                              width: double.infinity.w,
+                              child:  Padding(
                                 padding: EdgeInsets.symmetric(vertical: 7),
                                 child: Text(
                                   'Furniture',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 20,
+                                    fontSize: 20.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
                                   textAlign: TextAlign.center,
@@ -153,7 +154,7 @@ class CategoryToBeEdited extends StatelessWidget {
                               child: Image.asset(
                                 'assets/images/furniture.jpeg',
                                 fit: BoxFit.cover,
-                                width: double.infinity,
+                                width: double.infinity.w,
                               ),
                             ),
                           ],

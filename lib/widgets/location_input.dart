@@ -4,6 +4,7 @@ import 'package:location/location.dart';
 //import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:test_project/screens/map_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LocationInput extends StatefulWidget {
   final Function onSelectLocation;
@@ -94,12 +95,12 @@ class _LocationInputState extends State<LocationInput> {
     return Column(
       children: [
         Container(
-          height: 170,
-          width: double.infinity,
+          height: 170.h,
+          width: double.infinity.w,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             border: Border.all(
-              width: 1,
+              width: 1.w,
               color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
             ),
           ),
@@ -116,12 +117,12 @@ class _LocationInputState extends State<LocationInput> {
                   : Image.network(
                       _previewImageUrl!,
                       fit: BoxFit.cover,
-                      width: double.infinity,
+                      width: double.infinity.w,
                     ),
         ),
-        const SizedBox(height: 7),
+         SizedBox(height: 7.h),
         Container(
-          width: double.infinity,
+          width: double.infinity.w,
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -138,7 +139,7 @@ class _LocationInputState extends State<LocationInput> {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+               SizedBox(width: 10.w),
               Expanded(
                 child: TextButton.icon(
                   icon: const Icon(Icons.map),

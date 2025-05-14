@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:test_project/onbording/onbording.dart';
 import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/screens/delivery/delivery_home_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -103,7 +104,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        width: double.infinity,
+        width: double.infinity.w,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [

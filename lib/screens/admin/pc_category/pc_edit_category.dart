@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PcEditCategory extends StatefulWidget {
   final String userId;
@@ -91,7 +92,7 @@ class _PcEditCategoryState extends State<PcEditCategory> {
       gravity: ToastGravity.TOP,
       backgroundColor: const Color.fromARGB(255, 106, 179, 116),
       textColor: const Color.fromARGB(255, 255, 255, 255),
-      fontSize: 16.0,
+      fontSize: 16.0.sp,
     );
   }
 
@@ -121,11 +122,11 @@ class _PcEditCategoryState extends State<PcEditCategory> {
                       : null,
                 ),
               ),
-              const SizedBox(height: 18),
+               SizedBox(height: 18.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(width: 8),
+                   SizedBox(width: 8.w),
                   ElevatedButton.icon(
                     onPressed: _pickImageFromGallery,
                     icon: const Icon(Icons.photo),
@@ -133,7 +134,7 @@ class _PcEditCategoryState extends State<PcEditCategory> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+               SizedBox(height: 16.h),
               TextFormField(
                 controller: nameController,
                 decoration: const InputDecoration(labelText: 'Name'),
@@ -144,16 +145,16 @@ class _PcEditCategoryState extends State<PcEditCategory> {
                   return null;
                 },
               ),
-              const SizedBox(height: 40,),
+               SizedBox(height: 40.h),
               SizedBox(
-                width: double.infinity,
+                width: double.infinity.w,
                 child: ElevatedButton( 
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                       side: BorderSide(
                         color: Theme.of(context).colorScheme.primary,
-                        width: 2,
+                        width: 2.w,
                       ),
                     ),
                   ),
@@ -176,9 +177,9 @@ class _PcEditCategoryState extends State<PcEditCategory> {
                     }
                   },
                   child: _isUpdating
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
+                      ?  SizedBox(
+                          height: 20.h,
+                          width: 20.w,
                           child: CircularProgressIndicator(
                             //color: Colors.white,
                             strokeWidth: 2,

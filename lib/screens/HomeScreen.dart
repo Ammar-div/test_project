@@ -7,6 +7,7 @@ import 'package:test_project/screens/admin/pc_category/all_categories.dart';
 import 'package:test_project/screens/auth_screen.dart';
 import 'package:test_project/screens/product_details_screen.dart';
 import 'package:test_project/widgets/main_drawr.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -177,12 +178,12 @@ Widget build(BuildContext context) {
                 _getUserName();
               }
             },
-            child: const Padding(
+            child:  Padding(
               padding: EdgeInsets.only(right: 16),
               child: Row(
                 children: [
                   Icon(FontAwesomeIcons.user, size: 16),
-                  SizedBox(width: 6),
+                  SizedBox(width: 6.w),
                   Text('Sign In'),
                 ],
               ),
@@ -194,7 +195,7 @@ Widget build(BuildContext context) {
             child: Row(
               children: [
                 Text(userName),
-                const SizedBox(width: 8),
+                 SizedBox(width: 8.w),
                 const Icon(FontAwesomeIcons.userTie, size: 16),
               ],
             ),
@@ -235,11 +236,11 @@ Widget build(BuildContext context) {
 
           return CustomScrollView(
             slivers: [
-              const SliverToBoxAdapter(
+               SliverToBoxAdapter(
                 child: Column(
                   children: [
                     AllCategories(),
-                    SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                   ],
                 ),
               ),
@@ -279,14 +280,14 @@ Widget build(BuildContext context) {
                       child: Card(
                         elevation: 2,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Expanded(
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(8.r),
                                 child: Hero(
                                   tag: productId,
                                   child: Image.network(
@@ -302,8 +303,8 @@ Widget build(BuildContext context) {
                                 product['name'],
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 13,
+                                style:  TextStyle(
+                                  fontSize: 13.sp,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -314,8 +315,8 @@ Widget build(BuildContext context) {
                                 product['description'],
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 10,
+                                style:  TextStyle(
+                                  fontSize: 10.sp,
                                 ),
                               ),
                             ),
@@ -324,8 +325,8 @@ Widget build(BuildContext context) {
                               children: [
                                 Text(
                                   '${product['price'].toStringAsFixed(0)} JOD',
-                                  style: const TextStyle(
-                                    fontSize: 13,
+                                  style:  TextStyle(
+                                    fontSize: 13.sp,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.green,
                                   ),
@@ -408,7 +409,7 @@ Widget build(BuildContext context) {
                                 timeAgo,
                                 textAlign: TextAlign.start,
                                 style: TextStyle(
-                                  fontSize: 9,
+                                  fontSize: 9.sp,
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                                 ),

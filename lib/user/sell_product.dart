@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
 import 'package:test_project/screens/HomeScreen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 class SellProduct extends StatefulWidget {
   const SellProduct({
     super.key,
@@ -83,13 +84,13 @@ Widget build(BuildContext context) {
             Text(
               'What Product you want to sell',
               style: TextStyle(
-                fontSize: 25,
+                fontSize: 25.sp,
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 18),
+             SizedBox(height: 18.h),
           ];
 
           // Add categories to the list
@@ -117,10 +118,10 @@ Widget build(BuildContext context) {
                     child: Card(
                       margin: const EdgeInsets.all(8),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                         side: BorderSide(
                           color: Theme.of(context).colorScheme.primary, // Border color
-                          width: 2, // Border width
+                          width: 2.w, // Border width
                         ),
                       ),
                       clipBehavior: Clip.hardEdge,
@@ -130,8 +131,8 @@ Widget build(BuildContext context) {
                           // Image with individual loading indicator
                           Image.network(
                             imageUrl,
-                            height: 300,
-                            width: double.infinity,
+                            height: 300.h,
+                            width: double.infinity.w,
                             fit: BoxFit.cover,
                             loadingBuilder: (context, child, loadingProgress) {
                               if (loadingProgress == null) return child;
@@ -149,15 +150,15 @@ Widget build(BuildContext context) {
                               );
                             },
                           ),
-                          const SizedBox(height: 8),
+                           SizedBox(height: 8.h),
                           // Add a top border to the Text widget
                           Container(
-                            width: double.infinity, // Make the container full width
+                            width: double.infinity.w, // Make the container full width
                             decoration: BoxDecoration(
                               border: Border(
                                 top: BorderSide(
                                   color: Theme.of(context).colorScheme.primary, // Border color
-                                  width: 2, // Border width
+                                  width: 2.w, // Border width
                                 ),
                               ),
                             ),
@@ -166,8 +167,8 @@ Widget build(BuildContext context) {
                               child: Text(
                                 nameOfTheCategory,
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 22,
+                                style:  TextStyle(
+                                  fontSize: 22.sp,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -177,7 +178,7 @@ Widget build(BuildContext context) {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 25), // Add vertical space after each card
+                   SizedBox(height: 25.sp), // Add vertical space after each card
                 ],
               ),
             );
@@ -383,8 +384,8 @@ void _filterLocations(String query) {
           return AlertDialog(
             title: const Text('Select Pick Up Location'),
             content: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.5,
-              width: MediaQuery.of(context).size.width * 0.8,
+              height: MediaQuery.of(context).size.height * 0.5.h,
+              width: MediaQuery.of(context).size.width * 0.8.w,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -400,7 +401,7 @@ void _filterLocations(String query) {
                       });
                     },
                   ),
-                  const SizedBox(height: 10),
+                   SizedBox(height: 10.h),
                   Expanded(
                     child: ListView.builder(
                       shrinkWrap: true,
@@ -481,7 +482,7 @@ Future<void> _pickImageFromGallery() async {
       gravity: ToastGravity.TOP,
       backgroundColor: const Color.fromARGB(255, 106, 179, 116),
       textColor: const Color.fromARGB(255, 255, 255, 255),
-      fontSize: 16.0,
+      fontSize: 16.0.sp,
     );
   }
 
@@ -519,7 +520,7 @@ Future<void> _pickImageFromGallery() async {
         barrierDismissible: false,
         builder: (context) => Center(
           child: SizedBox(
-            height: 150,
+            height: 150.h,
             child: Lottie.network(
                 'https://lottie.host/635ac215-31e4-41bc-9ee4-a4fa4ddc9f76/8ki4C5LVhJ.json'),
           ),
@@ -615,14 +616,14 @@ Widget _buildBulletPoint(String text) {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+         Text(
           '• ',
-          style: TextStyle(fontSize: 30),
+          style: TextStyle(fontSize: 30.sp),
         ),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(fontSize: 16),
+            style:  TextStyle(fontSize: 16.sp),
           ),
         ),
       ],
@@ -645,16 +646,16 @@ Widget build(BuildContext context) {
         key: _formKey,
         child: Column(
           children: [
-            const SizedBox(height: 16,),
+             SizedBox(height: 16.h),
              Text('Add Images',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.onPrimaryContainer,
-              fontSize: 30,
+              fontSize: 30.sp,
             ),
             textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 10,),
+           SizedBox(height: 10.h),
 
              Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -662,11 +663,11 @@ Widget build(BuildContext context) {
                 _buildBulletPoint('The first image you take is the image that will appear in the main page.'),
               ],
             ),
-            const SizedBox(height: 30,),
+             SizedBox(height: 30.h),
             // Display selected images
             if (_selectedImages.isNotEmpty)
               SizedBox(
-                height: 130,
+                height: 130.h,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: _selectedImages.length,
@@ -677,8 +678,8 @@ Widget build(BuildContext context) {
                         children: [
                           Image.file(
                             _selectedImages[index],
-                            width: 130,
-                            height: 130,
+                            width: 130.w,
+                            height: 130.h,
                             fit: BoxFit.cover,
                           ),
                           Positioned(
@@ -699,7 +700,7 @@ Widget build(BuildContext context) {
                   },
                 ),
               ),
-            const SizedBox(height: 18),
+             SizedBox(height: 18.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -708,7 +709,7 @@ Widget build(BuildContext context) {
                   icon: const Icon(Icons.camera),
                   label: const Text('Camera'),
                 ),
-                const SizedBox(width: 8),
+                 SizedBox(width: 8.w),
                 ElevatedButton.icon(
                   onPressed: _pickImageFromGallery,
                   icon: const Icon(Icons.photo),
@@ -716,7 +717,7 @@ Widget build(BuildContext context) {
                 ),
               ],
             ),
-            const SizedBox(height: 30),
+             SizedBox(height: 30.h),
             TextFormField(
               controller: productNameController,
               decoration: const InputDecoration(labelText: 'Main Title'),
@@ -728,7 +729,7 @@ Widget build(BuildContext context) {
                 return null;
               },
             ),
-            const SizedBox(height: 40),
+             SizedBox(height: 40.h),
             TextFormField(
               controller: productDescriptionController,
               decoration: InputDecoration(
@@ -754,7 +755,7 @@ Widget build(BuildContext context) {
                 return null;
               },
             ),
-            const SizedBox(height: 25),
+             SizedBox(height: 25.h),
 
                // Dropdown for ProductStatus with hint text
               DropdownButtonFormField<ProductStatus?>(
@@ -783,7 +784,7 @@ Widget build(BuildContext context) {
                 },
               ),
 
-            const SizedBox(height: 25),
+             SizedBox(height: 25.h),
               // Conditionally display HowMuchUsed dropdown
               if (_selectedProductStatus == ProductStatus.Used)
                 DropdownButtonFormField<HowMuchUsed?>(
@@ -813,7 +814,7 @@ Widget build(BuildContext context) {
                 ),
 
               if (_selectedProductStatus == ProductStatus.Used)
-                const SizedBox(height: 25),
+                 SizedBox(height: 25.h),
 
             TextFormField(
                     controller: quantityController, // Add a controller if needed
@@ -835,17 +836,17 @@ Widget build(BuildContext context) {
                   ),
 
 
-                const SizedBox(height: 25),
+                 SizedBox(height: 25.h),
 
               // Searchable Dropdown for Pick Up Location
            Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+               Text(
                 'Pick up location',
-                style: TextStyle(fontSize: 16,),
+                style: TextStyle(fontSize: 16.sp),
               ),
-              const SizedBox(height: 8),
+               SizedBox(height: 8.h),
               InkWell(
                 onTap: () => _showSearchableDropdown(context),
                 child: InputDecorator(
@@ -865,7 +866,7 @@ Widget build(BuildContext context) {
           ),
 
         // Add Card Input Field
-              const SizedBox(height: 25),
+               SizedBox(height: 25.h),
               stripe.CardField(
                 onCardChanged: (card) {
                   // Handle card changes if needed
@@ -877,8 +878,7 @@ Widget build(BuildContext context) {
               ),
                 
               
-            const SizedBox(height: 25),
-
+             SizedBox(height: 25.h),
              
 
 
@@ -897,17 +897,17 @@ Widget build(BuildContext context) {
                 return null;
               },
             ),
-            const SizedBox(height: 16),
-            const SizedBox(height: 24),
+             SizedBox(height: 16.h),
+             SizedBox(height: 24.h),
             SizedBox(
-              width: double.infinity,
+              width: double.infinity.w,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                     side: BorderSide(
                       color: Theme.of(context).colorScheme.primary,
-                      width: 2,
+                      width: 2.w,
                     ),
                   ),
                 ),
@@ -915,9 +915,9 @@ Widget build(BuildContext context) {
                   _createProduct();
                 },
                 child: _isUpdating
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
+                    ?  SizedBox(
+                        height: 20.h,
+                        width: 20.w,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                         ),

@@ -8,6 +8,7 @@ import 'package:test_project/user/my_advertisings.dart';
 import 'package:test_project/user/my_favorites.dart';
 import 'package:test_project/user/my_orders.dart';
 import 'package:test_project/user/sell_product.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MainDrawr extends StatefulWidget {
   const MainDrawr({super.key});
@@ -140,7 +141,7 @@ void _loginDialog(BuildContext context , String x)
                 padding:  EdgeInsets.only(top: 12),
                 child: Text('You need to log in.'),
               ),
-              const SizedBox(height: 17,),
+               SizedBox(height: 17.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [ 
@@ -286,7 +287,7 @@ class _MainDrawrState extends State<MainDrawr> {
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(width: 18),
+                 SizedBox(width: 18.w),
                 ShaderMask(
                   shaderCallback: (bounds) => LinearGradient(
                     colors: [
@@ -296,10 +297,10 @@ class _MainDrawrState extends State<MainDrawr> {
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                   ).createShader(bounds),
-                  child: const Text(
+                  child:  Text(
                     'Settings',
                     style: TextStyle(
-                      fontSize: 34,
+                      fontSize: 34.sp,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -318,12 +319,12 @@ class _MainDrawrState extends State<MainDrawr> {
               'Account Management',
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18,
+                    fontSize: 18.sp,
                   ),
             ),
             onTap: () => _handleAccountManagement(context),
           ),
-          const SizedBox(height: 12),
+           SizedBox(height: 12.h),
           ListTile(
             leading: Icon(
               Icons.favorite,
@@ -334,14 +335,14 @@ class _MainDrawrState extends State<MainDrawr> {
               'My Favorites',
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18,
+                    fontSize: 18.sp,
                   ),
             ),
             onTap: () {
               _handleMyFavorites(context);
             },
           ),
-          const SizedBox(height: 12),
+           SizedBox(height: 12.h),
           ListTile(
             leading: Icon(
               Icons.shopping_cart,
@@ -352,14 +353,14 @@ class _MainDrawrState extends State<MainDrawr> {
               'My Orders',
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18,
+                    fontSize: 18.sp,
                   ),
             ),
             onTap: () {
              _handleMyOrders(context);
             },
           ),
-          const SizedBox(height: 12),
+           SizedBox(height: 12.h),
           ListTile(
             leading: Icon(
               Icons.sell,
@@ -370,14 +371,14 @@ class _MainDrawrState extends State<MainDrawr> {
               'My Advertisings',
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18,
+                    fontSize: 18.sp,
                   ),
             ),
             onTap: () {
                _handleMyAdvertisings(context);
             },
           ),
-          const SizedBox(height: 12),
+           SizedBox(height: 12.h),
           ListTile(
             leading: Icon(
               Icons.attach_money,
@@ -388,14 +389,14 @@ class _MainDrawrState extends State<MainDrawr> {
               'Sell Product',
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18,
+                    fontSize: 18.sp,
                   ),
             ),
             onTap: () {
              _handleSellProduct(context);
             },
           ),
-          const SizedBox(height: 12),
+           SizedBox(height: 12.h),
           ListTile(
             leading: Icon(
               Icons.help,
@@ -406,12 +407,12 @@ class _MainDrawrState extends State<MainDrawr> {
               'Support',
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18,
+                    fontSize: 18.sp,
                   ),
             ),
             onTap: () {},
           ),
-          const SizedBox(height: 12),
+           SizedBox(height: 12.h),
           ListTile(
   leading: Icon(
     Icons.logout,
@@ -422,7 +423,7 @@ class _MainDrawrState extends State<MainDrawr> {
     'Log Out',
     style: Theme.of(context).textTheme.titleSmall!.copyWith(
           color: Theme.of(context).colorScheme.onSurface,
-          fontSize: 18,
+          fontSize: 18.sp,
         ),
   ),
   onTap: () {

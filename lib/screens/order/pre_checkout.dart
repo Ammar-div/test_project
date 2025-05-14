@@ -9,6 +9,7 @@ import 'package:test_project/screens/order/order_confirmation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:test_project/widgets/keys.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 final List<String> pickUpLocation = [
   "Al Yasmin",
@@ -139,8 +140,8 @@ class _PreCheckoutState extends State<PreCheckout> {
             return AlertDialog(
               title: const Text('Select Pick Up Location'),
               content: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.5,
-                width: MediaQuery.of(context).size.width * 0.8,
+                height: MediaQuery.of(context).size.height * 0.5.h,
+                width: MediaQuery.of(context).size.width * 0.8.w,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -156,7 +157,7 @@ class _PreCheckoutState extends State<PreCheckout> {
                         });
                       },
                     ),
-                    const SizedBox(height: 10),
+                     SizedBox(height: 10.h),
                     Expanded(
                       child: ListView.builder(
                         shrinkWrap: true,
@@ -378,15 +379,15 @@ Widget _buildBulletPoint(String text) {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+         Text(
           '• ',
-          style: TextStyle(fontSize: 30),
+          style: TextStyle(fontSize: 30.sp),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 11),
           child: Text(
               text,
-              style: const TextStyle(fontSize: 14),
+              style:  TextStyle(fontSize: 14.sp),
             ),
           
         ),
@@ -403,7 +404,7 @@ void showToastrMessage(String message) {
       gravity: ToastGravity.TOP,
       backgroundColor: const Color.fromARGB(255, 106, 179, 116),
       textColor: const Color.fromARGB(255, 255, 255, 255),
-      fontSize: 16.0,
+      fontSize: 16.0.sp,
     );
   }
 
@@ -423,7 +424,7 @@ void showToastrMessage(String message) {
                   color: Colors.white,
                   elevation: 5,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(20),
@@ -432,32 +433,32 @@ void showToastrMessage(String message) {
                       children: [
                         Container(
                           alignment: Alignment.centerLeft,
-                          decoration: const BoxDecoration(
+                          decoration:  BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
                                 color: Colors.grey,
-                                width: 1.0,
+                                width: 1.0.w,
                               ),
                             ),
                           ),
-                          child: const Text(
+                          child:  Text(
                             'Order Detail',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                              fontSize: 20.sp,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 18),
+                         SizedBox(height: 18.h),
                         Row(
                           children: [
                             Image.network(
                               widget.imageUrl,
-                              height: 90,
-                              width: 90,
+                              height: 90.h,
+                              width: 90.w,
                               fit: BoxFit.cover,
                             ),
-                            const SizedBox(width: 18),
+                             SizedBox(width: 18.w),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -468,7 +469,7 @@ void showToastrMessage(String message) {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                   SizedBox(height: 4.h),
                                   Text(
                                     widget.productDescription,
                                     maxLines: 2,
@@ -479,7 +480,7 @@ void showToastrMessage(String message) {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
+                         SizedBox(height: 16.h),
                         Row(
                           children: [
                             Text('Product price: ${widget.totalAmount}'),
@@ -487,9 +488,9 @@ void showToastrMessage(String message) {
                             Text('Quantity: ${widget.quantity}'),
                           ],
                         ),
-                        const SizedBox(height: 5),
+                         SizedBox(height: 5.h),
                         const Divider(),
-                        const SizedBox(height: 16),
+                         SizedBox(height: 16.h),
                         const Row(
                           children: [
                             Text('Delivery fee'),
@@ -497,7 +498,7 @@ void showToastrMessage(String message) {
                             Text('3 JOD'),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                         SizedBox(height: 8.h),
                         const Row(
                           children: [
                             Text('Service fee'),
@@ -505,7 +506,7 @@ void showToastrMessage(String message) {
                             Text('0.35 JOD'),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                         SizedBox(height: 8.h),
                         Row(
                           children: [
                             const Text('Order Total(incl. tax)', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -513,17 +514,17 @@ void showToastrMessage(String message) {
                             Text('${_orderTotal(widget.totalAmount).toString()} JOD'),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                         SizedBox(height: 8.h),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                 SizedBox(height: 20.h),
                 Card(
                   color: Colors.white,
                   elevation: 5,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(20),
@@ -542,22 +543,22 @@ void showToastrMessage(String message) {
                                 ),
                               ),
                             ),
-                            child: const Text(
+                            child:  Text(
                               'Order Header',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                                fontSize: 20.sp,
                               ),
                             ),
                           ),
-                          const SizedBox(height: 0),
+                           SizedBox(height: 0.h),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _buildBulletPoint("Enter the recipient's information"),
                             ],
                           ),
-                          const SizedBox(height: 0),
+                           SizedBox(height: 0.h),
                           TextFormField(
                             controller: userEmailController,
                             decoration: const InputDecoration(labelText: 'Email Address'),
@@ -574,7 +575,7 @@ void showToastrMessage(String message) {
                               _enteredEmail = value!;
                             },
                           ),
-                          const SizedBox(height: 16),
+                           SizedBox(height: 16.h),
                           TextFormField(
                             controller: userFullNameController,
                             decoration: const InputDecoration(labelText: 'Full Name'),
@@ -589,7 +590,7 @@ void showToastrMessage(String message) {
                               _enteredFullName = value!;
                             },
                           ),
-                          const SizedBox(height: 16),
+                           SizedBox(height: 16.h),
                           TextFormField(
                             controller: userPhoneNumberController,
                             decoration: const InputDecoration(labelText: 'Phone Number'),
@@ -613,15 +614,15 @@ void showToastrMessage(String message) {
                               _enteredPhoneNumber = value!;
                             },
                           ),
-                          const SizedBox(height: 16),
+                           SizedBox(height: 16.h),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                               Text(
                                 'Pick up location',
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(fontSize: 16.sp),
                               ),
-                              const SizedBox(height: 8),
+                               SizedBox(height: 8.h),
                               InkWell(
                                 onTap: () => _showSearchableDropdown(context),
                                 child: InputDecorator(
@@ -639,14 +640,14 @@ void showToastrMessage(String message) {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 22),
+                           SizedBox(height: 22.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               Flexible(
                                 flex: 3,
                                 child: SizedBox(
-                                  width: double.infinity,
+                                  width: double.infinity.w,
                                   child: ElevatedButton(
                                     onPressed: () {
                                       Navigator.pop(context);
@@ -655,15 +656,15 @@ void showToastrMessage(String message) {
                                       backgroundColor: Colors.yellow[800],
                                       foregroundColor: Colors.white,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(8.r),
                                       ),
                                     ),
-                                    child: const Center(
+                                    child:  Center(
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Icon(Icons.arrow_back_ios_new, color: Colors.white),
-                                          SizedBox(width: 6),
+                                          SizedBox(width: 6.w),
                                           Text('Back'),
                                         ],
                                       ),
@@ -671,11 +672,11 @@ void showToastrMessage(String message) {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 16),
+                               SizedBox(width: 16.w),
                               Flexible(
                                 flex: 3,
                                 child: SizedBox(
-                                  width: double.infinity,
+                                  width: double.infinity.w,
                                   child: ElevatedButton(
                                     onPressed: () async {
                                       _confirmOrder();
@@ -684,15 +685,15 @@ void showToastrMessage(String message) {
                                       backgroundColor: Colors.green[600],
                                       foregroundColor: Colors.white,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(8.r),
                                       ),
                                     ),
-                                    child: const Center(
+                                    child:  Center(
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Icon(Icons.check_circle_outline, color: Colors.white),
-                                          SizedBox(width: 6),
+                                          SizedBox(width: 6.w),
                                           Text('Checkout'),
                                         ],
                                       ),

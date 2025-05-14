@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -59,7 +60,7 @@ class _AuthScreenState extends State<AuthScreen> {
        timeInSecForIosWeb: 3,
         backgroundColor: const Color.fromARGB(255, 106, 179, 116),
         textColor: const Color.fromARGB(255, 255, 255, 255),
-        fontSize: 16.0,
+        fontSize: 16.0.sp,
         webPosition: "right",
     );
   }
@@ -278,7 +279,7 @@ Widget build(BuildContext context) {
                 left: 20,
                 right: 20,
               ),
-              width: 200,
+              width: 200.w,
               child: Image.asset('assets/images/logo.png'),
             ),
             Card(
@@ -297,12 +298,12 @@ Widget build(BuildContext context) {
                               _selectedImage = pickedImage;
                             },
                           ),
-                        if (!_isLogin) const SizedBox(height: 20),
+                        if (!_isLogin)  SizedBox(height: 20.h),
                         if (!_isLogin)
                           LocationInput(
                             onSelectLocation: _saveLocation,
                           ),
-                        if (!_isLogin) const SizedBox(height: 20),
+                        if (!_isLogin)  SizedBox(height: 20.h),
                         TextFormField(
                           decoration: const InputDecoration(
                             labelText: 'Email Address',
@@ -427,7 +428,7 @@ Widget build(BuildContext context) {
                               return null;
                             },
                           ),
-                        const SizedBox(height: 12),
+                         SizedBox(height: 12.h),
                         if (_isAuthenticating)
                           const CircularProgressIndicator(),
                         if (!_isAuthenticating)

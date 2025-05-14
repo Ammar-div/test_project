@@ -6,6 +6,7 @@ import 'package:test_project/screens/admin/category_to_be_edited.dart';
 import 'package:test_project/screens/admin/edit_delivery_details.dart';
 import 'package:test_project/screens/admin/edit_user_details.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CrudOperationsScreen extends StatefulWidget {
   const CrudOperationsScreen({super.key});
@@ -243,7 +244,7 @@ class _CrudOperationsScreenState extends State<CrudOperationsScreen> {
           style: OutlinedButton.styleFrom(
             side: BorderSide(
               color: Theme.of(context).colorScheme.primaryContainer,
-              width: 1.5,
+              width: 1.5.w,
             ),
           ),
           child: Text(
@@ -301,10 +302,10 @@ class _CrudOperationsScreenState extends State<CrudOperationsScreen> {
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(8.0.r),
                   borderSide: BorderSide(
                       color: Theme.of(context).colorScheme.primaryContainer,
-                      width: 2.0),
+                      width: 2.0.w),
                 ),
               ),
               onChanged: (value) {

@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:test_project/screens/admin/vehichle_infos.dart';
 import 'package:test_project/widgets/user_image_picker.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 
@@ -89,7 +90,7 @@ stripe.CardFieldInputDetails? _cardDetails;
        timeInSecForIosWeb: 3,
         backgroundColor: const Color.fromARGB(255, 106, 179, 116),
         textColor: const Color.fromARGB(255, 255, 255, 255),
-        fontSize: 16.0,
+        fontSize: 16.0.sp,
         webPosition: "right",
     );
   }
@@ -228,7 +229,7 @@ stripe.CardFieldInputDetails? _cardDetails;
                               _enteredFullName = value!;
                             },
                           ),
-                           const SizedBox(height: 20),
+                            SizedBox(height: 20.h),
 
                              TextFormField(
                               decoration:
@@ -248,7 +249,7 @@ stripe.CardFieldInputDetails? _cardDetails;
                                 _enteredNationalID = value!;
                               },
                             ),
-                          const SizedBox(height: 10),
+                           SizedBox(height: 10.h),
                        Container(
                         margin: const EdgeInsets.symmetric(vertical: 30),
                         decoration: BoxDecoration(
@@ -329,7 +330,7 @@ stripe.CardFieldInputDetails? _cardDetails;
                             },
                           ),
 
-                            const SizedBox(height: 20),
+                             SizedBox(height: 20.h),
                           TextFormField(
                             decoration:
                                 const InputDecoration(labelText: 'Password'),
@@ -345,7 +346,7 @@ stripe.CardFieldInputDetails? _cardDetails;
                             },
                           ),
                           
-                            const SizedBox(height: 20,),
+                             SizedBox(height: 20.h),
 
                            TextFormField(
                               decoration: const InputDecoration(labelText: 'Phone Number'),
@@ -371,7 +372,7 @@ stripe.CardFieldInputDetails? _cardDetails;
                                 _enteredPhoneNumber = value!;
                               },
                             ),
-                            const SizedBox(height: 20),
+                             SizedBox(height: 20.h),
 
                               TextFormField(
                             decoration:
@@ -391,10 +392,10 @@ stripe.CardFieldInputDetails? _cardDetails;
                           ),
 
 
-                           const SizedBox(height: 20),
+                            SizedBox(height: 20.h),
 
                            // Add Card Input Field
-                          const SizedBox(height: 25),
+                           SizedBox(height: 25.h),
                           stripe.CardField(
                           onCardChanged: (card) {
                             setState(() {
@@ -407,7 +408,7 @@ stripe.CardFieldInputDetails? _cardDetails;
                           ),
                         ),
 
-                          const SizedBox(height: 25),
+                           SizedBox(height: 25.h),
                           if (_isAuthenticating)
                             const CircularProgressIndicator(),
                           if (!_isAuthenticating)
