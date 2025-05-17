@@ -86,6 +86,7 @@ class _PcCreateCategoryState extends State<PcCreateCategory> {
       final categoryInfo = {
         "name": nameController.text,
         "imageUrl": imageUrl,
+        "deleted_at":null,
       };
       final docRef = FirebaseFirestore.instance.collection("categories").doc();
       await docRef.set(categoryInfo);

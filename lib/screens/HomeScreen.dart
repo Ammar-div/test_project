@@ -240,7 +240,7 @@ Widget build(BuildContext context) {
                 child: Column(
                   children: [
                     AllCategories(),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: 5.h),
                   ],
                 ),
               ),

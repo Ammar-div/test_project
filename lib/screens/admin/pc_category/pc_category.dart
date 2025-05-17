@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:test_project/screens/admin/pc_category/pc_create_category.dart';
 import 'package:test_project/screens/admin/pc_category/pc_edit_category.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PcCategory extends StatefulWidget {
   const PcCategory({super.key});
@@ -15,41 +15,40 @@ class PcCategory extends StatefulWidget {
 class _PcCategoryState extends State<PcCategory> {
   Stream<QuerySnapshot>? categoryStream;
 
+  Future<void> deleteCategoryDetail(String id, String imageUrl) async {
+    try {
+      if (imageUrl.isNotEmpty) {
+        final ref = FirebaseStorage.instance.refFromURL(imageUrl);
+        await ref.delete();
+      }
 
+      await FirebaseFirestore.instance
+          .collection("categories")
+          .doc(id)
+          .delete();
 
-Future<void> deleteCategoryDetail(String id, String imageUrl) async {
-  try {
-    // Delete the image from Firebase Storage
-    if (imageUrl.isNotEmpty) {
-      final ref = FirebaseStorage.instance.refFromURL(imageUrl);
-      await ref.delete();
+      setState(() {});
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 5),
+          content: Text('Category and associated image deleted successfully.'),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 5),
+          content: Text('Failed to delete category: $e'),
+        ),
+      );
     }
-
-    // Delete the category document from Firestore
-    await FirebaseFirestore.instance.collection("categories").doc(id).delete();
-
-    // Update UI and show success message
-    setState(() {});
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        duration: Duration(seconds: 5),
-        content: Text('Category and associated image deleted successfully.'),
-      ),
-    );
-  } catch (e) {
-    // Handle errors and show failure message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        duration: const Duration(seconds: 5),
-        content: Text('Failed to delete category: $e'),
-      ),
-    );
   }
-}
-
 
   Future<Stream<QuerySnapshot>> getCategoryDetails() async {
-    return FirebaseFirestore.instance.collection("categories").snapshots();
+    return FirebaseFirestore.instance
+        .collection("categories")
+        .where("deleted_at", isNull: true)
+        .snapshots();
   }
 
   void getOnTheLoad() async {
@@ -68,18 +67,13 @@ Future<void> deleteCategoryDetail(String id, String imageUrl) async {
       stream: categoryStream,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.data!.docs.isEmpty) {
-          return const Center(
-            child: Text('No Categories, Try adding some...'),
-          );
+          return const Center(child: Text('No Categories, Try adding some...'));
         }
 
-        // Map Firestore data to widgets
         return GridView.builder(
           padding: const EdgeInsets.all(0),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -92,7 +86,7 @@ Future<void> deleteCategoryDetail(String id, String imageUrl) async {
           itemBuilder: (context, index) {
             var documentSnapshot = snapshot.data!.docs[index];
             var category = documentSnapshot.data() as Map<String, dynamic>;
-            String id = documentSnapshot.id; // Document ID/ Document ID
+            String id = documentSnapshot.id;
             String name = category['name'] ?? 'Unknown';
             String imageUrl = category['imageUrl'] ?? '';
 
@@ -105,66 +99,72 @@ Future<void> deleteCategoryDetail(String id, String imageUrl) async {
               elevation: 2,
               child: InkWell(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => PcEditCategory(
-                    userId: id,
-                     initialName: name,
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (ctx) => PcEditCategory(
+                      userId: id,
+                      initialName: name,
                       initialImageUrl: imageUrl,
-                      )));
+                    ),
+                  ));
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Container(
                       color: Colors.black87,
-                      padding: const EdgeInsets.symmetric(vertical: 7 , horizontal: 4),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 5),
                       child: Row(
                         children: [
-                          Text(name,
-                            style:  TextStyle(
+                          Text(
+                            name,
+                            style: TextStyle(
                               color: Colors.white,
-                              fontSize: 12.sp,
+                              fontSize: 11.sp,
                               fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center,
                           ),
                           const Spacer(),
-
-                          IconButton(onPressed: () {
-                            // deleteCategoryDetail(id);
-                             showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) =>  Dialog(
-                                child:
-                                Padding(padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    const Text('Delete This Category?'),
-                                     SizedBox(height: 17.h),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: [ 
-                                        TextButton(onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text('No'), 
+                          IconButton(
+                            onPressed: () {
+                              showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => Dialog(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        const Text('Delete This Category?'),
+                                        SizedBox(height: 17.h),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: const Text('No'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () async {
+                                                Navigator.pop(context);
+                                                await deleteCategoryDetail(
+                                                    id, imageUrl);
+                                              },
+                                              child: const Text('Yes'),
+                                            ),
+                                          ],
                                         ),
-
-                                        TextButton(onPressed: () async {
-                                            deleteCategoryDetail(id , imageUrl);
-                                        },
-                                        child: const Text('Yes'),),
                                       ],
                                     ),
-                                  ],
+                                  ),
                                 ),
-                                ),
-                              ),
-                            );
-                          },
-                          color: Colors.redAccent,
-                          icon: const Icon(Icons.delete)
+                              );
+                            },
+                            color: Colors.redAccent,
+                            icon: const Icon(Icons.delete),
                           ),
                         ],
                       ),
@@ -208,26 +208,21 @@ Future<void> deleteCategoryDetail(String id, String imageUrl) async {
         actions: [
           ElevatedButton(
             onPressed: () {
-                showModalBottomSheet(
-                  isScrollControlled: true,
-                  context: context,
-                  builder: (ctx) => PcCreateCategory(),
-                );
+              showModalBottomSheet(
+                isScrollControlled: true,
+                context: context,
+                builder: (ctx) => const PcCreateCategory(),
+              );
             },
-            child: const Text(
-              'Create Category',
-              style: TextStyle(),
-            ),
+            child: const Text('Create Category'),
           ),
         ],
       ),
       body: Container(
-        margin: const EdgeInsets.only(left: 20, right: 20, top: 40),
+        margin: const EdgeInsets.only(left: 30, right: 20, top: 40),
         child: Column(
           children: [
-            Expanded(
-              child: allCategoryDetails(),
-            ),
+            Expanded(child: allCategoryDetails()),
           ],
         ),
       ),

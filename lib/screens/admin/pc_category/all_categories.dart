@@ -16,7 +16,10 @@ class _AllCategoriesState extends State<AllCategories> {
   Stream? categoriesStream;
 
     Future<Stream<QuerySnapshot>> getCategoryDetails() async {
-  return await FirebaseFirestore.instance.collection("categories").snapshots();
+   return await FirebaseFirestore.instance
+        .collection("categories")
+        .where("deleted_at", isNull: true)
+        .snapshots();
 }
 
 getOnTheLoad() async {
