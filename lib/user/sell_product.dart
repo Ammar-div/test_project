@@ -33,8 +33,11 @@ class _SellProductState extends State<SellProduct> {
   Stream? categoriesStream;
 
   Future<Stream<QuerySnapshot>> getCategoryDetails() async {
-  return await FirebaseFirestore.instance.collection("categories").snapshots();
-}
+     return await FirebaseFirestore.instance
+        .collection("categories")
+        .where("deleted_at", isNull: true)
+        .snapshots();
+    }
 
   getOnTheLoad() async {
   categoriesStream = await getCategoryDetails();
