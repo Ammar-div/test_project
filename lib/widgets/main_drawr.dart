@@ -413,28 +413,36 @@ class _MainDrawrState extends State<MainDrawr> {
             onTap: () {},
           ),
            SizedBox(height: 12.h),
-          ListTile(
-  leading: Icon(
-    Icons.logout,
-    size: 26,
-    color: Theme.of(context).colorScheme.primary,
-  ),
-  title: Text(
-    'Log Out',
-    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-          color: Theme.of(context).colorScheme.onSurface,
-          fontSize: 18.sp,
-        ),
-  ),
-  onTap: () {
-    FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (ctx) => const HomeScreen(),
-      ),
-    );
-  },
-)
+          StreamBuilder<User?>(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data != null) {
+                return ListTile(
+                  leading: Icon(
+                    Icons.logout,
+                    size: 26,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(
+                    'Log Out',
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 18.sp,
+                        ),
+                  ),
+                  onTap: () {
+                    FirebaseAuth.instance.signOut();
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (ctx) => const HomeScreen(),
+                      ),
+                    );
+                  },
+                );
+              }
+              return const SizedBox.shrink(); // Return empty widget if user is not logged in
+            },
+          ),
         ],
       ),
     );
