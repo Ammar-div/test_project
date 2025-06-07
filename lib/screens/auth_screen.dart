@@ -91,8 +91,8 @@ Future<void> _submit() async {
         const SnackBar(content: Text('Please select your location.')),
       );
       return;
-    }
   }
+}
 
   _form.currentState!.save();
 
@@ -170,6 +170,19 @@ Future<void> _submit() async {
           ),
         );
       } else {
+        final status = userDoc['status'] ?? 'active';
+        if (status == 'blocked') {
+          Navigator.of(context).pop(); 
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Your account has been blocked. Please contact support.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          await _firebase.signOut(); 
+          return;
+        }
+
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (ctx) => const HomeScreen(),
