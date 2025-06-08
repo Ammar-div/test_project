@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -7,7 +6,7 @@ import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:test_project/screens/admin/crud_operations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:test_project/constants/colors.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -24,14 +23,13 @@ class VehichleInfosScreen extends StatefulWidget {
   }
 }
 
-
 final Map<String , dynamic> vehichle_color = {
-  'White': Colors.white,
+  'White': kWhite,
   'Black': Colors.black,
   'Yellow' : Colors.yellow,
   'Green' : Colors.green,
-  'Blue' : Colors.blue,
-  'Silver' : Colors.white38,
+  'Blue' : kPrimaryBlue,
+  'Silver' : Colors.grey,
   'Red' : Colors.red,
   'Pink' : Colors.pink,
   'Orange' : Colors.orange,

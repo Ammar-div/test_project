@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_project/constants/colors.dart';
 
 class OrdersSummary extends StatefulWidget {
   const OrdersSummary({super.key});
@@ -57,15 +58,16 @@ class _OrdersSummaryState extends State<OrdersSummary> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kBackgroundGrey,
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: fetchDeliveredOrders(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator(color: kPrimaryBlue));
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text('Error: ${snapshot.error}', style: TextStyle(color: kPrimaryBlue)));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No delivered orders found.'));
+            return Center(child: Text('No delivered orders found.', style: TextStyle(color: kPrimaryBlue)));
           } else {
             final orders = snapshot.data!;
 
@@ -73,11 +75,11 @@ class _OrdersSummaryState extends State<OrdersSummary> {
               future: fetchOrderDetails(orders),
               builder: (context, orderDetailsSnapshot) {
                 if (orderDetailsSnapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(child: CircularProgressIndicator(color: kPrimaryBlue));
                 } else if (orderDetailsSnapshot.hasError) {
-                  return Center(child: Text('Error: ${orderDetailsSnapshot.error}'));
+                  return Center(child: Text('Error: ${orderDetailsSnapshot.error}', style: TextStyle(color: kPrimaryBlue)));
                 } else if (!orderDetailsSnapshot.hasData || orderDetailsSnapshot.data!.isEmpty) {
-                  return const Center(child: Text('No order details found.'));
+                  return Center(child: Text('No order details found.', style: TextStyle(color: kPrimaryBlue)));
                 } else {
                   final orderDetails = orderDetailsSnapshot.data!;
 
@@ -95,6 +97,7 @@ class _OrdersSummaryState extends State<OrdersSummary> {
 
                       return Card(
                         margin: const EdgeInsets.all(8.0),
+                        color: kWhite,
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
@@ -102,43 +105,44 @@ class _OrdersSummaryState extends State<OrdersSummary> {
                             children: [
                               Text(
                                 'Order ID: ${order['buyer_id']}',
-                                style:  TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14.sp,
+                                  color: kPrimaryBlue,
                                 ),
                               ),
-                               SizedBox(height: 8.h),
-                              Text('Product: ${productData['name']}'),
-                              Text('Category: $categoryName'),
-                              Text('Quantity: ${order['product_infos']['quantity']}'),
-                              Text('Total Amount: \$${order['product_infos']['total_amount']}'),
-                               SizedBox(height: 8.h),
+                              SizedBox(height: 8.h),
+                              Text('Product: ${productData['name']}', style: TextStyle(color: kPrimaryBlue)),
+                              Text('Category: $categoryName', style: TextStyle(color: kPrimaryBlue)),
+                              Text('Quantity: ${order['product_infos']['quantity']}', style: TextStyle(color: kPrimaryBlue)),
+                              Text('Total Amount: \$${order['product_infos']['total_amount']}', style: TextStyle(color: kPrimaryBlue)),
+                              SizedBox(height: 8.h),
                               Text(
                                 'Receiver Info:',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.grey[700],
+                                  color: kPrimaryBlue,
                                 ),
                               ),
-                              Text('Name: ${order['receiver_infos']['receiver_name']}'),
-                              Text('Phone: ${order['receiver_infos']['receiver_phone_number']}'),
-                              Text('Pickup Location: ${order['receiver_infos']['receiver_pick_up_location']}'),
-                               SizedBox(height: 8.h),
+                              Text('Name: ${order['receiver_infos']['receiver_name']}', style: TextStyle(color: kPrimaryBlue)),
+                              Text('Phone: ${order['receiver_infos']['receiver_phone_number']}', style: TextStyle(color: kPrimaryBlue)),
+                              Text('Pickup Location: ${order['receiver_infos']['receiver_pick_up_location']}', style: TextStyle(color: kPrimaryBlue)),
+                              SizedBox(height: 8.h),
                               Text(
                                 'Seller Info:',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.grey[700],
+                                  color: kPrimaryBlue,
                                 ),
                               ),
-                              Text('Seller Location: ${order['seller_location']}'),
-                              Text('Seller Phone: ${order['seller_phone_number']}'),
-                               SizedBox(height: 8.h),
+                              Text('Seller Location: ${order['seller_location']}', style: TextStyle(color: kPrimaryBlue)),
+                              Text('Seller Phone: ${order['seller_phone_number']}', style: TextStyle(color: kPrimaryBlue)),
+                              SizedBox(height: 8.h),
                               Text(
                                 'Delivery Date: $formattedDeliveredDate',
                                 style: TextStyle(
                                   fontStyle: FontStyle.italic,
-                                  color: Colors.grey[600],
+                                  color: kPrimaryBlue.withOpacity(0.7),
                                 ),
                               ),
                             ],

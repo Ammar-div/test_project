@@ -4,6 +4,7 @@ import 'package:test_project/screens/admin/creating_delivery_account.dart';
 import 'package:test_project/screens/admin/transactions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:test_project/screens/auth_screen.dart';
+import 'package:test_project/constants/colors.dart';
 
 class AdminTabsScreen extends StatefulWidget {
   const AdminTabsScreen({super.key});
@@ -56,21 +57,28 @@ void initState() {
     }
 
     return Scaffold(
+      backgroundColor: kBackgroundGrey,
       appBar: AppBar(
-        title: Text(activePageTitle),
-        automaticallyImplyLeading: false, // Disables the back arrow
+        backgroundColor: kPrimaryBlue,
+        title: Text(activePageTitle, style: TextStyle(color: kWhite)),
+        automaticallyImplyLeading: false,
         actions: [
-          IconButton(onPressed: () {
-            FirebaseAuth.instance.signOut();
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => const AuthScreen(),));
-          }, icon: const Icon(
-            Icons.exit_to_app,
-            color: Colors.red,
-          )),
-      ],
+          IconButton(
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (ctx) => const AuthScreen()),
+              );
+            },
+            icon: Icon(Icons.exit_to_app, color: kWhite),
+          ),
+        ],
       ),
       body: activePage,
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: kPrimaryBlue,
+        selectedItemColor: kWhite,
+        unselectedItemColor: kWhite.withOpacity(0.7),
         onTap: _selectPage,
         currentIndex: _selectedPageIndex,
         items: const [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_project/constants/colors.dart';
 
 class Screen3 extends StatefulWidget
 {
@@ -17,14 +18,14 @@ class _Screen3State extends State<Screen3>
   Widget build(BuildContext context)
   {
     return Container(
-      color: const Color.fromARGB(255, 242, 223, 214),
+      color: kBackgroundGrey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset('assets/images/pic2.png'),
           const SizedBox(height: 40,),
-          const Text('Secure Transactions' , style: TextStyle(
-            color: Colors.black,
+          Text('Secure Transactions' , style: TextStyle(
+            color: kPrimaryBlue,
             fontSize: 25,
             fontWeight: FontWeight.bold,
           ),),
@@ -36,7 +37,7 @@ class _Screen3State extends State<Screen3>
                [
                   Text('1. Your payment is held securely by us until you receive your order.' , 
                   style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  color: kPrimaryBlue,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   ),
@@ -45,7 +46,7 @@ class _Screen3State extends State<Screen3>
                 const SizedBox(height: 20,),
                   Text('2. Once confirmed, the payment is released to the seller, minus a small fee for our service.' , 
                   style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  color: kPrimaryBlue,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   ),

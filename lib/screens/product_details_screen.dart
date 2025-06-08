@@ -7,6 +7,7 @@ import 'package:test_project/screens/order/pre_checkout.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_project/constants/colors.dart';
 
 
 
@@ -172,14 +173,15 @@ Future<void> _toggleFavorite() async {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kBackgroundGrey,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(onPressed: () {
-          Navigator.pop(context);
-        },
-         icon: const Icon(Icons.arrow_back_ios , color: Colors.black87,),
-         ),
+        backgroundColor: kPrimaryBlue,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back_ios, color: kWhite),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -741,7 +743,7 @@ Widget build(BuildContext context) {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                     width: double.infinity.w,
-                    color: Colors.blueGrey[100],
+                    color: kPrimaryBlue.withOpacity(0.1),
                     child: Row(
                       children: [
                          Text(
@@ -749,6 +751,7 @@ Widget build(BuildContext context) {
                           style: TextStyle(
                             fontSize: 17.sp,
                             fontWeight: FontWeight.bold,
+                            color: kPrimaryBlue,
                           ),
                         ),
                         Text(
@@ -756,6 +759,7 @@ Widget build(BuildContext context) {
                           style:  TextStyle(
                             fontSize: 17.sp,
                             fontWeight: FontWeight.bold,
+                            color: kPrimaryBlue,
                           ),
                         ),
                       ],

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:test_project/constants/colors.dart';
+
 class Screen1 extends StatefulWidget
 {
   const Screen1({super.key});
@@ -17,7 +19,7 @@ class _Screen1State extends State<Screen1>
   Widget build(BuildContext context)
   {
     return Container(
-      color: const Color.fromARGB(255, 242, 223, 214),
+      color: kBackgroundGrey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -27,7 +29,7 @@ class _Screen1State extends State<Screen1>
                 
                  Text('To',
                 style: GoogleFonts.moonDance(
-                  color: const Color.fromARGB(255, 15, 15, 15),
+                  color: kPrimaryBlue,
                   fontSize: 65,
                   fontWeight: FontWeight.bold,
                 ),
@@ -44,7 +46,7 @@ class _Screen1State extends State<Screen1>
             padding: const EdgeInsets.symmetric(horizontal: 20),
              child: Text('Discover a seamless way to buy and sell used items.' , 
              style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: kPrimaryBlue,
               fontSize: 16,
               fontWeight: FontWeight.bold,
               ),
@@ -56,7 +58,7 @@ class _Screen1State extends State<Screen1>
             padding: const EdgeInsets.symmetric(horizontal: 20),
              child: Text('Enjoy a hassle-free experience with our secure and efficient platform.' , 
              style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: kPrimaryBlue,
               fontSize: 16,
               fontWeight: FontWeight.bold,
               ),

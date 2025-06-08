@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/screens/order/order_status_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_project/constants/colors.dart';
 
 class MyOrders extends StatefulWidget {
   const MyOrders({super.key, required this.userId});
@@ -18,15 +19,19 @@ class _MyOrdersState extends State<MyOrders> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kBackgroundGrey,
       appBar: AppBar(
-        title: const Text('Your Orders'),
-         leading: IconButton(
-           icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-               Navigator.pushReplacement( context, MaterialPageRoute(builder: (context) => const HomeScreen()),
-                );
-                 }, 
-                 ),
+        backgroundColor: kPrimaryBlue,
+        title: Text('Your Orders', style: TextStyle(color: kWhite)),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: kWhite),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
@@ -49,8 +54,11 @@ class _MyOrdersState extends State<MyOrders> {
             }
 
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return  Center(
-                child: Text('No Orders Found, Try adding one', style: TextStyle(fontSize: 11.r),),
+              return Center(
+                child: Text(
+                  'No Orders Found, Try adding one',
+                  style: TextStyle(fontSize: 11.r, color: kPrimaryBlue),
+                ),
               );
             }
 
@@ -157,11 +165,11 @@ class _MyOrdersState extends State<MyOrders> {
                       child: Card(
                         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                         shape: RoundedRectangleBorder(
-                          side:  BorderSide(
-                            color: Colors.grey, // Border color
-                            width: 2.w, // Border width
+                          side: BorderSide(
+                            color: kPrimaryBlue,
+                            width: 2.w,
                           ),
-                          borderRadius: BorderRadius.circular(8.0.r), // Border radius
+                          borderRadius: BorderRadius.circular(8.0.r),
                         ),
                         child: ListTile(
                           leading: Image.network(
@@ -172,21 +180,24 @@ class _MyOrdersState extends State<MyOrders> {
                           ),
                           title: Row(
                             children: [
-                              // Constrain the productMainTitle to take up half of the available space
                               Flexible(
-                                flex: 1, // Takes 1 part of the available space
+                                flex: 1,
                                 child: Text(
                                   productMainTitle,
-                                  style:  TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20.r,
+                                    color: kPrimaryBlue,
                                   ),
-                                  maxLines: 1, // Limit to one line
-                                  overflow: TextOverflow.ellipsis, // Add ellipsis if text overflows
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              const Spacer(), // Takes up remaining space
-                              Text('x${quantity.toString()}'),
+                              const Spacer(),
+                              Text(
+                                'x${quantity.toString()}',
+                                style: TextStyle(color: kPrimaryBlue),
+                              ),
                             ],
                           ),
                           subtitle: Column(
@@ -194,7 +205,10 @@ class _MyOrdersState extends State<MyOrders> {
                             children: [
                               Text(
                                 productDescription,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: kPrimaryBlue,
+                                ),
                                 maxLines: 2,
                               ),
                             ],

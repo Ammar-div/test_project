@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_project/constants/colors.dart';
 
 class Screen4 extends StatefulWidget
 {
@@ -17,23 +18,23 @@ class _Screen4State extends State<Screen4>
   Widget build(BuildContext context)
   {
     return Container(
-      color: const Color.fromARGB(255, 242, 223, 214),
+      color: kBackgroundGrey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset('assets/images/pic3.webp'),
           const SizedBox(height: 40,),
-          const Text('Earn While You Sell' , style: TextStyle(
-            color: Colors.black,
+          Text('Earn While You Sell' , style: TextStyle(
+            color: kPrimaryBlue,
             fontSize: 25,
             fontWeight: FontWeight.bold,
           ),),
           const SizedBox(height: 20,),
            Container(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-             child: Text('Let sellers know they can post items and receive payment securely once buyers confirm receipt, with a small percentage going to support the app’s services.' , 
+             child: Text("Let sellers know they can post items and receive payment securely once buyers confirm receipt, with a small percentage going to support the app's services." , 
              style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: kPrimaryBlue,
               fontSize: 16,
               fontWeight: FontWeight.bold,
               ),

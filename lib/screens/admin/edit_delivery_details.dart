@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_project/constants/colors.dart';
 
 class EditDeliveryDetailsScreen extends StatefulWidget {
   final String userId;
@@ -45,18 +45,17 @@ class EditDeliveryDetailsScreen extends StatefulWidget {
   State<EditDeliveryDetailsScreen> createState() => _EditDeliveryDetailsScreenState();
 }
 
-  final Map<String , Color> vehichle_color = {
+final Map<String , Color> vehichle_color = {
   'Black': Colors.black,
-  'White': Colors.white,
+  'White': kWhite,
   'Yellow' : Colors.yellow,
   'Green' : Colors.green,
-  'Blue' : Colors.blue,
-  'Silver' : Colors.white38,
+  'Blue' : kPrimaryBlue,
+  'Silver' : Colors.grey,
   'Red' : Colors.red,
   'Pink' : Colors.pink,
   'Orange' : Colors.orange,
 };
-
 
 class _EditDeliveryDetailsScreenState extends State<EditDeliveryDetailsScreen> {
   final _formKey = GlobalKey<FormState>();

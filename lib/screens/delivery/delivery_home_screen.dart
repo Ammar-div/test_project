@@ -11,6 +11,7 @@ import 'package:test_project/screens/delivery/orders_summary.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_project/constants/colors.dart';
 
 class DeliveryHomeScreen extends StatefulWidget {
   final Map<String, dynamic>? deliveryData;
@@ -31,8 +32,8 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
       msg: message,
       toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.TOP,
-      backgroundColor: const Color.fromARGB(255, 106, 179, 116),
-      textColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: kPrimaryBlue,
+      textColor: kWhite,
       fontSize: 16.0.sp,
     );
   }
@@ -173,8 +174,8 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                Colors.blue.shade100,
-                                Colors.blue.shade200,
+                                kPrimaryBlue.withOpacity(0.1),
+                                kPrimaryBlue.withOpacity(0.2),
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -498,23 +499,21 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
         index: _page,
-        height: 60.0.h,
-        items: const [
-          Icon(Icons.home, size: 30),
-          Icon(Icons.delivery_dining, size: 30), // OrdersSummary (index 1)
-          Icon(Icons.account_balance_wallet,
-              size: 30), // EarningSummary (index 2)
-          Icon(Icons.history, size: 30), // ActiveOrder (index 3)
-          Icon(Icons.person, size: 30), // DeliveryPersonalData (index 4)
+        height: 60.0,
+        items: <Widget>[
+          Icon(Icons.home, size: 30, color: kWhite),
+          Icon(Icons.history, size: 30, color: kWhite),
+          Icon(Icons.attach_money, size: 30, color: kWhite),
+          Icon(Icons.person, size: 30, color: kWhite),
         ],
-        color: const Color.fromARGB(255, 128, 171, 206),
-        buttonBackgroundColor: const Color.fromARGB(255, 62, 157, 235),
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        color: kPrimaryBlue,
+        buttonBackgroundColor: kPrimaryBlue,
+        backgroundColor: kBackgroundGrey,
         animationCurve: Curves.easeInOut,
-        animationDuration: const Duration(milliseconds: 400),
+        animationDuration: const Duration(milliseconds: 600),
         onTap: (index) {
           setState(() {
-            _page = index.clamp(0, 4);
+            _page = index;
           });
         },
       ),

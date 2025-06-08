@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:test_project/screens/HomeScreen.dart';
 import 'package:url_launcher/url_launcher.dart'; // Import the intl package
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_project/constants/colors.dart';
 
 class DeliveryPersonalData extends StatelessWidget {
   final Map<String, dynamic>? deliveryData;
@@ -30,6 +31,7 @@ class DeliveryPersonalData extends StatelessWidget {
         : 'N/A';
 
     return Scaffold(
+      backgroundColor: kBackgroundGrey,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 16),
@@ -46,9 +48,10 @@ class DeliveryPersonalData extends StatelessWidget {
                   ),
                   Text(
                     deliveryData!['name'],
-                    style:  TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15.sp,
+                      color: kPrimaryBlue,
                     ),
                   ),
                 ],
@@ -61,6 +64,7 @@ class DeliveryPersonalData extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 19.sp,
+                      color: kPrimaryBlue,
                     ),
                   ),
                 ],
@@ -68,123 +72,135 @@ class DeliveryPersonalData extends StatelessWidget {
                SizedBox(height: 20.h),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Captain ID',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     deliveryId,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                 ],
               ),
               Divider(
-                color: Colors.grey[300],
+                color: kPrimaryBlue.withOpacity(0.2),
               ),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Phone Number',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     deliveryData!['phone_number'],
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                 ],
               ),
               Divider(
-                color: Colors.grey[300],
+                color: kPrimaryBlue.withOpacity(0.2),
               ),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Email',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     deliveryData!['email'],
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                 ],
               ),
               Divider(
-                color: Colors.grey[300],
+                color: kPrimaryBlue.withOpacity(0.2),
               ),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'National ID',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     deliveryData!['national_id'],
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                 ],
               ),
               Divider(
-                color: Colors.grey[300],
+                color: kPrimaryBlue.withOpacity(0.2),
               ),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Area',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     deliveryData!['location'],
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                 ],
               ),
               Divider(
-                color: Colors.grey[300],
+                color: kPrimaryBlue.withOpacity(0.2),
               ),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Joining Date',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                   const Spacer(),
                   Text(
-                    joiningDate, // Use the formatted date here
-                    style: const TextStyle(
+                    joiningDate,
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                 ],
               ),
               Divider(
-                color: Colors.grey[300],
+                color: kPrimaryBlue.withOpacity(0.2),
               ),
                SizedBox(height: 40.h),
                Row(
@@ -194,6 +210,7 @@ class DeliveryPersonalData extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 19.sp,
+                      color: kPrimaryBlue,
                     ),
                   ),
                 ],
@@ -201,83 +218,91 @@ class DeliveryPersonalData extends StatelessWidget {
                SizedBox(height: 20.h),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Vehicle Number',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     deliveryData!['Vehicle_Infos']['vehicle_number'],
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                 ],
               ),
               Divider(
-                color: Colors.grey[300],
+                color: kPrimaryBlue.withOpacity(0.2),
               ),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Vehicle Type',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     deliveryData!['Vehicle_Infos']['vehicle_type'],
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                 ],
               ),
               Divider(
-                color: Colors.grey[300],
+                color: kPrimaryBlue.withOpacity(0.2),
               ),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Vehicle Model',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     deliveryData!['Vehicle_Infos']['vehicle_model'],
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                 ],
               ),
               Divider(
-                color: Colors.grey[300],
+                color: kPrimaryBlue.withOpacity(0.2),
               ),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Vehicle Color',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     deliveryData!['Vehicle_Infos']['Vehicle_Color'],
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
                     ),
                   ),
                 ],
               ),
               Divider(
-                color: Colors.grey[300],
+                color: kPrimaryBlue.withOpacity(0.2),
               ),
                SizedBox(height: 30.h),
               Row(
@@ -285,8 +310,8 @@ class DeliveryPersonalData extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 240, 202, 200),
-                      foregroundColor: Colors.black,
+                      backgroundColor: kPrimaryBlue,
+                      foregroundColor: kWhite,
                     ),
                     onPressed: () {
                       FirebaseAuth.instance.signOut();
@@ -296,27 +321,27 @@ class DeliveryPersonalData extends StatelessWidget {
                         ),
                       );
                     },
-                    child:  Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.logout),
+                        Icon(Icons.logout, color: kWhite),
                         SizedBox(width: 8.w),
-                        Text('Log out'),
+                        Text('Log out', style: TextStyle(color: kWhite)),
                       ],
                     ),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 200, 230, 240),
-                      foregroundColor: Colors.black,
+                      backgroundColor: kPrimaryBlue,
+                      foregroundColor: kWhite,
                     ),
                     onPressed: _openWhatsApp,
-                    child:  Row(
-                      mainAxisSize: MainAxisSize.min, // Ensure the Row takes only the required space
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.phone), // Add the phone icon
-                        SizedBox(width: 8.w), // Add some spacing between the icon and text
-                        Text('Support'),
+                        Icon(Icons.phone, color: kWhite),
+                        SizedBox(width: 8.w),
+                        Text('Support', style: TextStyle(color: kWhite)),
                       ],
                     ),
                   ),

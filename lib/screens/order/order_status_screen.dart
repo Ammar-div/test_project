@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_project/constants/colors.dart';
+import 'dart:async';  // Add this import for StreamSubscription
 //flutter pub add flutter_screenutil
 
 class OrderStatusScreen extends StatefulWidget {
@@ -51,59 +53,89 @@ class OrderStatusScreen extends StatefulWidget {
 class _OrderStatusScreenState extends State<OrderStatusScreen> {
   bool _isExpanded = false;
   bool _isOverflowing = false;
+  late String _orderStatus;
+  StreamSubscription? _orderStatusSubscription;
 
+  @override
+  void initState() {
+    super.initState();
+    _orderStatus = widget.orderStatus;
+    _setupOrderStatusListener();
+  }
 
-   // Helper function to format the timestamp
+  @override
+  void dispose() {
+    _orderStatusSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _setupOrderStatusListener() {
+    _orderStatusSubscription = FirebaseFirestore.instance
+        .collection('orders')
+        .doc(widget.orderID)
+        .snapshots()
+        .listen((snapshot) {
+      if (snapshot.exists) {
+        final newStatus = snapshot.data()?['status'] as String?;
+        print('New order status received: $newStatus'); // Debug print
+        if (newStatus != null && newStatus != _orderStatus) {
+          print('Updating order status from $_orderStatus to $newStatus'); // Debug print
+          setState(() {
+            _orderStatus = newStatus;
+          });
+        }
+      }
+    });
+  }
+
+  // Helper function to format the timestamp
   String _formatTimestamp(Timestamp timestamp) {
     final dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} | ${dateTime.hour}:${dateTime.minute}'; // Customize the format as needed
   }
 
-
-late String _orderStatus; // Store the order status in the state
-
-  @override
-  void initState() {
-    super.initState();
-    _orderStatus = widget.orderStatus; // Initialize with the passed value
-  }
-
   // Helper function to map color names to Color objects
-Color _getColorFromString(String colorName) {
-  switch (colorName.toLowerCase()) {
-    case 'red':
-      return Colors.red;
-    case 'blue':
-      return Colors.blue;
-    case 'green':
-      return Colors.green;
-    case 'yellow':
-      return Colors.yellow;
-    case 'orange':
-      return Colors.orange;
-    case 'purple':
-      return Colors.purple;
-    case 'pink':
-      return Colors.pink;
-    case 'brown':
-      return Colors.brown;
-    case 'silver':
-      return Colors.grey;
-    case 'black':
-      return Colors.black;
-    case 'white':
-      return Colors.white;
-    default:
-      return Colors.grey; // Default color if the color name is not recognized
+  Color _getColorFromString(String colorName) {
+    switch (colorName.toLowerCase()) {
+      case 'red':
+        return Colors.red;
+      case 'blue':
+        return Colors.blue;
+      case 'green':
+        return Colors.green;
+      case 'yellow':
+        return Colors.yellow;
+      case 'orange':
+        return Colors.orange;
+      case 'purple':
+        return Colors.purple;
+      case 'pink':
+        return Colors.pink;
+      case 'brown':
+        return Colors.brown;
+      case 'silver':
+        return Colors.grey;
+      case 'black':
+        return Colors.black;
+      case 'white':
+        return Colors.white;
+      default:
+        return Colors.grey; // Default color if the color name is not recognized
+    }
   }
-}
   
 
   @override
   Widget build(BuildContext context) {
+    print('Current order status in build: $_orderStatus'); // Debug print
+    if (_orderStatus == "awaiting acknowledgment") {
+      print('Should show acknowledge button'); // Debug print
+    }
     return Scaffold(
+      backgroundColor: kBackgroundGrey,
       appBar: AppBar(
-        title: const Text('Order Status'),
+        backgroundColor: kPrimaryBlue,
+        title: Text('Order Status', style: TextStyle(color: kWhite)),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -142,9 +174,10 @@ Color _getColorFromString(String colorName) {
                      SizedBox(height: 20.h),
                     Text(
                       widget.mainTitle,
-                      style:  TextStyle(
+                      style: TextStyle(
                         fontSize: 23.0.sp,
                         fontWeight: FontWeight.bold,
+                        color: kPrimaryBlue,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -155,7 +188,7 @@ Color _getColorFromString(String colorName) {
                         final textPainter = TextPainter(
                           text: TextSpan(
                             text: widget.description,
-                            style:  TextStyle(fontSize: 16.sp),
+                            style: TextStyle(fontSize: 16.sp, color: kPrimaryBlue),
                           ),
                           maxLines: 4, // Match the maxLines in the Text widget
                           textDirection: TextDirection.ltr,
@@ -453,6 +486,7 @@ Color _getColorFromString(String colorName) {
                       alignment: Alignment.center,
                       child: ElevatedButton(
                         onPressed: () async {
+                          print('Acknowledge button pressed'); // Debug print
                           // Update the order status to "delivered"
                           await FirebaseFirestore.instance
                               .collection('orders')
@@ -495,14 +529,14 @@ Color _getColorFromString(String colorName) {
                     ),
                 child: Column(
                   children: [ 
-                    if(widget.orderStatus == "pending")
+                    if(_orderStatus == "pending")
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
                       width: double.infinity.w,
                       color: Colors.blueGrey[100],
                       child: Row(
                         children: [
-                          Text('Order Status : ${widget.orderStatus}' ,
+                          Text('Order Status : $_orderStatus' ,
                             style:  TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18.sp,
@@ -512,14 +546,14 @@ Color _getColorFromString(String colorName) {
                       ),
                     ),
 
-                     if(widget.orderStatus == "delivered")
+                     if(_orderStatus == "delivered")
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
                       width: double.infinity.w,
                       color: Colors.green[400],
                       child: Row(
                         children: [
-                          Text('Order Status : ${widget.orderStatus}' ,
+                          Text('Order Status : $_orderStatus' ,
                             style:  TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18.sp,
@@ -529,14 +563,14 @@ Color _getColorFromString(String colorName) {
                       ),
                     ),
 
-                     if(widget.orderStatus == "canceled")
+                     if(_orderStatus == "canceled")
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
                       width: double.infinity.w,
                        color: Colors.red[200],
                       child: Row(
                         children: [
-                          Text('Order Status : ${widget.orderStatus}' ,
+                          Text('Order Status : $_orderStatus' ,
                             style:  TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18.sp,
@@ -546,7 +580,7 @@ Color _getColorFromString(String colorName) {
                       ),
                     ),
 
-                    if(widget.orderStatus == "picked up")
+                    if(_orderStatus == "picked up")
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
                       width: double.infinity.w,
@@ -555,7 +589,7 @@ Color _getColorFromString(String colorName) {
                         children: [
                           Row(
                             children: [
-                              Text('Order Status : ${widget.orderStatus}' ,
+                              Text('Order Status : $_orderStatus' ,
                                 style:  TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18.sp,
@@ -579,14 +613,14 @@ Color _getColorFromString(String colorName) {
                       ),
                     ),
 
-                    if(widget.orderStatus == "confirmed")
+                    if(_orderStatus == "confirmed")
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
                       width: double.infinity.w,
                       color: const Color.fromARGB(255, 162, 210, 233),
                       child: Row(
                         children: [
-                          Text('Order Status : ${widget.orderStatus}' ,
+                          Text('Order Status : $_orderStatus' ,
                             style:  TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18.sp,
@@ -596,19 +630,36 @@ Color _getColorFromString(String colorName) {
                       ),
                     ),
 
+                    if(_orderStatus == "awaiting acknowledgment")
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
+                      width: double.infinity.w,
+                      color: Colors.orange[300],
+                      child: Row(
+                        children: [
+                          Text('Order Status : $_orderStatus' ,
+                            style:  TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
 
                      SizedBox(height: 8.h),
                     if(widget.paymentStatus == "held")
                    Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
                       width: double.infinity.w,
-                      color: Colors.blueGrey[100],
+                      color: kPrimaryBlue.withOpacity(0.1),
                      child: Row(
                         children: [
                           Text('Payment Status : ${widget.paymentStatus}' ,
                             style:  TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18.sp,
+                              color: kPrimaryBlue,
                             ),
                           ),
                         ],
@@ -619,13 +670,14 @@ Color _getColorFromString(String colorName) {
                    Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
                       width: double.infinity.w,
-                     color: Colors.green[400],
+                     color: kPrimaryBlue.withOpacity(0.2),
                      child: Row(
                         children: [
                           Text('Payment Status : ${widget.paymentStatus}' ,
                             style:  TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18.sp,
+                              color: kPrimaryBlue,
                             ),
                           ),
                         ],
@@ -634,15 +686,16 @@ Color _getColorFromString(String colorName) {
 
                     if(widget.paymentStatus == "refunded")
                    Container(
-                    padding:  EdgeInsets.symmetric(horizontal: 8,vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
                       width: double.infinity.w,
-                     color: Colors.red[200],
+                     color: kPrimaryBlue.withOpacity(0.1),
                      child: Row(
                         children: [
                           Text('Payment Status : ${widget.paymentStatus}' ,
                             style:  TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18.sp,
+                              color: kPrimaryBlue,
                             ),
                           ),
                         ],

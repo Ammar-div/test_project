@@ -796,7 +796,7 @@ Widget build(BuildContext context) {
                     labelText: 'How Much Used',
                     border: OutlineInputBorder(),
                   ),
-                  hint: const Text('Select how much the product has been used'),
+                  hint: Text('Select how much the product has been used' ,style: TextStyle(fontSize: 12.sp)),
                   items: HowMuchUsed.values.map((usage) {
                     return DropdownMenuItem<HowMuchUsed>(
                       value: usage,

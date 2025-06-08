@@ -8,6 +8,7 @@ import 'package:test_project/screens/auth_screen.dart';
 import 'package:test_project/screens/product_details_screen.dart';
 import 'package:test_project/widgets/main_drawr.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_project/constants/colors.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -163,8 +164,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 Widget build(BuildContext context) {
   final user = _auth.currentUser;
   return Scaffold(
-    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+    backgroundColor: kBackgroundGrey,
     appBar: AppBar(
+      backgroundColor: kPrimaryBlue,
       actions: [
         if (user == null)
           GestureDetector(
@@ -173,18 +175,17 @@ Widget build(BuildContext context) {
                 MaterialPageRoute(builder: (ctx) => const AuthScreen()),
               );
 
-              // Check the result; if login was successful, update the username
               if (result != null && result['success'] == true) {
                 _getUserName();
               }
             },
-            child:  Padding(
+            child: Padding(
               padding: EdgeInsets.only(right: 16),
               child: Row(
                 children: [
-                  Icon(FontAwesomeIcons.user, size: 16),
+                  Icon(FontAwesomeIcons.user, size: 16, color: kWhite),
                   SizedBox(width: 6.w),
-                  Text('Sign In'),
+                  Text('Sign In', style: TextStyle(color: kWhite)),
                 ],
               ),
             ),
@@ -194,9 +195,9 @@ Widget build(BuildContext context) {
             padding: const EdgeInsets.only(right: 16),
             child: Row(
               children: [
-                Text(userName),
-                 SizedBox(width: 8.w),
-                const Icon(FontAwesomeIcons.userTie, size: 16),
+                Text(userName, style: TextStyle(color: kWhite)),
+                SizedBox(width: 8.w),
+                Icon(FontAwesomeIcons.userTie, size: 16, color: kWhite),
               ],
             ),
           ),

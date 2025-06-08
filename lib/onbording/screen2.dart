@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_project/constants/colors.dart';
 
 class Screen2 extends StatefulWidget
 {
@@ -17,14 +18,14 @@ class _Screen2State extends State<Screen2>
   Widget build(BuildContext context)
   {
     return Container(
-      color: const Color.fromARGB(255, 242, 223, 214),
+      color: kBackgroundGrey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset('assets/images/pic1.avif'),
           const SizedBox(height: 40,),
-          const Text('How It Works' , style: TextStyle(
-            color: Colors.black,
+          Text('How It Works' , style: TextStyle(
+            color: kPrimaryBlue,
             fontSize: 25,
             fontWeight: FontWeight.bold,
           ),),
@@ -36,7 +37,7 @@ class _Screen2State extends State<Screen2>
                [
                   Text('1. Sellers Post Items: List your items quickly and easily.' , 
                   style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  color: kPrimaryBlue,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   ),
@@ -45,7 +46,7 @@ class _Screen2State extends State<Screen2>
                 const SizedBox(height: 20,),
                   Text('2. Buyers Purchase: Browse and buy without direct interaction.' , 
                   style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  color: kPrimaryBlue,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   ),
@@ -54,7 +55,7 @@ class _Screen2State extends State<Screen2>
                 const SizedBox(height: 20,),
                   Text('3. We Deliver: We handle the delivery to ensure a smooth transaction.' , 
                   style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  color: kPrimaryBlue,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   ),

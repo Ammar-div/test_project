@@ -6,9 +6,12 @@ import 'package:test_project/widgets/keys.dart';
 import 'firebase_options.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_project/constants/colors.dart';
 
 var kColorScheme = ColorScheme.fromSeed(
-  seedColor: const Color.fromARGB(255, 242, 223, 214),
+  seedColor: kPrimaryBlue,
+  background: kBackgroundGrey,
+  surface: kWhite,
 );
 
 void main() async {

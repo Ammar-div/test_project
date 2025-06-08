@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/screens/products_of_category.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_project/constants/colors.dart';
 
 
 class AllCategories extends StatefulWidget {
@@ -184,9 +185,9 @@ Widget build(BuildContext context) {
                             margin: const EdgeInsets.all(8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
-                              side:  BorderSide(
-                                color: Color.fromRGBO(50, 18, 0, 1), // RGB color (50, 18, 0)
-                                width: 2.w, // Border width
+                              side: BorderSide(
+                                color: kPrimaryBlue,
+                                width: 2.w,
                               ),
                             ),
                             clipBehavior: Clip.hardEdge,

@@ -10,6 +10,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:test_project/widgets/keys.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_project/constants/colors.dart';
 
 final List<String> pickUpLocation = [
   "Al Yasmin",
@@ -138,6 +139,7 @@ class _PreCheckoutState extends State<PreCheckout> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
+              backgroundColor: kBackgroundGrey,
               title: const Text('Select Pick Up Location'),
               content: SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5.h,
@@ -348,8 +350,24 @@ Future<Map<String, dynamic>> MakeIntentForPayment(String amountToBeCharge, Strin
       final docRef = FirebaseFirestore.instance.collection("orders").doc();
       await docRef.set(orderInfos);
 
+      // Add transaction data
+      final transactionData = {
+        "sender_id": userId,
+        "receiver_id": widget.sellerId,
+        "amount": _orderTotal(widget.totalAmount),
+        "date": Timestamp.fromDate(DateTime.now()),
+        "order_id": docRef.id,
+        "status": "pending",
+        "type": "order_payment"
+      };
+
+      await FirebaseFirestore.instance
+          .collection("transactions")
+          .add(transactionData);
 
       showToastrMessage("Your order has been placed successfully.");
+
+      
 
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
@@ -412,7 +430,7 @@ void showToastrMessage(String message) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 153, 191, 216),
+      backgroundColor: kBackgroundGrey,
       body: Center(
         child: SingleChildScrollView(
           child: Container(
@@ -421,7 +439,7 @@ void showToastrMessage(String message) {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Card(
-                  color: Colors.white,
+                  color: kWhite,
                   elevation: 5,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.r),
@@ -433,16 +451,16 @@ void showToastrMessage(String message) {
                       children: [
                         Container(
                           alignment: Alignment.centerLeft,
-                          decoration:  BoxDecoration(
+                          decoration: BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: Colors.grey,
+                                color: Colors.grey[300]!,
                                 width: 1.0.w,
                               ),
                             ),
                           ),
-                          child:  Text(
-                            'Order Detail',
+                          child: Text(
+                            'Order Summary',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20.sp,
@@ -521,7 +539,7 @@ void showToastrMessage(String message) {
                 ),
                  SizedBox(height: 20.h),
                 Card(
-                  color: Colors.white,
+                  color: kWhite,
                   elevation: 5,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.r),
@@ -693,7 +711,7 @@ void showToastrMessage(String message) {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Icon(Icons.check_circle_outline, color: Colors.white),
-                                          SizedBox(width: 6.w),
+                                          SizedBox(width: 5.w),
                                           Text('Checkout'),
                                         ],
                                       ),
@@ -715,4 +733,4 @@ void showToastrMessage(String message) {
       ),
     );
   }
-}
+} 

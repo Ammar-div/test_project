@@ -7,6 +7,8 @@ import 'package:test_project/onbording/screen4.dart';
 //import 'package:test_project/screens/test_screen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:test_project/screens/HomeScreen.dart';
+import 'package:test_project/constants/colors.dart';
+
 class OnBording extends StatefulWidget {
   const OnBording({super.key});
 
@@ -62,7 +64,7 @@ class _OnBordingState extends State<OnBording> {
                     controller: pageController,
                     count: 4,
                     effect: ExpandingDotsEffect(
-                      activeDotColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                      activeDotColor: kPrimaryBlue,
                       dotColor: Colors.grey,
                       dotHeight: 8.0,
                       dotWidth: 8.0,

@@ -9,6 +9,7 @@ import 'package:test_project/user/my_favorites.dart';
 import 'package:test_project/user/my_orders.dart';
 import 'package:test_project/user/sell_product.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_project/constants/colors.dart';  // Import for color constants
 
 class MainDrawr extends StatefulWidget {
   const MainDrawr({super.key});
@@ -252,7 +253,7 @@ class _MainDrawrState extends State<MainDrawr> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+      backgroundColor: kBackgroundGrey,
       child: Column(
         children: [
           DrawerHeader(
@@ -260,11 +261,8 @@ class _MainDrawrState extends State<MainDrawr> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context)
-                      .colorScheme
-                      .primaryContainer
-                      .withOpacity(0.8),
+                  kPrimaryBlue,
+                  kPrimaryBlue.withOpacity(0.8),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -275,8 +273,8 @@ class _MainDrawrState extends State<MainDrawr> {
                 ShaderMask(
                   shaderCallback: (bounds) => LinearGradient(
                     colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                      kWhite,
+                      kWhite.withOpacity(0.5),
                     ],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
@@ -284,15 +282,15 @@ class _MainDrawrState extends State<MainDrawr> {
                   child: const Icon(
                     Icons.settings,
                     size: 48,
-                    color: Colors.white,
+                    color: kWhite,
                   ),
                 ),
                  SizedBox(width: 18.w),
                 ShaderMask(
                   shaderCallback: (bounds) => LinearGradient(
                     colors: [
-                      Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                      Theme.of(context).colorScheme.primary,
+                      kWhite.withOpacity(0.5),
+                      kWhite,
                     ],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
@@ -302,7 +300,7 @@ class _MainDrawrState extends State<MainDrawr> {
                     style: TextStyle(
                       fontSize: 34.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: kWhite,
                     ),
                   ),
                 ),
@@ -313,14 +311,14 @@ class _MainDrawrState extends State<MainDrawr> {
             leading: Icon(
               Icons.manage_accounts,
               size: 26,
-              color: Theme.of(context).colorScheme.primary,
+              color: kPrimaryBlue,
             ),
             title: Text(
               'Account Management',
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18.sp,
-                  ),
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 18.sp,
+              ),
             ),
             onTap: () => _handleAccountManagement(context),
           ),
@@ -329,14 +327,14 @@ class _MainDrawrState extends State<MainDrawr> {
             leading: Icon(
               Icons.favorite,
               size: 26,
-              color: Theme.of(context).colorScheme.primary,
+              color: kPrimaryBlue,
             ),
             title: Text(
               'My Favorites',
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18.sp,
-                  ),
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 18.sp,
+              ),
             ),
             onTap: () {
               _handleMyFavorites(context);
@@ -347,14 +345,14 @@ class _MainDrawrState extends State<MainDrawr> {
             leading: Icon(
               Icons.shopping_cart,
               size: 26,
-              color: Theme.of(context).colorScheme.primary,
+              color: kPrimaryBlue,
             ),
             title: Text(
               'My Orders',
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18.sp,
-                  ),
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 18.sp,
+              ),
             ),
             onTap: () {
              _handleMyOrders(context);
@@ -365,14 +363,14 @@ class _MainDrawrState extends State<MainDrawr> {
             leading: Icon(
               Icons.sell,
               size: 26,
-              color: Theme.of(context).colorScheme.primary,
+              color: kPrimaryBlue,
             ),
             title: Text(
               'My Advertisings',
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18.sp,
-                  ),
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 18.sp,
+              ),
             ),
             onTap: () {
                _handleMyAdvertisings(context);
@@ -383,14 +381,14 @@ class _MainDrawrState extends State<MainDrawr> {
             leading: Icon(
               Icons.attach_money,
               size: 26,
-              color: Theme.of(context).colorScheme.primary,
+              color: kPrimaryBlue,
             ),
             title: Text(
               'Sell Product',
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18.sp,
-                  ),
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 18.sp,
+              ),
             ),
             onTap: () {
              _handleSellProduct(context);
@@ -401,14 +399,14 @@ class _MainDrawrState extends State<MainDrawr> {
             leading: Icon(
               Icons.help,
               size: 26,
-              color: Theme.of(context).colorScheme.primary,
+              color: kPrimaryBlue,
             ),
             title: Text(
               'Support',
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18.sp,
-                  ),
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 18.sp,
+              ),
             ),
             onTap: () {},
           ),
@@ -421,14 +419,14 @@ class _MainDrawrState extends State<MainDrawr> {
                   leading: Icon(
                     Icons.logout,
                     size: 26,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: kPrimaryBlue,
                   ),
                   title: Text(
                     'Log Out',
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontSize: 18.sp,
-                        ),
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 18.sp,
+                    ),
                   ),
                   onTap: () {
                     FirebaseAuth.instance.signOut();

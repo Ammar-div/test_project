@@ -8,6 +8,7 @@ import 'package:test_project/onbording/onbording.dart';
 import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/screens/delivery/delivery_home_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_project/constants/colors.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -105,11 +106,11 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Container(
         width: double.infinity.w,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color.fromARGB(255, 242, 223, 214),
-              Color.fromARGB(150, 242, 223, 214),
+              kPrimaryBlue,
+              kPrimaryBlue.withOpacity(0.8),
             ],
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,

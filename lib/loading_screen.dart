@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:test_project/constants/colors.dart';
 
 class LoadingScreen extends StatelessWidget {
   const LoadingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color.fromARGB(255, 242, 223, 214),
+    return Scaffold(
+      backgroundColor: kBackgroundGrey,
       body: Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator(
+          color: kPrimaryBlue,
+        ),
       ),
     );
   }
