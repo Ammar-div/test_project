@@ -145,33 +145,6 @@ class TransactionDetailsScreen extends StatelessWidget {
               ),
               SizedBox(height: 16.h),
             ],
-
-            // Additional Details
-            _buildInfoSection(
-              'Additional Details',
-              'View all transaction data',
-              Icons.more_horiz,
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Transaction Data'),
-                    content: SingleChildScrollView(
-                      child: Text(
-                        JsonEncoder.withIndent('  ').convert(transaction),
-                        style: TextStyle(fontSize: 14.sp),
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Close'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
           ],
         ),
       ),

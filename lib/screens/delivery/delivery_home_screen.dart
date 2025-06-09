@@ -481,29 +481,25 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
       EarningSummary(), // EarningSummary (index 2)
       const ActiveOrder(), // ActiveOrder (index 3)
       DeliveryPersonalData(
-          deliveryData: {}, deliveryId: ''), // Placeholder, will be replaced
+          deliveryData: widget.deliveryData,
+          deliveryId: widget.deliveryId), // Personal Data (index 4)
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    // Update the DeliveryPersonalData screen with the correct deliveryData and deliveryId
-    _screens[4] = DeliveryPersonalData(
-      deliveryData: widget.deliveryData,
-      deliveryId: widget.deliveryId,
-    );
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: _screens[_page], // Display the selected screen
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
         index: _page,
-        height: 60.0,
+        height: 60.0.h ,
         items: <Widget>[
           Icon(Icons.home, size: 30, color: kWhite),
           Icon(Icons.history, size: 30, color: kWhite),
           Icon(Icons.attach_money, size: 30, color: kWhite),
+          Icon(Icons.local_shipping, size: 30, color: kWhite),
           Icon(Icons.person, size: 30, color: kWhite),
         ],
         color: kPrimaryBlue,
@@ -513,7 +509,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
         animationDuration: const Duration(milliseconds: 600),
         onTap: (index) {
           setState(() {
-            _page = index;
+            _page = index.clamp(0, 4);
           });
         },
       ),
