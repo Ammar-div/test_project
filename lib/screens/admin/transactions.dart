@@ -22,11 +22,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundGrey,
-      appBar: AppBar(
-        title: Text('Transactions', style: TextStyle(color: kWhite)),
-        backgroundColor: kPrimaryBlue,
-        elevation: 0,
-      ),
       body: Column(
         children: [
           // Sort Row

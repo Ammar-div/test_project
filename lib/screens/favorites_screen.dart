@@ -11,10 +11,6 @@ class FavoritesScreen extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Favorites'),
-        backgroundColor: kPrimaryBlue,
-      ),
       body: user == null
           ? const Center(child: Text('Please sign in to view favorites'))
           : StreamBuilder<QuerySnapshot>(

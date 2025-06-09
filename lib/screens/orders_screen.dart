@@ -11,10 +11,6 @@ class OrdersScreen extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Orders'),
-        backgroundColor: kPrimaryBlue,
-      ),
       body: user == null
           ? const Center(child: Text('Please sign in to view your orders'))
           : StreamBuilder<QuerySnapshot>(

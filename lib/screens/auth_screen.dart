@@ -173,25 +173,26 @@ Future<void> _submit() async {
       } else {
         final status = userDoc['status'] ?? 'active';
         if (status == 'blocked') {
-          Navigator.of(context).pop(); 
+          Navigator.of(context).pop(); // Close spinner
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Your account has been blocked. Please contact support.'),
               backgroundColor: Colors.red,
             ),
           );
-          await _firebase.signOut(); 
+          await _firebase.signOut();
           return;
         }
+
+        Navigator.of(context).pop(); // Close spinner
 
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (ctx) => const HomeScreen(),
           ),
         );
+        showToastrMessage("Logged In Successfully.");
       }
-
-      showToastrMessage("Logged In Successfully.");
     } else {
       // Sign Up New User
       final userCredentials = await _firebase.createUserWithEmailAndPassword(
@@ -221,12 +222,18 @@ Future<void> _submit() async {
           'latitude': _latitude,
           'longitude': _longitude,
         },
-      }).then((value) {
-        showToastrMessage("Signed Up Successfully.");
+        'status': 'active'
       });
 
       Navigator.of(context).pop(); // Close spinner
-      Navigator.of(context).pop({'success': true, 'userId': userCredentials.user!.uid});
+      showToastrMessage("Signed Up Successfully.");
+      
+      // Navigate to HomeScreen
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (ctx) => const HomeScreen(),
+        ),
+      );
     }
   } on FirebaseAuthException catch (error) {
     Navigator.of(context).pop(); // Close spinner on error
@@ -279,20 +286,21 @@ Widget build(BuildContext context) {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 Image.asset(
                   'assets/images/logo-removebg-preview.png',
                   width: 120,
                   height: 120,
                   fit: BoxFit.contain,
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 if (!_isLogin)
                   UserImagePicker(
                     onPickImage: (pickedImage) {
                       _selectedImage = pickedImage;
                     },
                   ),
+                const SizedBox(height: 8),
                 TextFormField(
                   decoration: InputDecoration(
                     labelText: 'Email Address',
@@ -319,7 +327,7 @@ Widget build(BuildContext context) {
                     _enteredEmail = value!;
                   },
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 if (!_isLogin)
                   TextFormField(
                     decoration: InputDecoration(
@@ -350,6 +358,7 @@ Widget build(BuildContext context) {
                       _enteredFullName = value!;
                     },
                   ),
+                const SizedBox(height: 8),
                 if (!_isLogin)
                   TextFormField(
                     decoration: InputDecoration(
@@ -375,6 +384,7 @@ Widget build(BuildContext context) {
                       _enteredUsername = value!;
                     },
                   ),
+                const SizedBox(height: 8),
                 if (!_isLogin)
                   TextFormField(
                     decoration: InputDecoration(
@@ -414,12 +424,12 @@ Widget build(BuildContext context) {
                       _enteredPhoneNumber = value!;
                     },
                   ),
-                if (!_isLogin) const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 if (!_isLogin)
                   LocationInput(
                     onSelectLocation: _saveLocation,
                   ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 TextFormField(
                   decoration: InputDecoration(
                     labelText: 'Password',
@@ -444,7 +454,7 @@ Widget build(BuildContext context) {
                     _enteredPassword = value!;
                   },
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 if (!_isLogin)
                   TextFormField(
                     decoration: InputDecoration(
@@ -467,7 +477,7 @@ Widget build(BuildContext context) {
                       return null;
                     },
                   ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 if (_isAuthenticating)
                   CircularProgressIndicator(color: kPrimaryBlue)
                 else

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:test_project/constants/colors.dart';
+import 'order_details.dart';
 
 class OrdersSummary extends StatefulWidget {
   const OrdersSummary({super.key});
@@ -13,149 +14,178 @@ class OrdersSummary extends StatefulWidget {
 }
 
 class _OrdersSummaryState extends State<OrdersSummary> {
-  // Get the current delivery captain's ID
   String getCurrentDeliveryCaptainId() {
     return FirebaseAuth.instance.currentUser?.uid ?? '';
   }
 
-  // Fetch orders delivered by the current delivery captain
-  Future<List<Map<String, dynamic>>> fetchDeliveredOrders() async {
-    final String deliveryCaptainId = getCurrentDeliveryCaptainId();
-
-    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+  Stream<QuerySnapshot> _getOrdersStream() {
+    return FirebaseFirestore.instance
         .collection('orders')
+        .where('delivery_person_id', isEqualTo: getCurrentDeliveryCaptainId())
         .where('status', isEqualTo: 'delivered')
-        .where('delivery_person_id', isEqualTo: deliveryCaptainId)
-        .get();
-
-    return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-  }
-
-  // Fetch product and category data for all orders
-  Future<List<Map<String, dynamic>>> fetchOrderDetails(List<Map<String, dynamic>> orders) async {
-    List<Map<String, dynamic>> orderDetails = [];
-
-    for (final order in orders) {
-      final productId = order['product_infos']['product_id'];
-      final productSnapshot = await FirebaseFirestore.instance.collection('products').doc(productId).get();
-      final productData = productSnapshot.data() as Map<String, dynamic>;
-      final categoryId = productData['categoryId'];
-
-      final categorySnapshot = await FirebaseFirestore.instance.collection('categories').doc(categoryId).get();
-      final categoryData = categorySnapshot.data() as Map<String, dynamic>;
-      final categoryName = categoryData['name'] ?? 'Null Category';
-
-      orderDetails.add({
-        ...order,
-        'product_data': productData,
-        'category_name': categoryName,
-      });
-    }
-
-    return orderDetails;
+        .snapshots();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundGrey,
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: fetchDeliveredOrders(),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _getOrdersStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator(color: kPrimaryBlue));
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}', style: TextStyle(color: kPrimaryBlue)));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No delivered orders found.', style: TextStyle(color: kPrimaryBlue)));
-          } else {
-            final orders = snapshot.data!;
-
-            return FutureBuilder<List<Map<String, dynamic>>>(
-              future: fetchOrderDetails(orders),
-              builder: (context, orderDetailsSnapshot) {
-                if (orderDetailsSnapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator(color: kPrimaryBlue));
-                } else if (orderDetailsSnapshot.hasError) {
-                  return Center(child: Text('Error: ${orderDetailsSnapshot.error}', style: TextStyle(color: kPrimaryBlue)));
-                } else if (!orderDetailsSnapshot.hasData || orderDetailsSnapshot.data!.isEmpty) {
-                  return Center(child: Text('No order details found.', style: TextStyle(color: kPrimaryBlue)));
-                } else {
-                  final orderDetails = orderDetailsSnapshot.data!;
-
-                  return ListView.builder(
-                    itemCount: orderDetails.length,
-                    itemBuilder: (context, index) {
-                      final order = orderDetails[index];
-                      final productData = order['product_data'];
-                      final categoryName = order['category_name'];
-
-                      final deliveredDate = order['delivered_date'];
-                      final formattedDeliveredDate = deliveredDate != null
-                          ? DateFormat('MMM d, h:mm a').format((deliveredDate as Timestamp).toDate())
-                          : 'Not available';
-
-                      return Card(
-                        margin: const EdgeInsets.all(8.0),
-                        color: kWhite,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Order ID: ${order['buyer_id']}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14.sp,
-                                  color: kPrimaryBlue,
-                                ),
-                              ),
-                              SizedBox(height: 8.h),
-                              Text('Product: ${productData['name']}', style: TextStyle(color: kPrimaryBlue)),
-                              Text('Category: $categoryName', style: TextStyle(color: kPrimaryBlue)),
-                              Text('Quantity: ${order['product_infos']['quantity']}', style: TextStyle(color: kPrimaryBlue)),
-                              Text('Total Amount: \$${order['product_infos']['total_amount']}', style: TextStyle(color: kPrimaryBlue)),
-                              SizedBox(height: 8.h),
-                              Text(
-                                'Receiver Info:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: kPrimaryBlue,
-                                ),
-                              ),
-                              Text('Name: ${order['receiver_infos']['receiver_name']}', style: TextStyle(color: kPrimaryBlue)),
-                              Text('Phone: ${order['receiver_infos']['receiver_phone_number']}', style: TextStyle(color: kPrimaryBlue)),
-                              Text('Pickup Location: ${order['receiver_infos']['receiver_pick_up_location']}', style: TextStyle(color: kPrimaryBlue)),
-                              SizedBox(height: 8.h),
-                              Text(
-                                'Seller Info:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: kPrimaryBlue,
-                                ),
-                              ),
-                              Text('Seller Location: ${order['seller_location']}', style: TextStyle(color: kPrimaryBlue)),
-                              Text('Seller Phone: ${order['seller_phone_number']}', style: TextStyle(color: kPrimaryBlue)),
-                              SizedBox(height: 8.h),
-                              Text(
-                                'Delivery Date: $formattedDeliveredDate',
-                                style: TextStyle(
-                                  fontStyle: FontStyle.italic,
-                                  color: kPrimaryBlue.withOpacity(0.7),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                }
-              },
-            );
+            return const Center(child: CircularProgressIndicator());
           }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('No orders found'));
+          }
+
+          final orders = snapshot.data!.docs;
+
+          return ListView.builder(
+            padding: EdgeInsets.only(top: 32.h, left: 16.r, right: 16.r, bottom: 16.r),
+            itemCount: orders.length,
+            itemBuilder: (context, index) {
+              final order = orders[index].data() as Map<String, dynamic>;
+              return _buildOrderCard(order, orders[index].id);
+            }, 
+          );
         },
+      ),
+    );
+  }
+
+  Widget _buildOrderCard(Map<String, dynamic> order, String orderId) {
+    final deliveredDate = order['delivered_date'] != null 
+        ? (order['delivered_date'] as Timestamp).toDate() 
+        : DateTime.now();
+    final formattedDate = DateFormat('MMM d, yyyy h:mm a').format(deliveredDate);
+    
+    final amount = order['product_infos']?['total_amount']?.toDouble() ?? 0.0;
+    final status = order['status']?.toString().toLowerCase() ?? 'pending';
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OrderDetailsScreen(
+              orderId: orderId,
+              order: order,
+            ),
+          ),
+        );
+      },
+      child: Card(
+        margin: EdgeInsets.only(bottom: 16.h),
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(16.r),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Order #${orderId.substring(0, 8)}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.sp,
+                    ),
+                  ),
+                  _buildStatusChip(status),
+                ],
+              ),
+              SizedBox(height: 12.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Amount',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                      Text(
+                        '${amount.toStringAsFixed(2)} JOD',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.sp,
+                          color: Colors.green[700],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Date',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                      Text(
+                        formattedDate,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusChip(String status) {
+    Color chipColor;
+    switch (status.toLowerCase()) {
+      case 'pending':
+        chipColor = kPrimaryBlue;
+        break;
+      case 'delivered':
+        chipColor = Colors.green;
+        break;
+      case 'failed':
+        chipColor = Colors.red;
+        break;
+      default:
+        chipColor = Colors.grey;
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: chipColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(color: chipColor),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: TextStyle(
+          color: chipColor,
+          fontSize: 12.sp,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

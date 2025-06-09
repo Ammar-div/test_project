@@ -10,7 +10,7 @@ import 'package:test_project/widgets/main_drawr.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:test_project/constants/colors.dart';
 import 'package:test_project/screens/favorites_screen.dart';
-import 'package:test_project/screens/profile_screen.dart';
+import 'package:test_project/user/account_management.dart';
 import 'package:test_project/screens/orders_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -33,10 +33,34 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   // Add this list to store the screens
   final List<Widget> _screens = [
-    const HomeContent(), // We'll create this widget to hold the home content
+    const HomeContent(),
     const FavoritesScreen(),
     const OrdersScreen(),
-    const ProfileScreen(),
+    Builder(
+      builder: (context) {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user == null) {
+          return const Center(child: Text('Please sign in to view your profile'));
+        }
+        return FutureBuilder<DocumentSnapshot>(
+          future: FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final userData = snapshot.data!.data() as Map<String, dynamic>;
+            return AccountManagementScreen(
+              userId: user.uid,
+              initialName: userData['name'] ?? '',
+              initialEmail: userData['email'] ?? '',
+              initialUsername: userData['username'] ?? '',
+              initialPhoneNumber: userData['phone_number'] ?? '',
+              initialImageUrl: userData['image_url'],
+            );
+          },
+        );
+      },
+    ),
   ];
 
   @override
@@ -351,14 +375,14 @@ class HomeContent extends StatelessWidget {
                 child: Column(
                   children: [
                     AllCategories(),
-                    SizedBox(height: 5.h),
+                    SizedBox(height: 1.h),
                   ],
                 ),
               ),
               SliverGrid(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 3 / 5.5,
+                  childAspectRatio: 2.5 / 4,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
                 ),
@@ -389,7 +413,7 @@ class HomeContent extends StatelessWidget {
                         );
                       },
                       child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(15),
@@ -411,7 +435,7 @@ class HomeContent extends StatelessWidget {
                                 tag: productId,
                                 child: Image.network(
                                   imageUrl,
-                                  height: 180,
+                                  height: 130,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
                                 ),
@@ -450,7 +474,7 @@ class HomeContent extends StatelessWidget {
                                               maxLines: 2,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
-                                                fontSize: 14.sp,
+                                                fontSize: 17.sp,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.white,
                                                 height: 1.2,
@@ -559,7 +583,7 @@ class HomeContent extends StatelessWidget {
                                                   },
                                                   icon: Icon(
                                                     isFavorite ? Icons.favorite : Icons.favorite_border,
-                                                    size: 18,
+                                                    size: 16,
                                                     color: isFavorite ? Colors.red : Colors.white,
                                                   ),
                                                 ),

@@ -113,16 +113,6 @@ class _AccountManagementScreenState extends State<AccountManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Details'),
-        leading: IconButton(
-           icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-               Navigator.pushReplacement( context, MaterialPageRoute(builder: (context) => const HomeScreen()),
-                );
-                 }, 
-                 ),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(

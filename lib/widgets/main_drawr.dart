@@ -394,23 +394,6 @@ class _MainDrawrState extends State<MainDrawr> {
              _handleSellProduct(context);
             },
           ),
-           SizedBox(height: 12.h),
-          ListTile(
-            leading: Icon(
-              Icons.help,
-              size: 26,
-              color: kPrimaryBlue,
-            ),
-            title: Text(
-              'Support',
-              style: TextStyle(
-                color: Colors.black87,
-                fontSize: 18.sp,
-              ),
-            ),
-            onTap: () {},
-          ),
-           SizedBox(height: 12.h),
           StreamBuilder<User?>(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (context, snapshot) {
