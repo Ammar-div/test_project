@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:test_project/constants/colors.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 class Screen1 extends StatefulWidget
 {
   const Screen1({super.key});
@@ -25,7 +25,7 @@ class _Screen1State extends State<Screen1>
         children: [
            Row(
               children: [
-                Image.asset('assets/images/welcome-removebg-preview.png' , width: 310,),
+                Image.asset('assets/images/welcome-removebg-preview.png' , width: 250.w,),
                 
                  Text('To',
                 style: GoogleFonts.moonDance(
@@ -39,7 +39,7 @@ class _Screen1State extends State<Screen1>
             ),
           const SizedBox(height: 0,),
           
-           Image.asset('assets/images/logo-removebg-preview.png' , width: 220,),
+           Image.asset('assets/images/logo-removebg-preview.png' , width: 220.w,),
           
 
            Container(
