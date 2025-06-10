@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/screens/HomeScreen.dart';
 import 'package:test_project/screens/auth_screen.dart';
+import 'package:test_project/screens/favorites_screen.dart';
 import 'package:test_project/user/account_management.dart';
 import 'package:test_project/user/my_advertisings.dart';
 import 'package:test_project/user/my_favorites.dart';
@@ -40,6 +41,7 @@ class MainDrawr extends StatefulWidget {
           initialPhoneNumber : phoneNumber,
           initialName : fullName,
           initialImageUrl: imageUrl,
+          showHeader: true,
           ),
       ),
     );
@@ -98,7 +100,7 @@ void _handleMyFavorites(BuildContext context) async {
     // User is logged in
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (ctx) =>  MyFavorites(),
+        builder: (ctx) => const FavoritesScreen(showHeader: true),
       ),
     );
   } else {
@@ -183,6 +185,7 @@ void _loginDialog(BuildContext context , String x)
                             initialPhoneNumber : phoneNumber,
                             initialName : fullName,
                             initialImageUrl: imageUrl,
+                            showHeader: true,
                              ),
                            ),
                          );
@@ -217,7 +220,7 @@ void _loginDialog(BuildContext context , String x)
                         {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (ctx) => MyFavorites(),
+                              builder: (ctx) => const FavoritesScreen(showHeader: true),
                             )
                           );
                         }

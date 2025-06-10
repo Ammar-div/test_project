@@ -84,6 +84,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     // Initialize the stream
     _productsStream = _firestore
         .collection('products')
+        .where('deleted_at', isNull: true)
         .orderBy('publishDate', descending: true)
         .snapshots();
 
@@ -150,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     setState(() {
       _productsStream = _firestore
           .collection('products')
+          .where('deleted_at', isNull: true)
           .orderBy('publishDate', descending: true)
           .snapshots();
     });
@@ -345,6 +347,7 @@ class HomeContent extends StatelessWidget {
       child: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('products')
+            .where('deleted_at', isNull: true)
             .orderBy('publishDate', descending: true)
             .snapshots(),
         builder: (context, snapshot) {

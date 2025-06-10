@@ -139,6 +139,16 @@ class _MyFavoritesState extends State<MyFavorites> with SingleTickerProviderStat
 
                               if (productSnapshot.exists) {
                                 Map<String, dynamic> productData = productSnapshot.data() as Map<String, dynamic>;
+                                
+                                // Check if product is deleted
+                                if (productData['deleted_at'] != null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('This product has been removed')),
+                                  );
+                                  // Remove from favorites if product is deleted
+                                  await _toggleFavorite(productId, productName, productPrice, imageUrl);
+                                  return;
+                                }
 
                                 String description = productData["description"];
                                 String status = productData["status"];
@@ -162,6 +172,8 @@ class _MyFavoritesState extends State<MyFavorites> with SingleTickerProviderStat
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text('Product details not found')),
                                 );
+                                // Remove from favorites if product doesn't exist
+                                await _toggleFavorite(productId, productName, productPrice, imageUrl);
                               }
                             },
                             child: Card(

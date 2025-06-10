@@ -590,6 +590,7 @@ Future<void> _pickImageFromGallery() async {
         "how_much_used": howMuchUsedString,
         "quantity": int.parse(quantityController.text),
         "product_order_status": "Not requested yet",
+        "deleted_at": null
       };
       final docRef = FirebaseFirestore.instance.collection("products").doc();
       await docRef.set(productInfo);

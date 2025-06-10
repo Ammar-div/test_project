@@ -14,6 +14,7 @@ class AccountManagementScreen extends StatefulWidget {
   final String initialUsername;
   final String initialPhoneNumber;
   final String? initialImageUrl;
+  final bool? showHeader;
 
   const AccountManagementScreen({
     Key? key,
@@ -23,6 +24,7 @@ class AccountManagementScreen extends StatefulWidget {
     required this.initialUsername,
     required this.initialPhoneNumber,
     this.initialImageUrl,
+    this.showHeader,
   }) : super(key: key);
 
   @override
@@ -38,10 +40,6 @@ class _AccountManagementScreenState extends State<AccountManagementScreen> {
   File? _selectedImage;
   String? _imageUrl;
   var _isUpdating = false;
-
-
-
-
 
   @override
   void initState() {
@@ -113,6 +111,10 @@ class _AccountManagementScreenState extends State<AccountManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: widget.showHeader == true ? AppBar(
+        title: const Text('Account Management'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ) : null,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(

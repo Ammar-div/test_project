@@ -132,6 +132,7 @@ Widget build(BuildContext context) {
     body: StreamBuilder<QuerySnapshot>(
       stream: _firestore
           .collection('products')
+          .where('deleted_at', isNull: true)
           .where('categoryId', isEqualTo: widget.categoryId)
           .where('product_order_status', isEqualTo: 'Not requested yet')
           .snapshots(),
