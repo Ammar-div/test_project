@@ -188,144 +188,204 @@ Widget build(BuildContext context) {
                         ),
                       );
                     },
-                    child: Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8.r),
-                              child: Hero(
-                                tag: productId,
-                                child: Image.network(
-                                  imageUrl,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              product['name'],
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style:  TextStyle(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              product['description'],
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style:  TextStyle(
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Text(
-                                '${product['price'].toStringAsFixed(0)} JOD',
-                                style:  TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
-                                ),
-                              ),
-                              StreamBuilder<QuerySnapshot>(
-                                stream: _auth.currentUser != null
-                                    ? _firestore
-                                        .collection('favorites')
-                                        .where('userId', isEqualTo: _auth.currentUser?.uid)
-                                        .where('productId', isEqualTo: productId)
-                                        .snapshots()
-                                    : const Stream<QuerySnapshot>.empty(),
-                                builder: (context, favoriteSnapshot) {
-                                  final isFavorite = _auth.currentUser != null &&
-                                      favoriteSnapshot.hasData &&
-                                      favoriteSnapshot.data!.docs.isNotEmpty;
-
-                                  return AnimatedBuilder(
-                                    animation: _scaleAnimation,
-                                    builder: (context, child) {
-                                      return Transform.scale(
-                                        scale: _scaleAnimation.value,
-                                        child: IconButton(
-                                          onPressed: () async {
-                                            DocumentSnapshot productDocumentObj =
-                                                await _firestore.collection('products').doc(productId).get();
-                                            final sellerId = productDocumentObj["seller_ifos"]["seller_id"];
-                                            final user = FirebaseAuth.instance.currentUser;
-                                            if (user != null) {
-                                              if (user.uid == sellerId) {
-                                                // owner of the product
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                    const SnackBar(content: Text("The user can't favorite his own product.")));
-                                                return;
-                                              }
-                                            }
-
-                                            if (_auth.currentUser == null) {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(content: Text('You must be logged in to add favorites')),
-                                              );
-                                            } else {
-                                              setState(() {
-                                                _isFavorite = !_isFavorite;
-                                              });
-
-                                              if (_isFavorite) {
-                                                _animationController.forward().then((_) {
-                                                  _animationController.reverse();
-                                                });
-                                              } else {
-                                                _animationController.reverse();
-                                              }
-
-                                              _toggleFavorite(
-                                                productId,
-                                                product['name'],
-                                                product['price'],
-                                                imageUrl,
-                                              );
-                                            }
-                                          },
-                                          icon: Icon(
-                                            isFavorite ? Icons.favorite : Icons.favorite_border,
-                                            color: isFavorite ? Colors.red : null,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          // Display how long ago the product was posted
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
-                            child: Text(
-                              timeAgo,
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                              ),
-                            ),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
                           ),
                         ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: Stack(
+                          children: [
+                            // Background Image
+                            Hero(
+                              tag: productId,
+                              child: Image.network(
+                                imageUrl,
+                                height: 130,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            // Gradient Overlay
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withOpacity(0.7),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // Content
+                            Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            product['name'],
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 17.sp,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              height: 1.2,
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: Colors.green,
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            '${product['price'].toStringAsFixed(0)} JOD',
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      product['description'],
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 11.sp,
+                                        color: Colors.white.withOpacity(0.9),
+                                        height: 1.2,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(0.2),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.access_time, size: 10, color: Colors.white),
+                                              const SizedBox(width: 2),
+                                              Text(
+                                                timeAgo,
+                                                style: TextStyle(
+                                                  fontSize: 8.sp,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        StreamBuilder<QuerySnapshot>(
+                                          stream: _auth.currentUser != null
+                                              ? _firestore
+                                                  .collection('favorites')
+                                                  .where('userId', isEqualTo: _auth.currentUser?.uid)
+                                                  .where('productId', isEqualTo: productId)
+                                                  .snapshots()
+                                              : const Stream<QuerySnapshot>.empty(),
+                                          builder: (context, favoriteSnapshot) {
+                                            final isFavorite = _auth.currentUser != null &&
+                                                favoriteSnapshot.hasData &&
+                                                favoriteSnapshot.data!.docs.isNotEmpty;
+
+                                            return Container(
+                                              padding: const EdgeInsets.all(6),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withOpacity(0.2),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: IconButton(
+                                                padding: EdgeInsets.zero,
+                                                constraints: const BoxConstraints(),
+                                                onPressed: () async {
+                                                  DocumentSnapshot productDocumentObj =
+                                                      await _firestore.collection('products').doc(productId).get();
+                                                  final sellerId = productDocumentObj["seller_ifos"]["seller_id"];
+                                                  final user = FirebaseAuth.instance.currentUser;
+                                                  if (user != null) {
+                                                    if (user.uid == sellerId) {
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                          const SnackBar(content: Text("The user can't favorite his own product.")));
+                                                      return;
+                                                    }
+                                                  }
+
+                                                  if (_auth.currentUser == null) {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      const SnackBar(content: Text('You must be logged in to add favorites')),
+                                                    );
+                                                  } else {
+                                                    setState(() {
+                                                      _isFavorite = !_isFavorite;
+                                                    });
+
+                                                    if (_isFavorite) {
+                                                      _animationController.forward().then((_) {
+                                                        _animationController.reverse();
+                                                      });
+                                                    } else {
+                                                      _animationController.reverse();
+                                                    }
+
+                                                    _toggleFavorite(
+                                                      productId,
+                                                      product['name'],
+                                                      product['price'],
+                                                      imageUrl,
+                                                    );
+                                                  }
+                                                },
+                                                icon: Icon(
+                                                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                                                  size: 16,
+                                                  color: isFavorite ? Colors.red : Colors.white,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

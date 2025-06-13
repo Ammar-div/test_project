@@ -450,15 +450,12 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                         const Spacer(),
                         GestureDetector(
                           onTap: () async {
-                            // Clean the phone number (remove non-numeric characters)
                             final String phoneNumber = widget.deliveryInfos!['phone_number'].replaceAll(RegExp(r'[^0-9]'), '');
                             final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
 
-                            // Check if the device can launch the phone dialer
                             if (await canLaunchUrl(phoneUri)) {
                               await launchUrl(phoneUri);
                             } else {
-                              // Handle the case where the device cannot make phone calls
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Cannot make phone calls on this device.'),
@@ -471,7 +468,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                             style: const TextStyle(
                               color: Colors.blue,
                               decoration: TextDecoration.underline,
-                              // fontSize: 16, // Adjust the font size as needed
+                              // fontSize: 16,
                             ),
                           ),
                         ),
@@ -486,26 +483,58 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                       alignment: Alignment.center,
                       child: ElevatedButton(
                         onPressed: () async {
-                          print('Acknowledge button pressed'); // Debug print
-                          // Update the order status to "delivered"
-                          await FirebaseFirestore.instance
-                              .collection('orders')
-                              .doc(widget.orderID)
-                              .update({
-                                'status': 'delivered',
-                              });
+                          print('Acknowledge button pressed'); 
+                          
+                          try {
+                            final transactionQuery = await FirebaseFirestore.instance
+                                .collection('transactions')
+                                .where('order_id', isEqualTo: widget.orderID)
+                                .get();
 
-                          // Show a success message
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Order acknowledged as delivered.'),
-                            ),
-                          );
+                            if (transactionQuery.docs.isEmpty) {
+                              throw Exception('No transaction found for this order');
+                            }
 
-                          // Update the local state
-                          setState(() {
-                            _orderStatus = 'delivered';
-                          });
+                            final transactionDoc = transactionQuery.docs.first;
+                            
+                            final batch = FirebaseFirestore.instance.batch();
+                            
+                            final orderRef = FirebaseFirestore.instance
+                                .collection('orders')
+                                .doc(widget.orderID);
+                            batch.update(orderRef, {
+                              'status': 'delivered',
+                              'payment_status': 'completed'
+                            });
+
+                            // Update transaction status
+                            final transactionRef = FirebaseFirestore.instance
+                                .collection('transactions')
+                                .doc(transactionDoc.id);
+                            batch.update(transactionRef, {
+                              'status': 'completed',
+                            });
+
+                            await batch.commit();
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Order acknowledged as delivered and transaction completed.'),
+                              ),
+                            );
+
+                            setState(() {
+                              _orderStatus = 'delivered';
+                            });
+                          } catch (e) {
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Error: ${e.toString()}'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
@@ -640,7 +669,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                           Text('Order Status : $_orderStatus' ,
                             style:  TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 18.sp,
+                              fontSize: 14.sp,
                             ),
                           ),
                         ],

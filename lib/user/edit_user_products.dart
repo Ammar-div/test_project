@@ -520,7 +520,7 @@ Widget build(BuildContext context) {
                     labelText: 'Pick up location',
                     border: OutlineInputBorder(),
                   ),
-                  hint: const Text('Where the captain will take your product'), // Hint text
+                  hint: const Text('Enter a location'), // Hint text
                   items: pickUpLocation.map((location) {
                     return DropdownMenuItem<String>(
                       value: location,
