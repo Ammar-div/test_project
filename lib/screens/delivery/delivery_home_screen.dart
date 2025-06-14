@@ -32,7 +32,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
       msg: message,
       toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.TOP,
-      backgroundColor: kPrimaryBlue,
+      backgroundColor: Colors.green[700],
       textColor: kWhite,
       fontSize: 16.0.sp,
     );
@@ -111,7 +111,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
               await _refreshOrders(); // Refresh the orders list
             },
             child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              padding:  EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
               itemCount: orders.length,
               itemBuilder: (ctx, index) {
                 final order = orders[index].data() as Map<String, dynamic>;
@@ -494,7 +494,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
         index: _page,
-        height: 60.0.h ,
+        height: 75.0 ,
         items: <Widget>[
           Icon(Icons.home, size: 30, color: kWhite),
           Icon(Icons.history, size: 30, color: kWhite),

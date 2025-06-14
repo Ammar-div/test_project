@@ -430,7 +430,7 @@ void showToastrMessage(String message) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundGrey,
+      backgroundColor: Colors.lightBlue[200],
       body: Center(
         child: SingleChildScrollView(
           child: Container(

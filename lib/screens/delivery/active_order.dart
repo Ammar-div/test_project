@@ -49,7 +49,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
       msg: message,
       toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.TOP,
-      backgroundColor: kPrimaryBlue,
+      backgroundColor: Colors.green[700],
       textColor: kWhite,
       fontSize: 16.0.sp,
     );
@@ -63,7 +63,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
           msg: message,
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.TOP,
-          backgroundColor: kPrimaryBlue,
+          backgroundColor: Colors.green[700],
           textColor: kWhite,
           fontSize: 16.0.sp,
         );
@@ -147,7 +147,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
                         formattedAcceptanceDate),
                   ],
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
                 _buildInfoCard(
                   title: 'Seller Information',
                   children: [
@@ -159,8 +159,8 @@ class _ActiveOrderState extends State<ActiveOrder> {
                         sellerInfo['seller_phone_number'] ?? 'N/A'),
                     _buildInfoRow(Icons.location_on, 'Location',
                         sellerInfo['seller_pick_up_location'] ?? 'N/A'),
-                    const SizedBox(height: 16),
-                    if (!_isReceived)
+                    SizedBox(height: 16.h),
+                    if (!_isReceived) // Show "Received" button only if not received
                       Align(
                         alignment: Alignment.center,
                         child: ElevatedButton(
@@ -243,7 +243,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
                       ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
                 _buildInfoCard(
                   title: 'Receiver Information',
                   children: [
@@ -255,8 +255,8 @@ class _ActiveOrderState extends State<ActiveOrder> {
                         receiverInfo['receiver_phone_number'] ?? 'N/A'),
                     _buildInfoRow(Icons.location_on, 'Location',
                         receiverInfo['receiver_pick_up_location'] ?? 'N/A'),
-                    const SizedBox(height: 16),
-                    if (_isReceived)
+                    SizedBox(height: 16.h),
+                    if (_isReceived) // Show "Mark as Delivered" only if received
                       Align(
                         alignment: Alignment.center,
                         child: ElevatedButton(
@@ -382,7 +382,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
                 color: Colors.blue,
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             ...children,
           ],
         ),
@@ -392,10 +392,10 @@ class _ActiveOrderState extends State<ActiveOrder> {
 
   Widget _buildInfoRow(IconData icon, String label, String? value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 8.h),
       child: Row(
         children: [
-          Icon(icon, color: Colors.blue.shade800, size: 16),
+          Icon(icon, color: Colors.blue.shade800, size: 16.sp),
           SizedBox(width: 10.w),
           Text(
             '$label: ',

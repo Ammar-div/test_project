@@ -55,15 +55,15 @@ class _AuthScreenState extends State<AuthScreen> {
    void showToastrMessage(String message)
   {
     Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        timeInSecForIosWeb: 3,
-        backgroundColor: kPrimaryBlue,
-        textColor: kWhite,
-        fontSize: 16.0.sp,
-        webPosition: "right",
-    );
+  msg: message,
+  toastLength: Toast.LENGTH_LONG,
+  gravity: ToastGravity.TOP,
+  timeInSecForIosWeb: 3,
+  backgroundColor: Colors.green[700], // Changed to a beautiful, compatible green
+  textColor: kWhite,
+  fontSize: 16.0.sp,
+  webPosition: "right",
+);
   }
 
   void _saveLocation(double latitude, double longitude) {
