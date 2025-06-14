@@ -775,14 +775,14 @@ Widget build(BuildContext context) {
                          Text(
                           'Product order status : ',
                           style: TextStyle(
-                            fontSize: 17.sp,
+                            fontSize: widget.productOrderStatus == "It has been purchased" ? 14.sp : 17.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           widget.productOrderStatus,
                           style:  TextStyle(
-                            fontSize: 17.sp,
+                            fontSize: widget.productOrderStatus == "It has been purchased" ? 14.sp : 17.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

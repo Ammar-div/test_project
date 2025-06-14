@@ -50,6 +50,7 @@ dependencies:
   intl: ^0.20.1
   shared_preferences: ^2.3.3
   uuid: ^4.5.1
+  curved_navigation_bar: ^1.0.6
   transparent_image: ^2.0.1
   carousel_slider: ^5.0.0
   flutter_markdown: ^0.7.5
@@ -58,7 +59,7 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   font_awesome_flutter: ^10.8.0
   url_launcher: ^6.3.1
-  curved_navigation_bar: ^1.0.6
+  
   flutter_svg: ^2.0.17
   lottie: ^3.3.1
   flutter_stripe: ^11.4.0
