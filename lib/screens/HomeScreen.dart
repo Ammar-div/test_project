@@ -12,6 +12,7 @@ import 'package:test_project/constants/colors.dart';
 import 'package:test_project/screens/favorites_screen.dart';
 import 'package:test_project/user/account_management.dart';
 import 'package:test_project/screens/orders_screen.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late Stream<QuerySnapshot> _productsStream;
   int _selectedIndex = 0;
+  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
   
   String userName = '';
 
@@ -251,30 +253,26 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       ),
       drawer: const MainDrawr(),
       body: _screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag),
-            label: 'Orders',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+      bottomNavigationBar: CurvedNavigationBar(
+        key: _bottomNavigationKey,
+        index: _selectedIndex,
+        height: 60.0.h,
+        items: <Widget>[
+          Icon(Icons.home, size: 30, color: kWhite),
+          Icon(Icons.favorite, size: 30, color: kWhite),
+          Icon(Icons.shopping_bag, size: 30, color: kWhite),
+          Icon(Icons.person, size: 30, color: kWhite),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: kPrimaryBlue,
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
+        color: kPrimaryBlue,
+        buttonBackgroundColor: kPrimaryBlue,
+        backgroundColor: kBackgroundGrey,
+        animationCurve: Curves.easeInOut,
+        animationDuration: const Duration(milliseconds: 600),
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
       ),
     );
   }
