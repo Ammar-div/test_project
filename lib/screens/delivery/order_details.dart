@@ -31,6 +31,20 @@ class OrderDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: kBackgroundGrey,
+      appBar: AppBar(
+        backgroundColor: kPrimaryBlue,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: kBackgroundGrey),
+          onPressed: () {
+            Navigator.pop(context); // Navigate back to the previous screen
+          },
+        ),
+        title: Text(
+          'Order Details',
+          style: TextStyle(color: kWhite, fontSize: 20.sp),
+        ),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.r),
         child: Column(
@@ -255,4 +269,4 @@ class OrderDetailsScreen extends StatelessWidget {
         return Colors.grey;
     }
   }
-} 
+}

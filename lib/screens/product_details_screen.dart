@@ -867,6 +867,36 @@ Widget build(BuildContext context) {
                       ],
                     ),
                   ),
+                if (widget.productOrderStatus == "delivered")
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                    width: double.infinity.w,
+                    color: Colors.green[400],
+                    child: Row(
+                      children: [
+                         Text(
+                          'Order status : ',
+                          style: TextStyle(
+                            fontSize: 17.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          widget.productOrderStatus,
+                          style:  TextStyle(
+                            fontSize: 17.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+
+
+
+
+
                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")
                    SizedBox(height: 15.h),
                 if (widget.productOrderStatus == "confirmed" || widget.productOrderStatus == "picked up")

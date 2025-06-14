@@ -319,7 +319,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
                                       Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const DeliverySuccessScreen(),
+                                               DeliverySuccessScreen(orderId: orderId,),
                                         ),
                                       );
                                     }

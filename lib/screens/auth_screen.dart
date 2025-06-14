@@ -273,34 +273,46 @@ Future<void> _submit() async {
 
 
 
- @override
+@override
 Widget build(BuildContext context) {
   return Scaffold(
     backgroundColor: kBackgroundGrey,
     body: Center(
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0.w),
           child: Form(
             key: _form,
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start, // Align back button to the left
               children: [
-                const SizedBox(height: 24),
-                Image.asset(
-                  'assets/images/logo-removebg-preview.png',
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.contain,
+                SizedBox(height: 16.h),
+                IconButton(
+                  icon: Icon(Icons.arrow_back, color: kPrimaryBlue, size: 24.sp),
+                  onPressed: () {
+                    Navigator.pop(context); // Navigate back to the previous screen
+                  },
+                  padding: EdgeInsets.zero, // Remove default padding
+                  alignment: Alignment.centerLeft, // Align icon to the left
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 16.h),
+                Center( // Center the logo image
+                  child: Image.asset(
+                    'assets/images/logo-removebg-preview.png',
+                    width: 120.w,
+                    height: 120.h,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                SizedBox(height: 24.h),
                 if (!_isLogin)
                   UserImagePicker(
                     onPickImage: (pickedImage) {
                       _selectedImage = pickedImage;
                     },
                   ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 TextFormField(
                   decoration: InputDecoration(
                     labelText: 'Email Address',
@@ -327,7 +339,7 @@ Widget build(BuildContext context) {
                     _enteredEmail = value!;
                   },
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 if (!_isLogin)
                   TextFormField(
                     decoration: InputDecoration(
@@ -358,7 +370,7 @@ Widget build(BuildContext context) {
                       _enteredFullName = value!;
                     },
                   ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 if (!_isLogin)
                   TextFormField(
                     decoration: InputDecoration(
@@ -384,7 +396,7 @@ Widget build(BuildContext context) {
                       _enteredUsername = value!;
                     },
                   ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 if (!_isLogin)
                   TextFormField(
                     decoration: InputDecoration(
@@ -424,12 +436,12 @@ Widget build(BuildContext context) {
                       _enteredPhoneNumber = value!;
                     },
                   ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 if (!_isLogin)
                   LocationInput(
                     onSelectLocation: _saveLocation,
                   ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 TextFormField(
                   decoration: InputDecoration(
                     labelText: 'Password',
@@ -444,8 +456,7 @@ Widget build(BuildContext context) {
                   controller: _passwordController,
                   obscureText: true,
                   validator: (value) {
-                    if (value == null ||
-                        value.trim().length < 6) {
+                    if (value == null || value.trim().length < 6) {
                       return 'Password must be at least 6 characters long.';
                     }
                     return null;
@@ -454,7 +465,7 @@ Widget build(BuildContext context) {
                     _enteredPassword = value!;
                   },
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 if (!_isLogin)
                   TextFormField(
                     decoration: InputDecoration(
@@ -477,7 +488,7 @@ Widget build(BuildContext context) {
                       return null;
                     },
                   ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 if (_isAuthenticating)
                   CircularProgressIndicator(color: kPrimaryBlue)
                 else
@@ -515,5 +526,4 @@ Widget build(BuildContext context) {
     ),
   );
 }
-
 }
