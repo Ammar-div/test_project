@@ -256,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
         index: _selectedIndex,
-        height: 60.0.h,
+        height: 60.0,
         items: <Widget>[
           Icon(Icons.home, size: 30, color: kWhite),
           Icon(Icons.favorite, size: 30, color: kWhite),

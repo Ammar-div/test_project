@@ -51,6 +51,7 @@ dependencies:
   shared_preferences: ^2.3.3
   uuid: ^4.5.1
   curved_navigation_bar: ^1.0.6
+
   transparent_image: ^2.0.1
   carousel_slider: ^5.0.0
   flutter_markdown: ^0.7.5

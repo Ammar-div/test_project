@@ -123,63 +123,65 @@ class _PcCreateCategoryState extends State<PcCreateCategory> {
           elevation: 0, // Remove AppBar shadow
           backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer, // Match container color
         ),
-        body: Container(
-          padding: const EdgeInsets.only(left: 23, right: 23, top: 33),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: _pickImageFromGallery,
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundImage: _selectedImage != null
-                        ? FileImage(_selectedImage!)
-                        : _imageUrl != null
-                            ? NetworkImage(_imageUrl!)
-                            : null,
-                    child: _selectedImage == null && _imageUrl == null
-                        ? const Icon(Icons.camera_alt, size: 40)
-                        : null,
+        body: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.only(left: 23, right: 23, top: 33),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: _pickImageFromGallery,
+                    child: CircleAvatar(
+                      radius: 60,
+                      backgroundImage: _selectedImage != null
+                          ? FileImage(_selectedImage!)
+                          : _imageUrl != null
+                              ? NetworkImage(_imageUrl!)
+                              : null,
+                      child: _selectedImage == null && _imageUrl == null
+                          ? const Icon(Icons.camera_alt, size: 40)
+                          : null,
+                    ),
                   ),
-                ),
-                 SizedBox(height: 18.h),
-                ElevatedButton.icon(
-                  onPressed: _pickImageFromGallery,
-                  icon: const Icon(Icons.photo),
-                  label: const Text('Gallery'),
-                ),
-                 SizedBox(height: 16.h),
-                TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                  enableSuggestions: false,
-                  keyboardType: TextInputType.name,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a category name.';
-                    }
-                    return null;
-                  },
-                ),
-                 SizedBox(height: 40.h),
-                SizedBox(
-                  width: screenWidth * 0.75.w,
-                  child: ElevatedButton(
-                    onPressed: _createCategory,
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.primary,
-                          width: 2.w,
+                   SizedBox(height: 18.h),
+                  ElevatedButton.icon(
+                    onPressed: _pickImageFromGallery,
+                    icon: const Icon(Icons.photo),
+                    label: const Text('Gallery'),
+                  ),
+                   SizedBox(height: 16.h),
+                  TextFormField(
+                    controller: nameController,
+                    decoration: const InputDecoration(labelText: 'Name'),
+                    enableSuggestions: false,
+                    keyboardType: TextInputType.name,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a category name.';
+                      }
+                      return null;
+                    },
+                  ),
+                   SizedBox(height: 40.h),
+                  SizedBox(
+                    width: screenWidth * 0.75.w,
+                    child: ElevatedButton(
+                      onPressed: _createCategory,
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2.w,
+                          ),
                         ),
                       ),
+                      child: const Text('Create'),
                     ),
-                    child: const Text('Create'),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

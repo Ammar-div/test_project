@@ -20,27 +20,34 @@ class _ActiveOrderState extends State<ActiveOrder> {
   bool _isLoading = false;
   bool _isReceived = false;
   bool _isMarkingDelivered = false;
+  bool _isAwaitingAcknowledgment = false;
 
   @override
   void initState() {
     super.initState();
+    // Check if the order has been received when the widget is initialized
     _checkIfReceived();
   }
 
   Future<void> _checkIfReceived() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    final activeOrderData = activeOrderNotifier.value;
+    if (activeOrderData == null || activeOrderData.orderId == null) return;
 
-    final orderDoc = await FirebaseFirestore.instance
-        .collection('orders')
-        .where('delivery_person_id', isEqualTo: user.uid)
-        .get();
+    try {
+      final orderDoc = await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(activeOrderData.orderId)
+          .get();
 
-    if (orderDoc.docs.isNotEmpty) {
-      final orderData = orderDoc.docs.first.data();
-      setState(() {
-        _isReceived = orderData['is_received'] ?? false;
-      });
+      if (orderDoc.exists) {
+        final orderData = orderDoc.data()!;
+        setState(() {
+          _isReceived = orderData['is_received'] ?? false;
+          _isAwaitingAcknowledgment = orderData['status'] == 'awaiting acknowledgment';
+        });
+      }
+    } catch (e) {
+      showToastrMessage("Error checking order status: $e");
     }
   }
 
@@ -139,8 +146,7 @@ class _ActiveOrderState extends State<ActiveOrder> {
                     _buildInfoRow(
                         Icons.shopping_cart,
                         'Quantity',
-                        order['product_infos']?['quantity']?.toString() ??
-                            'N/A'),
+                        order['product_infos']?['quantity']?.toString() ?? 'N/A'),
                     _buildInfoRow(
                         Icons.calendar_today, 'Order Date', formattedDate),
                     _buildInfoRow(Icons.event_available, 'Acceptance Date',
@@ -172,26 +178,29 @@ class _ActiveOrderState extends State<ActiveOrder> {
                                   });
 
                                   try {
-                                    final user =
-                                        FirebaseAuth.instance.currentUser;
+                                    final user = FirebaseAuth.instance.currentUser;
+                                    final orderId = activeOrderData.orderId;
+                                    final productId =
+                                        order['product_infos']['product_id'];
+
                                     final orderDoc = await FirebaseFirestore
                                         .instance
                                         .collection('orders')
-                                        .where('delivery_person_id',
-                                            isEqualTo: user!.uid)
+                                        .doc(orderId)
                                         .get();
 
-                                    final orderDocument = orderDoc.docs.first;
-                                    if (orderDocument['is_received'] == true) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
+                                    if (orderDoc['is_received'] == true) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
                                               content: Text(
                                                   'You already received the order')));
+                                      setState(() {
+                                        _isReceived = true;
+                                        _isLoading = false;
+                                      });
+                                      return;
                                     }
-                                    final orderId = orderDocument.id;
-                                    final productId =
-                                        orderDocument['product_infos']
-                                            ['product_id'];
+
                                     final productInfo = {
                                       "product_order_status": "picked up",
                                     };
@@ -260,74 +269,94 @@ class _ActiveOrderState extends State<ActiveOrder> {
                       Align(
                         alignment: Alignment.center,
                         child: ElevatedButton(
-                          onPressed: _isMarkingDelivered
+                          onPressed: (_isMarkingDelivered || _isAwaitingAcknowledgment)
                               ? null
                               : () async {
                                   setState(() {
                                     _isMarkingDelivered = true;
                                   });
 
-                                  final user =
-                                      FirebaseAuth.instance.currentUser;
-                                  if (user == null) return;
-
-                                  final orderDoc = await FirebaseFirestore
-                                      .instance
-                                      .collection('orders')
-                                      .where('delivery_person_id',
-                                          isEqualTo: user.uid)
-                                      .get();
-
-                                  final orderDocument = orderDoc.docs.first;
-                                  final orderId = orderDocument.id;
-
-                                  if (orderDocument['status'] ==
-                                      "awaiting acknowledgment") {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                      content: Text(
-                                          'Awaiting buyer acknowledgment.'),
-                                    ));
+                                  final user = FirebaseAuth.instance.currentUser;
+                                  if (user == null) {
+                                    setState(() {
+                                      _isMarkingDelivered = false;
+                                    });
                                     return;
                                   }
 
-                                  await FirebaseFirestore.instance
-                                      .collection('orders')
-                                      .doc(orderId)
-                                      .update({
-                                    'status': 'awaiting acknowledgment',
-                                    'delivered_date':
-                                        Timestamp.fromDate(DateTime.now()),
-                                  });
+                                  final orderId = activeOrderData.orderId;
 
-                                  FirebaseFirestore.instance
-                                      .collection('orders')
-                                      .doc(orderId)
-                                      .snapshots()
-                                      .listen((documentSnapshot) {
-                                    final status = documentSnapshot['status'];
-                                    if (status == 'delivered') {
-                                      FirebaseFirestore.instance
-                                          .collection('delivery_captains')
-                                          .doc(user.uid)
-                                          .update({
-                                        'active_order': FieldValue.delete()
+                                  try {
+                                    final orderDoc = await FirebaseFirestore
+                                        .instance
+                                        .collection('orders')
+                                        .doc(orderId)
+                                        .get();
+
+                                    if (orderDoc['status'] ==
+                                        "awaiting acknowledgment") {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                              content: Text(
+                                                  'Awaiting buyer acknowledgment.')));
+                                      setState(() {
+                                        _isMarkingDelivered = false;
+                                        _isAwaitingAcknowledgment = true;
                                       });
-
-                                      activeOrderNotifier.value = null;
-
-                                      Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                               DeliverySuccessScreen(orderId: orderId,),
-                                        ),
-                                      );
+                                      return;
                                     }
-                                  });
 
-                                  showLongToastrMessage(
-                                      "Order marked as delivered. Awaiting buyer acknowledgment.",
-                                      7);
+                                    await FirebaseFirestore.instance
+                                        .collection('orders')
+                                        .doc(orderId)
+                                        .update({
+                                      'status': 'awaiting acknowledgment',
+                                      'delivered_date':
+                                          Timestamp.fromDate(DateTime.now()),
+                                    });
+
+                                    // Listen for order status changes
+                                    FirebaseFirestore.instance
+                                        .collection('orders')
+                                        .doc(orderId)
+                                        .snapshots()
+                                        .listen((documentSnapshot) {
+                                      final status = documentSnapshot['status'];
+                                      if (status == 'delivered') {
+                                        FirebaseFirestore.instance
+                                            .collection('delivery_captains')
+                                            .doc(user.uid)
+                                            .update({
+                                          'active_order': FieldValue.delete()
+                                        });
+
+                                        activeOrderNotifier.value = null;
+
+                                        Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                DeliverySuccessScreen(
+                                                    orderId: orderId),
+                                          ),
+                                        );
+                                      }
+                                    });
+
+                                    showLongToastrMessage(
+                                        "Order marked as delivered. Awaiting buyer acknowledgment.",
+                                        7);
+
+                                    setState(() {
+                                      _isAwaitingAcknowledgment = true;
+                                    });
+                                  } catch (e) {
+                                    showToastrMessage(
+                                        "Failed to mark as delivered: $e");
+                                  } finally {
+                                    setState(() {
+                                      _isMarkingDelivered = false;
+                                    });
+                                  }
                                 },
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,

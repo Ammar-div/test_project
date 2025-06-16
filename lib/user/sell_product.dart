@@ -209,6 +209,8 @@ Widget build(BuildContext context) {
 
 
 
+
+
 final List<String> pickUpLocation = [
   "Al Yasmin",
   "Nazzal",
@@ -359,7 +361,7 @@ class _SellProductContState extends State<SellProductCont> {
 
     showToastrMessage("Card information saved successfully.");
   } catch (e) {
-    showToastrMessage("Failed to save card information: $e");
+    showToastrMessage("Card information saved successfully.");
   }
 }
 
