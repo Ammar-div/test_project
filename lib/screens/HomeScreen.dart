@@ -478,7 +478,7 @@ class HomeContent extends StatelessWidget {
                                                 fontSize: 17.sp,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.white,
-                                                height: 1.2,
+                                                height: 0.9,
                                               ),
                                             ),
                                           ),
@@ -522,7 +522,7 @@ class HomeContent extends StatelessWidget {
                                             ),
                                             child: Row(
                                               children: [
-                                                Icon(Icons.access_time, size: 10, color: Colors.white),
+                                                Icon(Icons.access_time, size: 5, color: Colors.white),
                                                 const SizedBox(width: 2),
                                                 Text(
                                                   timeAgo,
