@@ -13,6 +13,9 @@ import 'package:test_project/screens/favorites_screen.dart';
 import 'package:test_project/user/account_management.dart';
 import 'package:test_project/screens/orders_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,7 +24,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   bool _isFavorite = false;
@@ -30,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   late Stream<QuerySnapshot> _productsStream;
   int _selectedIndex = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
-  
+
   String userName = '';
 
   // Add this list to store the screens
@@ -42,10 +46,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       builder: (context) {
         final user = FirebaseAuth.instance.currentUser;
         if (user == null) {
-          return const Center(child: Text('Please sign in to view your profile'));
+          return const Center(
+              child: Text('Please sign in to view your profile'));
         }
         return FutureBuilder<DocumentSnapshot>(
-          future: FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
+          future: FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
@@ -113,12 +121,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   void _getUserName() async {
     final user = _auth.currentUser;
-    if(user != null)
-    {
-        final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-        setState(() {
-           userName = userDoc['username'] ?? 'N/A';
-        });
+    if (user != null) {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      setState(() {
+        userName = userDoc['username'] ?? 'N/A';
+      });
     }
   }
 
@@ -160,7 +170,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   // Function to add/remove a product from favorites
-  Future<void> _toggleFavorite(String productId, String productName, double productPrice, String imageUrl) async {
+  Future<void> _toggleFavorite(String productId, String productName,
+      double productPrice, String imageUrl) async {
     final user = _auth.currentUser;
     if (user == null) {
       // Handle case where user is not logged in
@@ -375,6 +386,27 @@ class HomeContent extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Column(
                   children: [
+                    // Add the image search button above categories
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () => _searchByImage(context),
+                          icon: const Icon(Icons.image_search),
+                          label: const Text('Search by Image'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: kPrimaryBlue,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                          ),
+                        ),
+                      ),
+                    ),
                     AllCategories(),
                     SizedBox(height: 1.h),
                   ],
@@ -389,7 +421,8 @@ class HomeContent extends StatelessWidget {
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    final product = products[index].data() as Map<String, dynamic>;
+                    final product =
+                        products[index].data() as Map<String, dynamic>;
                     final imageUrl = product['imageUrls'][0];
                     final productId = products[index].id;
                     final publishDate = product['publishDate'] as Timestamp;
@@ -403,18 +436,21 @@ class HomeContent extends StatelessWidget {
                             builder: (context) => ProductDetailScreen(
                               productName: product['name'],
                               productPrice: product['price'],
-                              imageUrls: List<String>.from(product['imageUrls']),
+                              imageUrls:
+                                  List<String>.from(product['imageUrls']),
                               description: product['description'],
                               quantity: product['quantity'],
                               status: product['status'],
-                              howMuchUsed: product['how_much_used'] ?? 'Not specified',
+                              howMuchUsed:
+                                  product['how_much_used'] ?? 'Not specified',
                               productId: productId,
                             ),
                           ),
                         );
                       },
                       child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 8),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(15),
@@ -464,10 +500,12 @@ class HomeContent extends StatelessWidget {
                                 child: Container(
                                   padding: const EdgeInsets.all(12),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Expanded(
                                             child: Text(
@@ -483,10 +521,12 @@ class HomeContent extends StatelessWidget {
                                             ),
                                           ),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 4),
                                             decoration: BoxDecoration(
                                               color: Colors.green,
-                                              borderRadius: BorderRadius.circular(12),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
                                             ),
                                             child: Text(
                                               '${product['price'].toStringAsFixed(0)} JOD',
@@ -512,17 +552,23 @@ class HomeContent extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 8),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 4),
                                             decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.2),
-                                              borderRadius: BorderRadius.circular(12),
+                                              color:
+                                                  Colors.white.withOpacity(0.2),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
                                             ),
                                             child: Row(
                                               children: [
-                                                Icon(Icons.access_time, size: 10, color: Colors.white),
+                                                Icon(Icons.access_time,
+                                                    size: 10,
+                                                    color: Colors.white),
                                                 const SizedBox(width: 2),
                                                 Text(
                                                   timeAgo,
@@ -535,43 +581,80 @@ class HomeContent extends StatelessWidget {
                                             ),
                                           ),
                                           StreamBuilder<QuerySnapshot>(
-                                            stream: FirebaseAuth.instance.currentUser != null
+                                            stream: FirebaseAuth
+                                                        .instance.currentUser !=
+                                                    null
                                                 ? FirebaseFirestore.instance
                                                     .collection('favorites')
-                                                    .where('userId', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
-                                                    .where('productId', isEqualTo: productId)
+                                                    .where('userId',
+                                                        isEqualTo: FirebaseAuth
+                                                            .instance
+                                                            .currentUser
+                                                            ?.uid)
+                                                    .where('productId',
+                                                        isEqualTo: productId)
                                                     .snapshots()
-                                                : const Stream<QuerySnapshot>.empty(),
-                                            builder: (context, favoriteSnapshot) {
-                                              final isFavorite = FirebaseAuth.instance.currentUser != null &&
+                                                : const Stream<
+                                                    QuerySnapshot>.empty(),
+                                            builder:
+                                                (context, favoriteSnapshot) {
+                                              final isFavorite = FirebaseAuth
+                                                          .instance
+                                                          .currentUser !=
+                                                      null &&
                                                   favoriteSnapshot.hasData &&
-                                                  favoriteSnapshot.data!.docs.isNotEmpty;
+                                                  favoriteSnapshot
+                                                      .data!.docs.isNotEmpty;
 
                                               return Container(
-                                                padding: const EdgeInsets.all(6),
+                                                padding:
+                                                    const EdgeInsets.all(6),
                                                 decoration: BoxDecoration(
-                                                  color: Colors.white.withOpacity(0.2),
+                                                  color: Colors.white
+                                                      .withOpacity(0.2),
                                                   shape: BoxShape.circle,
                                                 ),
                                                 child: IconButton(
                                                   padding: EdgeInsets.zero,
-                                                  constraints: const BoxConstraints(),
+                                                  constraints:
+                                                      const BoxConstraints(),
                                                   onPressed: () async {
-                                                    DocumentSnapshot productDocumentObj =
-                                                        await FirebaseFirestore.instance.collection('products').doc(productId).get();
-                                                    final sellerId = productDocumentObj["seller_ifos"]["seller_id"];
-                                                    final user = FirebaseAuth.instance.currentUser;
+                                                    DocumentSnapshot
+                                                        productDocumentObj =
+                                                        await FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                                'products')
+                                                            .doc(productId)
+                                                            .get();
+                                                    final sellerId =
+                                                        productDocumentObj[
+                                                                "seller_ifos"]
+                                                            ["seller_id"];
+                                                    final user = FirebaseAuth
+                                                        .instance.currentUser;
                                                     if (user != null) {
-                                                      if (user.uid == sellerId) {
-                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                            const SnackBar(content: Text("The user can't favorite his own product.")));
+                                                      if (user.uid ==
+                                                          sellerId) {
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                                const SnackBar(
+                                                                    content: Text(
+                                                                        "The user can't favorite his own product.")));
                                                         return;
                                                       }
                                                     }
 
-                                                    if (FirebaseAuth.instance.currentUser == null) {
-                                                      ScaffoldMessenger.of(context).showSnackBar(
-                                                        const SnackBar(content: Text('You must be logged in to add favorites')),
+                                                    if (FirebaseAuth.instance
+                                                            .currentUser ==
+                                                        null) {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        const SnackBar(
+                                                            content: Text(
+                                                                'You must be logged in to add favorites')),
                                                       );
                                                     } else {
                                                       _toggleFavorite(
@@ -583,9 +666,13 @@ class HomeContent extends StatelessWidget {
                                                     }
                                                   },
                                                   icon: Icon(
-                                                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                                                    isFavorite
+                                                        ? Icons.favorite
+                                                        : Icons.favorite_border,
                                                     size: 16,
-                                                    color: isFavorite ? Colors.red : Colors.white,
+                                                    color: isFavorite
+                                                        ? Colors.red
+                                                        : Colors.white,
                                                   ),
                                                 ),
                                               );
@@ -611,5 +698,156 @@ class HomeContent extends StatelessWidget {
         },
       ),
     );
+  }
+
+  String extractFilename(String url) {
+    // Parse the URL properly
+    final uri = Uri.parse(url);
+    final pathSegments = uri.pathSegments;
+
+    // Find the 'o' parameter which contains the encoded path
+    final encodedPath = pathSegments.lastWhere(
+      (segment) => segment.contains('.jpg') || segment.contains('.png'),
+      orElse: () => '',
+    );
+
+    // Decode URL encoding (%2F becomes /, etc.)
+    final decodedPath = Uri.decodeComponent(encodedPath);
+
+    // Extract just the filename
+    return decodedPath.split('/').last;
+  }
+
+  Future<void> _searchByImage(BuildContext context) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      try {
+        const pythonApiUrl = 'http://172.20.10.2:5001/search';
+        var request = http.MultipartRequest('POST', Uri.parse(pythonApiUrl));
+        request.files
+            .add(await http.MultipartFile.fromPath('image', pickedFile.path));
+
+        var response = await request.send();
+        final responseBody = await response.stream.bytesToString();
+        final responseData = jsonDecode(responseBody);
+
+        Navigator.of(context).pop(); // Close loading indicator
+
+        if (response.statusCode == 200 && responseData['status'] == 'success') {
+          final results = List<List<dynamic>>.from(responseData['results']);
+
+          // Extract just the numeric image names from results (without .jpg)
+          final resultImageNames = results.map((result) {
+            String filename = result[0].toString();
+            return filename.split('.').first; // Gets just "1739130712336"
+          }).toList();
+
+          // Get all products from Firestore
+          final productsQuery = await FirebaseFirestore.instance
+              .collection('products')
+              .where('deleted_at', isNull: true)
+              .get();
+
+          // Filter products that have any image matching the result names
+          final matchedProducts = productsQuery.docs.where((doc) {
+            final productData = doc.data();
+            final imageUrls = List<String>.from(productData['imageUrls']);
+
+            return imageUrls.any((url) {
+              try {
+                // Extract the numeric filename from Firebase Storage URL
+                // Example URL: "https://.../product_images%2F1750009078909.jpg?..."
+                final uri = Uri.parse(url);
+                final path = uri
+                    .path; // Gets "/v0/.../product_images%2F1750009078909.jpg"
+                final encodedFilename = path
+                    .split('/')
+                    .last; // "product_images%2F1750009078909.jpg"
+                final decodedFilename = Uri.decodeComponent(
+                    encodedFilename); // "product_images/1750009078909.jpg"
+                final filename =
+                    decodedFilename.split('/').last; // "1750009078909.jpg"
+                final imageName = filename.split('.').first; // "1750009078909"
+
+                // Check if this image name exists in our results
+                return resultImageNames.any((id) => imageName.contains(id));
+              } catch (e) {
+                print('Error parsing URL: $url, error: $e');
+                return false;
+              }
+            });
+          }).toList();
+
+          if (matchedProducts.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('No matching products found')),
+            );
+          } else {
+            // Show results in a new screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Scaffold(
+                  appBar: AppBar(title: const Text('Search Results')),
+                  body: ListView.builder(
+                    itemCount: matchedProducts.length,
+                    itemBuilder: (context, index) {
+                      final product = matchedProducts[index].data();
+                      final imageUrl = product['imageUrls'][0];
+
+                      return ListTile(
+                        leading: Image.network(imageUrl,
+                            width: 50, height: 50, fit: BoxFit.cover),
+                        title: Text(product['name']),
+                        subtitle: Text('${product['price']} JOD'),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProductDetailScreen(
+                                productName: product['name'],
+                                productPrice: product['price'],
+                                imageUrls:
+                                    List<String>.from(product['imageUrls']),
+                                description: product['description'],
+                                quantity: product['quantity'],
+                                status: product['status'],
+                                howMuchUsed:
+                                    product['how_much_used'] ?? 'Not specified',
+                                productId: matchedProducts[index].id,
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'Search failed: ${responseData['message'] ?? 'Unknown error'}')),
+          );
+        }
+      } catch (e) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
   }
 }
